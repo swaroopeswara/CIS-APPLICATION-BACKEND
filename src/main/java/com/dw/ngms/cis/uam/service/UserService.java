@@ -27,6 +27,14 @@ public class UserService {
 		return userRepository.findExternalUsersByProvinceCode(provinceCode);
 	}//getAllUsersByUserTypeNameAndProvinceCode
 	
+	public List<User> getAllApprovalPendingUsers(String approvalStatus){
+		return userRepository.findByApprovalStatus(approvalStatus);
+	}//getAllApprovalPendingUsers
+	
+	public List<User> getAllApprovalPendingUsersByProvinceCode(String approvalStatus, String provinceCode){
+		return userRepository.findExternalUsersByApprovalStatusAndProvinceCode(approvalStatus, provinceCode);
+	}//getAllApprovalPendingUsersByProvinceCode
+	
 	public User findByEmail(String email) {
 		return this.userRepository.findByEmail(email);
 	} //FindUserByEmail

@@ -30,6 +30,7 @@ public class UserController extends MessageController {
 
 	private static final String INTERNAL_USER_TYPE_NAME = "INTERNAL";
 	private static final String EXTERNAL_USER_TYPE_NAME = "EXTERNAL";
+	private static final String APPROVAL_PENDING_STATUS = "N";
 	
 	@Autowired
     private UserService userService;
@@ -60,7 +61,19 @@ public class UserController extends MessageController {
         }
     }//getAllExternalUsers
 
-
+	@GetMapping("/getUsersForPendingApproval")
+    public ResponseEntity<?> getUsersForPendingApproval(HttpServletRequest request, @RequestParam String provincecode) {
+        try {
+        	List<User> userList = (StringUtils.isEmpty(provincecode) || "all".equalsIgnoreCase(provincecode.trim())) ? 
+        		userService.getAllApprovalPendingUsers(APPROVAL_PENDING_STATUS) : 
+        			userService.getAllApprovalPendingUsersByProvinceCode(APPROVAL_PENDING_STATUS, provincecode);
+        	return (CollectionUtils.isEmpty(userList)) ? generateEmptyResponse(request, "User(s) not found") 
+            		: ResponseEntity.status(HttpStatus.OK).body(userList);
+        } catch (Exception exception) {
+            return generateFailureResponse(request, exception);
+        }
+    }//getAllInternalUsers
+	
 	@GetMapping("/checkUserExist")
 	public ResponseEntity<?> checkUserExistsInDB(HttpServletRequest request, @RequestParam String email) {
 		User userExists = null;
