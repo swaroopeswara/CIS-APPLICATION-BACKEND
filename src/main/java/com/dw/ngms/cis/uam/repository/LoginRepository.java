@@ -10,6 +10,6 @@ import org.springframework.data.repository.query.Param;
  */
 public interface LoginRepository extends JpaRepository<User, Long> {
 
-    @Query("SELECT u FROM User u WHERE u.username = :username")
+    @Query("SELECT u FROM User u WHERE u.userName = :username")
     User findByLoginName(@Param("username") String username);
 }

@@ -36,7 +36,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 	   		+ "WHERE U.USERTYPENAME = 'EXTERNAL' AND EUR.USERPROVINCECODE = :provincecode", nativeQuery = true)
    List<User> findExternalUsersByProvinceCode(@Param("provincecode") String provincecode);
    
-   @Query("SELECT u FROM User u WHERE u.usercode = :usercode and u.username = :username")
+   @Query("SELECT u FROM User u WHERE u.userCode = :usercode and u.userName = :username")
    User findByUserByNameAndCode(@Param("usercode") String usercode,@Param("username") String username);
 
 }
