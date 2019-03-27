@@ -29,7 +29,7 @@ public class OrganisationTypeController extends MessageController {
 			return (CollectionUtils.isEmpty(organisationTypeList)) ? generateEmptyResponse(request, "OrgTypes not found")
 					: ResponseEntity.status(HttpStatus.OK).body(organisationTypeList);
 		} catch (Exception exception) {
-			return generateErrorResponse(request, exception);
+			return generateFailureResponse(request, exception);
 		}
 	}//getAllOrganisationTypes
 	

@@ -29,7 +29,7 @@ public class CommunicationTypeController extends MessageController {
 			return (CollectionUtils.isEmpty(communicationTypeList)) ? generateEmptyResponse(request, "CommTypes not found")
 					: ResponseEntity.status(HttpStatus.OK).body(communicationTypeList);
 		} catch (Exception exception) {
-			return generateErrorResponse(request, exception);
+			return generateFailureResponse(request, exception);
 		}
 	}//getAllCommunicationTypes
 
