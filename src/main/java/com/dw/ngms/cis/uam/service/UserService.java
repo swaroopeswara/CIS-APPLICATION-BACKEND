@@ -19,10 +19,14 @@ public class UserService {
 		return userRepository.findByUserTypeName(userTypeName);
 	}//getAllUsersByUserTypeName
 	
-	public List<User> getAllUsersByUserTypeNameAndProvinceCode(String userTypeName, String provinceCode){
-		return userRepository.findByUserTypeNameAndProvinceCode(userTypeName, provinceCode);
+	public List<User> getAllInternalUsersByProvinceCode(String provinceCode){
+		return userRepository.findInternalUsersByProvinceCode(provinceCode);
 	}//getAllUsersByUserTypeNameAndProvinceCode
 
+	public List<User> getAllExternalUsersByProvinceCode(String provinceCode){
+		return userRepository.findExternalUsersByProvinceCode(provinceCode);
+	}//getAllUsersByUserTypeNameAndProvinceCode
+	
 	public User findByEmail(String email) {
 		return this.userRepository.findByEmail(email);
 	} //FindUserByEmail

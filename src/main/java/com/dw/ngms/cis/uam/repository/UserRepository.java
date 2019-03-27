@@ -20,14 +20,16 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
    @Query("SELECT u FROM User u WHERE u.userTypeName = :userTypeName")
    List<User> findByUserTypeName(@Param("userTypeName") String userTypeName);
+
+   @Query(value = "SELECT U.* FROM USERS U INNER JOIN INTERNALUSERROLES IUR ON (IUR.USERCODE = u.USERCODE) "
+   		+ "WHERE U.USERTYPENAME = 'INTERNAL' AND IUR.USERPROVINCECODE = :provincecode", nativeQuery = true)
+   List<User> findInternalUsersByProvinceCode(@Param("provincecode") String provincecode);
    
-   @Query("SELECT u FROM User u WHERE u.userTypeName = :userTypeName and u.userTypeCode = :provincecode")
-   List<User> findByUserTypeNameAndProvinceCode(@Param("userTypeName") String userTypeName, @Param("provincecode") String provincecode);
-
-
+   @Query(value = "SELECT U.* FROM USERS U INNER JOIN EXTERNALUSERROLES EUR ON (EUR.USERCODE = u.USERCODE) "
+	   		+ "WHERE U.USERTYPENAME = 'EXTERNAL' AND EUR.USERPROVINCECODE = :provincecode", nativeQuery = true)
+   List<User> findExternalUsersByProvinceCode(@Param("provincecode") String provincecode);
+   
    @Query("SELECT u FROM User u WHERE u.usercode = :usercode and u.username = :username")
    User findByUserByNameAndCode(@Param("usercode") String usercode,@Param("username") String username);
-
-
 
 }

@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import com.dw.ngms.cis.uam.dto.UserDTO;
+import com.dw.ngms.cis.uam.entity.User;
 import com.dw.ngms.cis.uam.enums.Status;
 import com.dw.ngms.cis.uam.jsonresponse.UserControllerResponse;
 import com.google.gson.Gson;
@@ -19,7 +20,6 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
-import com.dw.ngms.cis.uam.entity.User;
 import com.dw.ngms.cis.uam.service.UserService;
 
 import static org.springframework.util.StringUtils.isEmpty;
@@ -29,7 +29,7 @@ import static org.springframework.util.StringUtils.isEmpty;
 public class UserController extends MessageController {
 
 	private static final String INTERNAL_USER_TYPE_NAME = "INTERNAL";
-//	private static final String EXTERNAL_USER_TYPE_NAME = "EXTERNAL";
+	private static final String EXTERNAL_USER_TYPE_NAME = "EXTERNAL";
 	
 	@Autowired
     private UserService userService;
@@ -39,13 +39,26 @@ public class UserController extends MessageController {
         try {
         	List<User> userList = (StringUtils.isEmpty(provincecode) || "all".equalsIgnoreCase(provincecode.trim())) ? 
         		userService.getAllUsersByUserTypeName(INTERNAL_USER_TYPE_NAME) : 
-        			userService.getAllUsersByUserTypeNameAndProvinceCode(INTERNAL_USER_TYPE_NAME, provincecode);
+        			userService.getAllInternalUsersByProvinceCode(provincecode);
         	return (CollectionUtils.isEmpty(userList)) ? generateEmptyResponse(request, "User(s) not found") 
             		: ResponseEntity.status(HttpStatus.OK).body(userList);
         } catch (Exception exception) {
             return generateFailureResponse(request, exception);
         }
     }//getAllInternalUsers
+	
+	@GetMapping("/getAllExternalUsers")
+    public ResponseEntity<?> getAllExternalUsers(HttpServletRequest request, @RequestParam String provincecode) {
+        try {
+        	List<User> userList = (StringUtils.isEmpty(provincecode) || "all".equalsIgnoreCase(provincecode.trim())) ? 
+        		userService.getAllUsersByUserTypeName(EXTERNAL_USER_TYPE_NAME) : 
+        			userService.getAllExternalUsersByProvinceCode(provincecode);
+        	return (CollectionUtils.isEmpty(userList)) ? generateEmptyResponse(request, "User(s) not found") 
+            		: ResponseEntity.status(HttpStatus.OK).body(userList);
+        } catch (Exception exception) {
+            return generateFailureResponse(request, exception);
+        }
+    }//getAllExternalUsers
 
 
 	@GetMapping("/checkUserExist")
