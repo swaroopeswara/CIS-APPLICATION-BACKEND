@@ -15,5 +15,18 @@ public class UserControllerResponse {
 
     private String exists;
     private String valid;
+    
+	public String getExists() {
+		return exists;
+	}
+	public void setExists(String exists) {
+		this.exists = exists;
+	}
+	public String getValid() {
+		return valid;
+	}
+	public void setValid(String valid) {
+		this.valid = valid;
+	}
 
 }

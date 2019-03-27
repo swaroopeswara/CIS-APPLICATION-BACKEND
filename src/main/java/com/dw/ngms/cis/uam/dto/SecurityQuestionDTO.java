@@ -16,7 +16,10 @@ import java.io.Serializable;
 @Setter
 @ToString
 public class SecurityQuestionDTO implements Serializable {
-    private String code;
+
+	private static final long serialVersionUID = 8462144096554739452L;
+	
+	private String code;
     private String que;
     private String ans;
 
