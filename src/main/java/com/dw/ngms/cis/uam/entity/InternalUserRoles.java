@@ -45,9 +45,9 @@ public class InternalUserRoles implements Serializable {
     @NotEmpty(message = "USER ROLE NAME must not be empty")
     private String userRoleName;
 
-//    @Column(name = "USERCODE", nullable = true, length = 50)
-//    @NotEmpty(message = "USER CODE must not be empty")
-//    private String userCode;
+    @Column(name = "USERCODE", nullable = true, length = 50)
+    @NotEmpty(message = "USER CODE must not be empty")
+    private String userCode;
 
     @Column(name = "USERNAME", nullable = true, length = 255)
     @NotEmpty(message = "USER NAME must not be empty")
@@ -70,8 +70,13 @@ public class InternalUserRoles implements Serializable {
     private String userSectionName;
 
     @Column(name = "ISACTIVE", nullable = true, length = 10)
-    @NotEmpty(message = "Active status must not be empty")
     private String isactive;
+
+/*
+    @Column(name = "ISACTIVE", nullable = true, length = 10)
+    @NotEmpty(message = "Active status must not be empty")
+    private String isactive;*/
+
 
     @Temporal(TemporalType.DATE)
     @Column(name = "CREATEDDATE", nullable = true)
@@ -82,11 +87,7 @@ public class InternalUserRoles implements Serializable {
 
     @Column(name = "INTERNALROLECODE",length = 50)
     private String internalRoleCode;
-    
-//    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
-//    @JoinColumn
-//    private List<User> users;
-    
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
