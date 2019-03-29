@@ -24,10 +24,14 @@ public interface UserRepository extends JpaRepository<User, Long> {
    @Query("SELECT u FROM User u WHERE u.isApproved = :approvalStatus")
    List<User> findByApprovalStatus(@Param("approvalStatus") String approvalStatus);
    
-   @Query(value = "SELECT U.* FROM USERS U INNER JOIN EXTERNALUSERROLES EUR ON (EUR.USERCODE = u.USERCODE) "
+   @Query(value = "SELECT U.* FROM USERS U INNER JOIN EXTERNALUSERROLES EUR ON (EUR.USERCODE = U.USERCODE) "
 	   		+ "WHERE U.USERTYPENAME = 'EXTERNAL' AND U.ISAPPROVED = ?1 AND EUR.USERPROVINCECODE = ?2", nativeQuery = true)
    List<User> findExternalUsersByApprovalStatusAndProvinceCode(String approvalStatus, String provincecode);
    
+   @Query(value = "SELECT U.* FROM USERS U INNER JOIN EXTERNALUSERASSISTANTS EUA ON (EUA.USERID = U.USERID) "
+	   		+ "WHERE U.USERTYPENAME = 'EXTERNAL' AND EUA.ISAPPROVED = ?1 AND EUR.SURVEYORUSERCODE = ?2", nativeQuery = true)
+   List<User> findAssistantsForPendingApprovalStatusAndProvinceCode(String approvalStatus, String surveyorusercode);
+  
    @Query(value = "SELECT U.* FROM USERS U INNER JOIN INTERNALUSERROLES IUR ON (IUR.USERCODE = u.USERCODE) "
    		+ "WHERE U.USERTYPENAME = 'INTERNAL' AND IUR.USERPROVINCECODE = :provincecode", nativeQuery = true)
    List<User> findInternalUsersByProvinceCode(@Param("provincecode") String provincecode);
@@ -38,5 +42,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
    
    @Query("SELECT u FROM User u WHERE u.userCode = :usercode and u.userName = :username")
    User findByUserByNameAndCode(@Param("usercode") String usercode,@Param("username") String username);
+
+   @Query("SELECT u FROM User u WHERE u.userCode = :usercode and u.userName = :username and u.userTypeName = :usertypename")
+   User findByUserCodeUserNameAndTypeName(@Param("usercode") String usercode,@Param("username") String username, @Param("usertypename") String usertypename);
 
 }

@@ -1,35 +1,36 @@
 package com.dw.ngms.cis.uam.controller;
 
-import com.dw.ngms.cis.uam.dto.InternalUserRoleDTO;
-import com.dw.ngms.cis.uam.dto.UserDTO;
-import com.dw.ngms.cis.uam.entity.InternalRole;
-import com.dw.ngms.cis.uam.entity.InternalUserRoles;
-import com.dw.ngms.cis.uam.entity.User;
-import com.dw.ngms.cis.uam.service.InternalUserService;
-import com.dw.ngms.cis.uam.storage.StorageService;
-import com.dw.ngms.cis.uam.utilities.Constants;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.InputStreamResource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.util.CollectionUtils;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.dw.ngms.cis.uam.dto.InternalUserRoleDTO;
+import com.dw.ngms.cis.uam.entity.InternalRole;
+import com.dw.ngms.cis.uam.entity.InternalUserRoles;
+import com.dw.ngms.cis.uam.service.InternalUserRoleService;
+import com.dw.ngms.cis.uam.service.InternalUserService;
+import com.dw.ngms.cis.uam.storage.StorageService;
+import com.dw.ngms.cis.uam.utilities.Constants;
 
 /**
  * Created by swaroop on 2019/03/28.
@@ -41,10 +42,11 @@ public class InternalUserRoleController extends MessageController {
 
     @Autowired
     private InternalUserService internalUserService;
-
     @Autowired
-    StorageService testService;
-
+    private InternalUserRoleService internalUserRoleService;
+    @Autowired
+    private StorageService testService; 
+    
     @PostMapping("/registerInternalUserRole")
     public InternalUserRoles createInternalUserRole(@RequestBody @Valid InternalUserRoleDTO internalUserRoleDTO) {
         System.out.println("Internal Role Code "+internalUserRoleDTO.getProvinceCode());
@@ -63,12 +65,8 @@ public class InternalUserRoleController extends MessageController {
         System.out.println("Internal Role Code "+internalRole.getInternalRoleCode());
         System.out.println("User Province Name "+internalUserRoles.getUserProvinceName());
         return internalUserService.saveInternalUserRole(internalUserRoles);
-    }
-
-
-
-
-
+    }//createInternalUserRole
+    
     @PostMapping("/uploadSignedUserAccess")
     public ResponseEntity<?> handleFileUpload(HttpServletRequest request,@RequestParam("file") MultipartFile file,
                                               @RequestParam("userCode") String userCode,
@@ -116,9 +114,7 @@ public class InternalUserRoleController extends MessageController {
             message = "FAIL to upload " + file.getOriginalFilename() + "!";
             return generateFailureResponse(request, exception);
         }
-    }
-
-
+    }//handleFileUpload
 
     @GetMapping("/downloadSignedUserAccess")
     public ResponseEntity<?> downloadFile(HttpServletRequest request, @RequestBody @Valid InternalUserRoleDTO internalUserRoles) throws IOException {
@@ -141,6 +137,28 @@ public class InternalUserRoleController extends MessageController {
         }else{
             return generateEmptyResponse(request, "No Internal Roles  found");
         }
-
-    }
+    }//downloadFile
+    
+    @GetMapping("/getInternalUserRolesByEmail")
+    public ResponseEntity<?> getInternalUserRolesByEmail(HttpServletRequest request, @RequestParam String email) {
+    	try {
+    		InternalUserRoles internalUserRoles = internalUserRoleService.getInternalUserRole(email);
+        	return (internalUserRoles == null) ? generateEmptyResponse(request, "InternalUserRole not found") 
+            		: ResponseEntity.status(HttpStatus.OK).body(internalUserRoles);
+        } catch (Exception exception) {
+            return generateFailureResponse(request, exception);
+        }
+    }//getInternalUserRolesByEmail
+    
+    @PostMapping("/deleteInternalUserRole")
+    public ResponseEntity<?> deleteInternalUserRoles(HttpServletRequest request, @RequestParam String usercode,
+    		@RequestParam String username, @RequestParam String internalrolecode) {
+    	try {
+    		internalUserRoleService.deleteInternalUserRole(usercode, username, internalrolecode);
+    		return ResponseEntity.status(HttpStatus.OK).body("InternalUserRoles deleted successfully");//FIXME need to confirm
+        } catch (Exception exception) {
+            return generateFailureResponse(request, exception);
+        }
+    }//deleteInternalUserRoles
+    
 }

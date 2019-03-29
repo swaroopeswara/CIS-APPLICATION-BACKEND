@@ -22,5 +22,23 @@ public class SecurityQuestionDTO implements Serializable {
 	private String code;
     private String que;
     private String ans;
-
+	public String getCode() {
+		return code;
+	}
+	public void setCode(String code) {
+		this.code = code;
+	}
+	public String getQue() {
+		return que;
+	}
+	public void setQue(String que) {
+		this.que = que;
+	}
+	public String getAns() {
+		return ans;
+	}
+	public void setAns(String ans) {
+		this.ans = ans;
+	}
+   
 }

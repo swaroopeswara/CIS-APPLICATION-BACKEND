@@ -1,7 +1,6 @@
 package com.dw.ngms.cis.uam.controller;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -34,12 +33,32 @@ public class UserController extends MessageController {
 
 	private static final String INTERNAL_USER_TYPE_NAME = "INTERNAL";
 	private static final String EXTERNAL_USER_TYPE_NAME = "EXTERNAL";
-	private static final String APPROVAL_PENDING_STATUS = "N";
+	private static final String APPROVAL_STATUS_PENDING = "N";
+	private static final String APPROVAL_STATUS_APPROVE = "Y";
 	
 	@Autowired
     private UserService userService;
-
-
+	
+	@GetMapping("/checkADUserExists")
+	public ResponseEntity<?> isADUserExists(HttpServletRequest request, @RequestParam String username, @RequestParam String password) {
+		try {
+        	return ResponseEntity.status(HttpStatus.OK).body(userService.isADUserExists(username, password));
+        } catch (Exception exception) {
+            return generateFailureResponse(request, exception);
+        }
+	}//isADUserExists
+	
+	@PostMapping("/submitInternalUserForApproval")
+	public ResponseEntity<?> submitInternalUserForApproval(HttpServletRequest request, @RequestParam String usercode, 
+			@RequestParam String username, @RequestParam String isapproved) {
+		try {
+        	User user = userService.submitInternalUserForApproval(usercode, username, INTERNAL_USER_TYPE_NAME, APPROVAL_STATUS_APPROVE);
+        	return (user == null) ? generateEmptyResponse(request, "User(s) not found") : 
+        				ResponseEntity.status(HttpStatus.OK).body(user);
+        } catch (Exception exception) {
+            return generateFailureResponse(request, exception);
+        }
+	}//submitInternalUserForApproval
 	
 	@GetMapping("/getAllInternalUsers")
     public ResponseEntity<?> getAllInternalUsers(HttpServletRequest request, @RequestParam String provincecode) {
@@ -71,14 +90,28 @@ public class UserController extends MessageController {
     public ResponseEntity<?> getUsersForPendingApproval(HttpServletRequest request, @RequestParam String provincecode) {
         try {
         	List<User> userList = (StringUtils.isEmpty(provincecode) || "all".equalsIgnoreCase(provincecode.trim())) ? 
-        		userService.getAllApprovalPendingUsers(APPROVAL_PENDING_STATUS) : 
-        			userService.getAllApprovalPendingUsersByProvinceCode(APPROVAL_PENDING_STATUS, provincecode);
+        		userService.getAllApprovalPendingUsers(APPROVAL_STATUS_PENDING) : 
+        			userService.getAllApprovalPendingUsersByProvinceCode(APPROVAL_STATUS_PENDING, provincecode);
         	return (CollectionUtils.isEmpty(userList)) ? generateEmptyResponse(request, "User(s) not found") 
             		: ResponseEntity.status(HttpStatus.OK).body(userList);
         } catch (Exception exception) {
             return generateFailureResponse(request, exception);
         }
-    }//getAllInternalUsers
+    }//getUsersForPendingApproval
+	
+	@GetMapping("/getUsersForPendingApproval")
+    public ResponseEntity<?> getAssistantsForPendingApproval(HttpServletRequest request, @RequestParam String surveyorusercode) {
+        try {
+        	List<User> userList = null;
+        	if(!StringUtils.isEmpty(surveyorusercode)) {
+        		userList = userService.getAllAssistantsForPendingApprovalBySurveyorUserCode(APPROVAL_STATUS_PENDING, surveyorusercode);
+        	}
+        	return (CollectionUtils.isEmpty(userList)) ? generateEmptyResponse(request, "User(s) not found") 
+            		: ResponseEntity.status(HttpStatus.OK).body(userList);
+        } catch (Exception exception) {
+            return generateFailureResponse(request, exception);
+        }
+    }//getAssistantsForPendingApproval
 	
 	@GetMapping("/checkUserExist")
 	public ResponseEntity<?> checkUserExistsInDB(HttpServletRequest request, @RequestParam String email) {
@@ -175,9 +208,5 @@ public class UserController extends MessageController {
 			return generateFailureResponse(request, exception);
 		}
 	}
-
-
-
-
-
+	
 }
