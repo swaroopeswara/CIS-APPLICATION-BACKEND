@@ -5,13 +5,20 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -23,6 +30,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
+@NoArgsConstructor
 @Table(name = "EXTERNALUSERDATA")
 public class ExternalUser implements Serializable {
 
@@ -33,7 +41,11 @@ public class ExternalUser implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long externaluserdataid;
 
-
+    @JsonIgnore
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "USERID", referencedColumnName="USERID", nullable = false)
+    private User user;
+    
     @Column(name = "USERCODE", nullable = true, length = 50)
     @NotEmpty(message = "USERCODE must not be empty")
     private String usercode;
@@ -125,242 +137,14 @@ public class ExternalUser implements Serializable {
 
     @Column(name = "SUBSCRIBEEVENTS",length = 1)
     private String subscribeevents;
-
-    @Column(name = "USERID", nullable = true)
-    private Long userid;
-
+    
     @Column(name = "SECTORCODE",length = 50)
     private String sectorcode;
 
     @Column(name = "SECTORNAME",length = 100)
     private String sectorname;
 
-    
-	public Long getExternaluserdataid() {
-		return externaluserdataid;
-	}
-
-	public void setExternaluserdataid(Long externaluserdataid) {
-		this.externaluserdataid = externaluserdataid;
-	}
-
-	public String getUsercode() {
-		return usercode;
-	}
-
-	public void setUsercode(String usercode) {
-		this.usercode = usercode;
-	}
-
-	public String getOrganizationtypecode() {
-		return organizationtypecode;
-	}
-
-	public void setOrganizationtypecode(String organizationtypecode) {
-		this.organizationtypecode = organizationtypecode;
-	}
-
-	public String getOrganizationtypename() {
-		return organizationtypename;
-	}
-
-	public void setOrganizationtypename(String organizationtypename) {
-		this.organizationtypename = organizationtypename;
-	}
-
-	public String getPpno() {
-		return ppno;
-	}
-
-	public void setPpno(String ppno) {
-		this.ppno = ppno;
-	}
-
-	public String getPracticename() {
-		return practicename;
-	}
-
-	public void setPracticename(String practicename) {
-		this.practicename = practicename;
-	}
-
-	public String getPostaladdressline1() {
-		return postaladdressline1;
-	}
-
-	public void setPostaladdressline1(String postaladdressline1) {
-		this.postaladdressline1 = postaladdressline1;
-	}
-
-	public String getPostaladdressline2() {
-		return postaladdressline2;
-	}
-
-	public void setPostaladdressline2(String postaladdressline2) {
-		this.postaladdressline2 = postaladdressline2;
-	}
-
-	public String getPostaladdressline3() {
-		return postaladdressline3;
-	}
-
-	public void setPostaladdressline3(String postaladdressline3) {
-		this.postaladdressline3 = postaladdressline3;
-	}
-
-	public String getPostalcode() {
-		return postalcode;
-	}
-
-	public void setPostalcode(String postalcode) {
-		this.postalcode = postalcode;
-	}
-
-	public String getCommunicationmodetypecode() {
-		return communicationmodetypecode;
-	}
-
-	public void setCommunicationmodetypecode(String communicationmodetypecode) {
-		this.communicationmodetypecode = communicationmodetypecode;
-	}
-
-	public String getCommunicationmodetypename() {
-		return communicationmodetypename;
-	}
-
-	public void setCommunicationmodetypename(String communicationmodetypename) {
-		this.communicationmodetypename = communicationmodetypename;
-	}
-
-	public String getSecurityquestiontypecode1() {
-		return securityquestiontypecode1;
-	}
-
-	public void setSecurityquestiontypecode1(String securityquestiontypecode1) {
-		this.securityquestiontypecode1 = securityquestiontypecode1;
-	}
-
-	public String getSecurityquestion1() {
-		return securityquestion1;
-	}
-
-	public void setSecurityquestion1(String securityquestion1) {
-		this.securityquestion1 = securityquestion1;
-	}
-
-	public String getSecurityanswer1() {
-		return securityanswer1;
-	}
-
-	public void setSecurityanswer1(String securityanswer1) {
-		this.securityanswer1 = securityanswer1;
-	}
-
-	public String getSecurityquestiontypecode2() {
-		return securityquestiontypecode2;
-	}
-
-	public void setSecurityquestiontypecode2(String securityquestiontypecode2) {
-		this.securityquestiontypecode2 = securityquestiontypecode2;
-	}
-
-	public String getSecurityquestion2() {
-		return securityquestion2;
-	}
-
-	public void setSecurityquestion2(String securityquestion2) {
-		this.securityquestion2 = securityquestion2;
-	}
-
-	public String getSecurityanswer2() {
-		return securityanswer2;
-	}
-
-	public void setSecurityanswer2(String securityanswer2) {
-		this.securityanswer2 = securityanswer2;
-	}
-
-	public String getSecurityquestiontypecode3() {
-		return securityquestiontypecode3;
-	}
-
-	public void setSecurityquestiontypecode3(String securityquestiontypecode3) {
-		this.securityquestiontypecode3 = securityquestiontypecode3;
-	}
-
-	public String getSecurityquestion3() {
-		return securityquestion3;
-	}
-
-	public void setSecurityquestion3(String securityquestion3) {
-		this.securityquestion3 = securityquestion3;
-	}
-
-	public String getSecurityanswer3() {
-		return securityanswer3;
-	}
-
-	public void setSecurityanswer3(String securityanswer3) {
-		this.securityanswer3 = securityanswer3;
-	}
-
-	public Date getCreatedDate() {
-		return createdDate;
-	}
-
-	public void setCreatedDate(Date createdDate) {
-		this.createdDate = createdDate;
-	}
-
-	public String getSubscribenews() {
-		return subscribenews;
-	}
-
-	public void setSubscribenews(String subscribenews) {
-		this.subscribenews = subscribenews;
-	}
-
-	public String getSubscribenotifications() {
-		return subscribenotifications;
-	}
-
-	public void setSubscribenotifications(String subscribenotifications) {
-		this.subscribenotifications = subscribenotifications;
-	}
-
-	public String getSubscribeevents() {
-		return subscribeevents;
-	}
-
-	public void setSubscribeevents(String subscribeevents) {
-		this.subscribeevents = subscribeevents;
-	}
-
-	public Long getUserid() {
-		return userid;
-	}
-
-	public void setUserid(Long userid) {
-		this.userid = userid;
-	}
-
-	public String getSectorcode() {
-		return sectorcode;
-	}
-
-	public void setSectorcode(String sectorcode) {
-		this.sectorcode = sectorcode;
-	}
-
-	public String getSectorname() {
-		return sectorname;
-	}
-
-	public void setSectorname(String sectorname) {
-		this.sectorname = sectorname;
-	}
-
-	@Override
+    @Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;

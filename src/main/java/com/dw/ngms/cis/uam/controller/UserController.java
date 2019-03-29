@@ -99,7 +99,7 @@ public class UserController extends MessageController {
         }
     }//getUsersForPendingApproval
 	
-	@GetMapping("/getUsersForPendingApproval")
+	@GetMapping("/getAssistantsForPendingApproval")
     public ResponseEntity<?> getAssistantsForPendingApproval(HttpServletRequest request, @RequestParam String surveyorusercode) {
         try {
         	List<User> userList = null;

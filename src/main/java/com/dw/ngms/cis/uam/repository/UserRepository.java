@@ -33,8 +33,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
    List<User> findAssistantsForPendingApprovalStatusAndProvinceCode(String approvalStatus, String surveyorusercode);
   
    @Query(value = "SELECT U.* FROM USERS U INNER JOIN INTERNALUSERROLES IUR ON (IUR.USERCODE = u.USERCODE) "
-   		+ "WHERE U.USERTYPENAME = 'INTERNAL' AND IUR.USERPROVINCECODE = :provincecode", nativeQuery = true)
-   List<User> findInternalUsersByProvinceCode(@Param("provincecode") String provincecode);
+   		+ "WHERE U.USERTYPENAME = 'INTERNAL' AND IUR.USERPROVINCECODE = ?1", nativeQuery = true)
+   List<User> findInternalUsersByProvinceCode(String provincecode);
    
    @Query(value = "SELECT U.* FROM USERS U INNER JOIN EXTERNALUSERROLES EUR ON (EUR.USERCODE = u.USERCODE) "
 	   		+ "WHERE U.USERTYPENAME = 'EXTERNAL' AND EUR.USERPROVINCECODE = :provincecode", nativeQuery = true)

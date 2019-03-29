@@ -72,12 +72,6 @@ public class InternalUserRoles implements Serializable {
     @Column(name = "ISACTIVE", nullable = true, length = 10)
     private String isactive;
 
-/*
-    @Column(name = "ISACTIVE", nullable = true, length = 10)
-    @NotEmpty(message = "Active status must not be empty")
-    private String isactive;*/
-
-
     @Temporal(TemporalType.DATE)
     @Column(name = "CREATEDDATE", nullable = true)
     Date createddate;
