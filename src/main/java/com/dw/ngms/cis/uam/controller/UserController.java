@@ -1,6 +1,7 @@
 package com.dw.ngms.cis.uam.controller;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -11,6 +12,8 @@ import com.dw.ngms.cis.uam.dto.UserDTO;
 import com.dw.ngms.cis.uam.entity.User;
 import com.dw.ngms.cis.uam.enums.Status;
 import com.dw.ngms.cis.uam.jsonresponse.UserControllerResponse;
+import com.dw.ngms.cis.uam.storage.StorageService;
+import com.dw.ngms.cis.uam.utilities.Constants;
 import com.google.gson.Gson;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,11 +24,12 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import com.dw.ngms.cis.uam.service.UserService;
+import org.springframework.web.multipart.MultipartFile;
 
 import static org.springframework.util.StringUtils.isEmpty;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/cisorigin.uam/api/v1")
 public class UserController extends MessageController {
 
 	private static final String INTERNAL_USER_TYPE_NAME = "INTERNAL";
@@ -34,6 +38,8 @@ public class UserController extends MessageController {
 	
 	@Autowired
     private UserService userService;
+
+
 	
 	@GetMapping("/getAllInternalUsers")
     public ResponseEntity<?> getAllInternalUsers(HttpServletRequest request, @RequestParam String provincecode) {
@@ -169,4 +175,9 @@ public class UserController extends MessageController {
 			return generateFailureResponse(request, exception);
 		}
 	}
+
+
+
+
+
 }

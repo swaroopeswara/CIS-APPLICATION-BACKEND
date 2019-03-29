@@ -28,6 +28,9 @@ public class InternalUserService {
         return this.internalUserRepository.getInternalRoleCode(provinceCode,sectionCode,roleCode);
     }//get Internal Role Code
 
+    public InternalUserRoles findByUserByNameAndCode(String userCode, String userName) {
+        return this.internalUserRepository.findByUserByNameAndCode(userCode,userName);
+    }//get Internal Role Code
 
 
 
