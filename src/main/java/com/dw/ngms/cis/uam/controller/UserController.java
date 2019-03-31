@@ -89,6 +89,17 @@ public class UserController extends MessageController {
         }
     }//getAllExternalUsers
 
+	@PostMapping("/updateExternalUser")
+	public ResponseEntity<?> updateExternalUser(HttpServletRequest request, @RequestParam User user){
+		try{
+			user = userService.saveInternalUser(user);
+			return (user == null) ? generateEmptyResponse(request, "Failed to update user") :
+				ResponseEntity.status(HttpStatus.OK).body("Successful");
+		} catch (Exception exception) {
+			return generateFailureResponse(request, exception);
+		}
+	}//updateExternalUser
+	
 	@GetMapping("/getUsersForPendingApproval")
     public ResponseEntity<?> getUsersForPendingApproval(HttpServletRequest request, @RequestParam String provincecode) {
         try {

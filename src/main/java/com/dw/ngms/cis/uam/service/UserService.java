@@ -84,7 +84,38 @@ public class UserService {
 		return this.userRepository.save(user);
 	}//saveExternalUser
 
+	public User updateExternalUser(User uiUser) {
+		if(uiUser == null || uiUser.getUserCode() == null || uiUser.getUserName() == null) return null;
+		
+		User user = userRepository.findByUserByNameAndCode(uiUser.getUserCode(), uiUser.getUserName());
+		if(user == null) return null;
+
+		return this.userRepository.save(getPopulatedUserWithModifiedDetails(user, uiUser));
+	}//updateExternalUser
+	
+	private User getPopulatedUserWithModifiedDetails(User user, User uiUser) {
+		if(uiUser.getEmail() != null) user.setEmail(uiUser.getEmail());
+		if(uiUser.getExternaluser() != null) user.setExternaluser(uiUser.getExternaluser());
+		if(uiUser.getEmail() != null) user.setEmail(uiUser.getEmail());
+		if(uiUser.getFirstName() != null) user.setFirstName(uiUser.getFirstName());
+		if(uiUser.getIsActive() != null) user.setIsActive(uiUser.getIsActive());
+		if(uiUser.getIsApprejDate() != null) user.setIsApprejDate(uiUser.getIsApprejDate());
+		if(uiUser.getIsApprejuserCode() != null) user.setIsApprejuserCode(uiUser.getIsApprejuserCode());
+		if(uiUser.getIsApprejuserName() != null) user.setIsApprejuserName(uiUser.getIsApprejuserName());
+		if(uiUser.getIsApproved() != null) user.setIsApproved(uiUser.getIsApproved());
+		if(uiUser.getMobileNo() != null) user.setMobileNo(uiUser.getMobileNo());
+//		if(uiUser.getPassword() != null) user.setPassword(uiUser.getPassword());//TODO confirm
+		if(uiUser.getRejectionReason() != null) user.setRejectionReason(uiUser.getRejectionReason());
+		if(uiUser.getSurname() != null) user.setSurname(uiUser.getSurname());
+		if(uiUser.getTelephoneNo() != null) user.setTelephoneNo(uiUser.getTelephoneNo());
+		if(uiUser.getTitle() != null) user.setTitle(uiUser.getTitle());
+		if(uiUser.getUserTypeCode() != null) user.setUserTypeCode(uiUser.getUserTypeCode());
+		if(uiUser.getUserTypeName() != null) user.setUserTypeName(uiUser.getUserTypeName());
+		return user;
+	}//getPopulatedUserWithModifiedDetails
+
 	public User saveInternalUser(User user) {
+		if(user == null) return null;
 		return this.userRepository.save(user);
 	}//saveInternalUser
 
