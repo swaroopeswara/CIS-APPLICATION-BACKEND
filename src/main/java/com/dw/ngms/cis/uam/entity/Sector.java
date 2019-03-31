@@ -18,7 +18,18 @@ import org.hibernate.annotations.NaturalId;
 
 import com.dw.ngms.cis.uam.enums.Status;
 
+import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+
 @Entity
+@Data
+@Getter
+@Setter
+@ToString
+@NoArgsConstructor
 @Table(name = "SECTORS")
 public class Sector implements Serializable {
 
@@ -41,73 +52,12 @@ public class Sector implements Serializable {
     
     @Enumerated(EnumType.STRING)
     @Column(name = "ISACTIVE", nullable = true, length = 10)
-    private Status isActive; 
+    private Status isActive = Status.Y; 
     
     @Temporal(TemporalType.DATE)
     @Column(name = "CREATEDDATE", nullable = true)
-    private Date creationDate;
-
-	public Sector() {
-	}
-
-	public Sector(Long id, String code, String name, String description, Status isActive, Date creationDate) {
-		super();
-		this.id = id;
-		this.code = code;
-		this.name = name;
-		this.description = description;
-		this.isActive = isActive;
-		this.creationDate = creationDate;
-	}
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public String getCode() {
-		return code;
-	}
-
-	public void setCode(String code) {
-		this.code = code;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
-	public Status getIsActive() {
-		return isActive;
-	}
-
-	public void setIsActive(Status isActive) {
-		this.isActive = isActive;
-	}
-
-	public Date getCreationDate() {
-		return creationDate;
-	}
-
-	public void setCreationDate(Date creationDate) {
-		this.creationDate = creationDate;
-	}
-
+    private Date creationDate = new Date();
+    
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -131,12 +81,6 @@ public class Sector implements Serializable {
 		} else if (!id.equals(other.id))
 			return false;
 		return true;
-	}
-
-	@Override
-	public String toString() {
-		return "Sector [id=" + id + ", code=" + code + ", name=" + name + ", description=" + description + ", isActive="
-				+ isActive + ", creationDate=" + creationDate + "]";
 	}
     
 }

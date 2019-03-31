@@ -18,7 +18,18 @@ import org.hibernate.annotations.NaturalId;
 
 import com.dw.ngms.cis.uam.enums.Status;
 
+import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+
 @Entity
+@Data
+@Getter
+@Setter
+@ToString
+@NoArgsConstructor
 @Table(name = "PROVINCES")
 public class Province implements Serializable {
 
@@ -55,95 +66,6 @@ public class Province implements Serializable {
     @Temporal(TemporalType.DATE)
     @Column(name = "CREATEDDATE", nullable = true)
     private Date creationDate; 
-       
-    protected Province() {
-    }
-
-	public Province(Long id, String organisationCode, String organisationName, String code, String name,
-			String shortName, String description, Status isActive, Date creationDate) {
-		super();
-		this.id = id;
-		this.organisationCode = organisationCode;
-		this.organisationName = organisationName;
-		this.code = code;
-		this.name = name;
-		this.shortName = shortName;
-		this.description = description;
-		this.isActive = isActive;
-		this.creationDate = creationDate;
-	}
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public String getOrganisationCode() {
-		return organisationCode;
-	}
-
-	public void setOrganisationCode(String organisationCode) {
-		this.organisationCode = organisationCode;
-	}
-
-	public String getOrganisationName() {
-		return organisationName;
-	}
-
-	public void setOrganisationName(String organisationName) {
-		this.organisationName = organisationName;
-	}
-
-	public String getCode() {
-		return code;
-	}
-
-	public void setCode(String code) {
-		this.code = code;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getShortName() {
-		return shortName;
-	}
-
-	public void setShortName(String shortName) {
-		this.shortName = shortName;
-	}
-
-	public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
-	public Status getIsActive() {
-		return isActive;
-	}
-
-	public void setIsActive(Status isActive) {
-		this.isActive = isActive;
-	}
-
-	public Date getCreationDate() {
-		return creationDate;
-	}
-
-	public void setCreationDate(Date creationDate) {
-		this.creationDate = creationDate;
-	}
 
 	@Override
 	public int hashCode() {
@@ -168,13 +90,6 @@ public class Province implements Serializable {
 		} else if (!id.equals(other.id))
 			return false;
 		return true;
-	}
-
-	@Override
-	public String toString() {
-		return "Province [id=" + id + ", organisationCode=" + organisationCode + ", organisationName="
-				+ organisationName + ", code=" + code + ", name=" + name + ", shortName=" + shortName + ", description="
-				+ description + ", isActive=" + isActive + ", creationDate=" + creationDate + "]";
 	}
     
 }

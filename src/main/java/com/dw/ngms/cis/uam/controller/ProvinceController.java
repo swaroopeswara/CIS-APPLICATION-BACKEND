@@ -16,7 +16,7 @@ import com.dw.ngms.cis.uam.entity.Province;
 import com.dw.ngms.cis.uam.service.ProvinceService;
 
 @RestController
-@RequestMapping("/province")
+@RequestMapping("/cisorigin.uam/api/v1")
 public class ProvinceController extends MessageController {
 	
 	@Autowired

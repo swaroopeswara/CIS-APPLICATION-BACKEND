@@ -6,8 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import com.dw.ngms.cis.uam.dto.ADUserDTO;
 import com.dw.ngms.cis.uam.dto.UserDTO;
 import com.dw.ngms.cis.uam.entity.User;
+import com.dw.ngms.cis.uam.enums.ApprovalStatus;
 import com.dw.ngms.cis.uam.repository.UserRepository;
 
 @Service
@@ -20,7 +22,7 @@ public class UserService {
 		return userRepository.findByUserTypeName(userTypeName);
 	}//getAllUsersByUserTypeName
 	
-	public User submitInternalUserForApproval(String usercode, String username, String userType, String approvalStatus) {
+	public User submitInternalUserForApproval(String usercode, String username, String userType, ApprovalStatus approvalStatus) {
 		if(StringUtils.isEmpty(usercode) || StringUtils.isEmpty(username)) {
     		throw new RuntimeException("User code and user name required");
     	}
@@ -86,9 +88,16 @@ public class UserService {
 		return this.userRepository.save(user);
 	}//saveInternalUser
 
-	public Boolean isADUserExists(String username, String password) {
+	public ADUserDTO isADUserExists(String username, String password) {
 		// TODO Need to build LDAP UTILIES client and confirm user existence
-		return Boolean.FALSE;
+		
+		ADUserDTO adUser = new ADUserDTO();
+		adUser.setFirstname(username);
+		adUser.setLastname(username);
+		adUser.setDesignation(username);
+		adUser.setExists(Boolean.FALSE);
+		
+		return adUser;
 	}//isADUserExists
 
 }

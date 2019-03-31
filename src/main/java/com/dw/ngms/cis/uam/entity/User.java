@@ -17,8 +17,8 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.dw.ngms.cis.uam.enums.ApprovalStatus;
 import com.dw.ngms.cis.uam.enums.Status;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -79,8 +79,9 @@ public class User implements Serializable {
     @Column(name = "EMAIL", nullable = true, length = 255)
     private String email;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "ISAPPROVED",length = 3)
-    private String isApproved;
+    private ApprovalStatus isApproved = ApprovalStatus.N;
 
     @Column(name = "REJECTIONREASON",length = 500)
     private String rejectionReason;
@@ -95,11 +96,11 @@ public class User implements Serializable {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "ISACTIVE", nullable = true, length = 10)
-    private Status isActive;
+    private Status isActive = Status.Y;
 
     @Temporal(TemporalType.DATE)
     @Column(name = "CREATEDDATE", nullable = true)
-    private Date createdDate;
+    private Date createdDate = new Date();
     
 	@Override
 	public int hashCode() {

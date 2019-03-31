@@ -11,8 +11,6 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
 
-import org.hibernate.annotations.NaturalId;
-
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;

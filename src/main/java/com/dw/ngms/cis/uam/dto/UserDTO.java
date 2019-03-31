@@ -2,6 +2,7 @@ package com.dw.ngms.cis.uam.dto;
 
 import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -17,6 +18,7 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
+@NoArgsConstructor
 public class UserDTO implements Serializable {
 
 	private static final long serialVersionUID = 8918972033622516172L;

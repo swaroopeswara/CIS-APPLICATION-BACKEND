@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.dw.ngms.cis.uam.dto.UserDTO;
 import com.dw.ngms.cis.uam.entity.User;
+import com.dw.ngms.cis.uam.enums.ApprovalStatus;
 import com.dw.ngms.cis.uam.enums.Status;
 import com.dw.ngms.cis.uam.jsonresponse.UserControllerResponse;
 import com.dw.ngms.cis.uam.service.UserService;
@@ -54,7 +55,7 @@ public class UserController extends MessageController {
 	public ResponseEntity<?> submitInternalUserForApproval(HttpServletRequest request, @RequestParam String usercode, 
 			@RequestParam String username, @RequestParam String isapproved) {
 		try {
-        	User user = userService.submitInternalUserForApproval(usercode, username, INTERNAL_USER_TYPE_NAME, Status.PND.name());
+        	User user = userService.submitInternalUserForApproval(usercode, username, INTERNAL_USER_TYPE_NAME, ApprovalStatus.PND);
         	return (user == null) ? generateEmptyResponse(request, "User(s) not found") : 
         				ResponseEntity.status(HttpStatus.OK).body(user);
         } catch (Exception exception) {
@@ -92,8 +93,8 @@ public class UserController extends MessageController {
     public ResponseEntity<?> getUsersForPendingApproval(HttpServletRequest request, @RequestParam String provincecode) {
         try {
         	List<User> userList = (StringUtils.isEmpty(provincecode) || "all".equalsIgnoreCase(provincecode.trim())) ? 
-        		userService.getAllExternalApprovalPendingUsers(Status.PND.name(), Status.Y.name()) : 
-        			userService.getAllExternalApprovalPendingUsersByProvinceCode(Status.PND.name(), Status.Y.name(), provincecode);
+        		userService.getAllExternalApprovalPendingUsers(ApprovalStatus.PND.name(), ApprovalStatus.Y.name()) : 
+        			userService.getAllExternalApprovalPendingUsersByProvinceCode(ApprovalStatus.PND.name(), ApprovalStatus.Y.name(), provincecode);
         	return (CollectionUtils.isEmpty(userList)) ? generateEmptyResponse(request, "User(s) not found") 
             		: ResponseEntity.status(HttpStatus.OK).body(userList);
         } catch (Exception exception) {
@@ -106,7 +107,7 @@ public class UserController extends MessageController {
         try {
         	List<User> userList = null;
         	if(!StringUtils.isEmpty(surveyorusercode)) {
-        		userList = userService.getAllAssistantsForPendingApprovalBySurveyorUserCode(Status.N.name(), Status.PND.name(), surveyorusercode);
+        		userList = userService.getAllAssistantsForPendingApprovalBySurveyorUserCode(ApprovalStatus.N.name(), ApprovalStatus.PND.name(), surveyorusercode);
         	}
         	return (CollectionUtils.isEmpty(userList)) ? generateEmptyResponse(request, "User(s) not found") 
             		: ResponseEntity.status(HttpStatus.OK).body(userList);
@@ -181,7 +182,7 @@ public class UserController extends MessageController {
 				return generateEmptyResponse(request, "Users not found");
 			}
 			if (!isEmpty(user)) {
-				user.setIsApproved(userDTO.getIsapproved());
+				user.setIsApproved(ApprovalStatus.valueOf(userDTO.getIsapproved()));
 				user.setRejectionReason(userDTO.getRejectionreason());
 				user.setIsApprejDate(new Date());
 			}

@@ -1,13 +1,19 @@
 package com.dw.ngms.cis.uam.entity;
 
+import java.io.Serializable;
+import java.util.Date;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-
-import javax.persistence.*;
-import java.io.Serializable;
-import java.util.Date;
 
 /**
  * Created by swaroop on 2019/03/24.
@@ -21,8 +27,10 @@ import java.util.Date;
 @ToString
 public class SecurityQuestion implements Serializable {
 
+	private static final long serialVersionUID = 1699353954812191931L;
 
-    @Id
+
+	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "SECURITYQUESTIONTYPEID")
     private Long securityquestiontypeid;

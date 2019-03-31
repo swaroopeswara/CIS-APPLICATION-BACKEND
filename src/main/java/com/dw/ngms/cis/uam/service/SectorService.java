@@ -1,7 +1,6 @@
 package com.dw.ngms.cis.uam.service;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,24 +18,17 @@ public class SectorService {
         return this.sectorRepository.findAll();
     }
 
-    public Sector addSector(Sector Sector) {
-        return this.sectorRepository.save(Sector);
-    }
-
-    public Optional<Sector> getSectorById(Long id) {
-        return this.sectorRepository.findById(id);
-    }
-
-    public Sector updateSector(Sector Sector) {
-        return this.sectorRepository.save(Sector);
-    }
-
-    public void deleteSectorById(Long id) {
-        this.sectorRepository.deleteById(id);
-    }
-
-    public void deleteAllSectors() {
-        this.sectorRepository.deleteAll();
-    }
+    public Sector addSector(Sector sector) {
+    	if(sector == null) return null;
+    	sector.setCode(getSectorCode());
+        return this.sectorRepository.save(sector);
+    }//addSector
+    
+    private String getSectorCode() {
+		String code = null;
+		// TODO need to complete this impl
+		code = "SECT0010";
+		return code;
+	}//getSectorCode
 
 }

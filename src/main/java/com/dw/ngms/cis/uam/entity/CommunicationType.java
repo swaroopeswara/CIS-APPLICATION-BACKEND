@@ -16,7 +16,18 @@ import javax.persistence.TemporalType;
 
 import com.dw.ngms.cis.uam.enums.Status;
 
+import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+
 @Entity
+@Data
+@Getter
+@Setter
+@ToString
+@NoArgsConstructor
 @Table(name = "COMMUNICATIONMODETYPES")
 public class CommunicationType implements Serializable {
 
@@ -44,69 +55,7 @@ public class CommunicationType implements Serializable {
     @Column(name = "CREATEDDATE", nullable = false)
     private Date creationDate; 
        
-    protected CommunicationType() {
-    }
-    
-	public CommunicationType(Long id, String communicationTypeCode, String communicationTypeName, String description,
-			Status isActive, Date creationDate) {
-		super();
-		this.id = id;
-		this.communicationTypeCode = communicationTypeCode;
-		this.communicationTypeName = communicationTypeName;
-		this.description = description;
-		this.isActive = isActive;
-		this.creationDate = creationDate;
-	}
-
-	public Long getId() {
-		return id;
-	}
-
-	public String getCommunicationTypeCode() {
-		return communicationTypeCode;
-	}
-
-	public String getCommunicationTypeName() {
-		return communicationTypeName;
-	}
-
-	public String getDescription() {
-		return description;
-	}
-
-	public Status getIsActive() {
-		return isActive;
-	}
-
-	public Date getCreationDate() {
-		return creationDate;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public void setCommunicationTypeCode(String communicationTypeCode) {
-		this.communicationTypeCode = communicationTypeCode;
-	}
-
-	public void setCommunicationTypeName(String communicationTypeName) {
-		this.communicationTypeName = communicationTypeName;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
-	public void setIsActive(Status isActive) {
-		this.isActive = isActive;
-	}
-
-	public void setCreationDate(Date creationDate) {
-		this.creationDate = creationDate;
-	}
-
-	@Override
+    @Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
@@ -129,13 +78,6 @@ public class CommunicationType implements Serializable {
 		} else if (!id.equals(other.id))
 			return false;
 		return true;
-	}
-
-	@Override
-	public String toString() {
-		return "CommunicationType [id=" + id + ", communicationTypeCode=" + communicationTypeCode
-				+ ", communicationTypeName=" + communicationTypeName + ", description=" + description + ", isActive="
-				+ isActive + ", creationDate=" + creationDate + "]";
 	}
     
 }
