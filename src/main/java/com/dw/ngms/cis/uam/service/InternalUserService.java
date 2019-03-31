@@ -1,11 +1,11 @@
 package com.dw.ngms.cis.uam.service;
 
-import com.dw.ngms.cis.uam.entity.InternalRole;
-import com.dw.ngms.cis.uam.entity.InternalUserRoles;
-import com.dw.ngms.cis.uam.entity.User;
-import com.dw.ngms.cis.uam.repository.InternalUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.dw.ngms.cis.uam.entity.InternalRole;
+import com.dw.ngms.cis.uam.entity.InternalUserRoles;
+import com.dw.ngms.cis.uam.repository.InternalUserRepository;
 
 /**
  * Created by swaroop on 2019/03/26.

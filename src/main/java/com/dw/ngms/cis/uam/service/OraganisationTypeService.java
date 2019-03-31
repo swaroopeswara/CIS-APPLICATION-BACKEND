@@ -19,7 +19,7 @@ public class OraganisationTypeService {
 	}//getAllOrganisatioTypes
 
 	public OrganisationType addOrganisationType(OrganisationType organisationType) {
-		if(organisationType == null) return null;
+		if(organisationType == null|| organisationType.getId() != null) return null;
 		organisationType.setOrganisationCode(getOrganisationTypeCode());
 		return organisationTypeRepository.save(organisationType);
 	}//getAllOrganisatioTypes

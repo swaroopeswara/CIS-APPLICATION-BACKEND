@@ -49,7 +49,7 @@ public class CommunicationType implements Serializable {
     
     @Enumerated(EnumType.STRING)
     @Column(name = "ISACTIVE", nullable = false, length = 10)
-    private Status isActive; 
+    private Status isActive = Status.Y; 
     
     @Temporal(TemporalType.DATE)
     @Column(name = "CREATEDDATE", nullable = false)

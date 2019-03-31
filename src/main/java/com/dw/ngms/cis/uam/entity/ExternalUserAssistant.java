@@ -29,7 +29,7 @@ public class ExternalUserAssistant implements Serializable {
 	private static final long serialVersionUID = 432458826856147391L;
 
 	@Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "EXTERNALASSISTANTID")
     private Long externalassistantid;
 

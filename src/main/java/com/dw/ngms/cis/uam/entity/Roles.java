@@ -24,7 +24,7 @@ public class Roles implements Serializable {
     private static final long serialVersionUID = 8072176445175268887L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "ROLEID")
     private Long roleid;
 

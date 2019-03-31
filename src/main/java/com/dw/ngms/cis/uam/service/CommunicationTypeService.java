@@ -17,4 +17,15 @@ public class CommunicationTypeService {
 	public List<CommunicationType> getAllCommunicationTypes(){
 		return communicationTypeRepository.findAll();
 	}//getAllCommunicationTypes
+	
+	public CommunicationType addCommunicationType(CommunicationType communicationType) throws Exception {
+		if(communicationType == null || communicationType.getId() != null) return null;
+		communicationType.setCommunicationTypeCode(generateCommTypeCode());
+		return communicationTypeRepository.save(communicationType);
+	}//createAndPersistCommunicationType
+
+	private String generateCommTypeCode() {
+		return "COMM005";//TODO Need to generate sequence
+	}//generateCommTypeCode
+
 }
