@@ -33,31 +33,4 @@ public class ProvinceController extends MessageController {
         }
     }//getAllProvinces
     
-//    @RequestMapping(value = "/addProvince", method = RequestMethod.POST,
-//            consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-//    public Province addProvince(@RequestBody Province province) {
-//        return this.provinceService.addProvince(province);
-//    }
-//
-//    @RequestMapping(value = "/updateProvince", method = RequestMethod.PUT,
-//            consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-//    public Province updateProvince(@RequestBody Province province) {
-//        return this.provinceService.updateProvince(province);
-//    }
-//
-//    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-//    public Optional<Province> getProvince(@PathVariable int id) {
-//        return this.provinceService.getProvinceById(id);
-//    }
-//
-//    @RequestMapping(value = "/all", method = RequestMethod.DELETE)
-//    public void deleteAllProvinces() {
-//        this.provinceService.deleteAllProvinces();
-//    }
-//
-//    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-//    public void deleteProvince(@PathVariable int id) {
-//        this.provinceService.deleteProvinceById(id);
-//    }
-    
 }
