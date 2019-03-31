@@ -68,6 +68,14 @@ public class UserService {
 		return userRepository.findAssistantsForPendingApprovalStatusAndProvinceCode(userApprovalStatus, assistantApprovalStatus, surveyorusercode);
 	}//getAllAssistantsForPendingApprovalBySurveyorUserCode
 	
+	public List<User> getAllAssistantsBySurveyorUserCode(String surveyorusercode) {
+		return userRepository.findAssistantsSurveyorUserCode(surveyorusercode);
+	}//getAllAssistantsBySurveyorUserCode
+	
+	public List<User> getAllSurveyorsByAssistantsUserCode(String assistantusercode){
+		return userRepository.findSurveyorsByAssistantsUserCode(assistantusercode);
+	}//getAllSurveyorByAssistantsUserCode
+	
 	public User findByEmail(String email) {
 		return this.userRepository.findByEmail(email);
 	} //FindUserByEmail

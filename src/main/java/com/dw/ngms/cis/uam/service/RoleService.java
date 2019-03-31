@@ -21,4 +21,7 @@ public class RoleService {
         return this.roleRepository.findByRoleType(type);
     }
 
+    public Roles getRoleByRoleCode(String roleCode) {
+    	return roleRepository.findByRoleCode(roleCode);
+    }
 }

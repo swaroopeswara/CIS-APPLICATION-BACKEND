@@ -23,13 +23,23 @@ public class RoleController extends MessageController {
 
     @GetMapping("/getRoles")
     public ResponseEntity<?> getRolesBasedOnRoleType(HttpServletRequest request, @RequestParam String type) {
-        List<Roles> rolesList = null;
         try {
-            rolesList = this.roleService.findByRoleType(type);
+        	List<Roles> rolesList = this.roleService.findByRoleType(type);
             return (CollectionUtils.isEmpty(rolesList)) ? generateEmptyResponse(request, "Roles not found")
                     : ResponseEntity.status(HttpStatus.OK).body(rolesList);
         } catch (Exception exception) {
             return generateFailureResponse(request, exception);
         }
     }//getAllRoles
+    
+    @GetMapping("/getMenuOfUser")
+    public ResponseEntity<?> getMenuOfUser(HttpServletRequest request, @RequestParam String roleCode) {
+        try {
+        	Roles role = this.roleService.getRoleByRoleCode(roleCode);
+            return (role == null) ? generateEmptyResponse(request, "Menu for role not found")
+                    : ResponseEntity.status(HttpStatus.OK).body(role);
+        } catch (Exception exception) {
+            return generateFailureResponse(request, exception);
+        }
+    }//getMenuOfUser
 }

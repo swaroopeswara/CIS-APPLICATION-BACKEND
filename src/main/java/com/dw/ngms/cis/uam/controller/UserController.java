@@ -113,6 +113,34 @@ public class UserController extends MessageController {
         }
     }//getUsersForPendingApproval
 	
+	@GetMapping("/getMyAssistants")
+	public ResponseEntity<?> getSurveyorAssistants(HttpServletRequest request, @RequestParam String surveyorusercode) {
+        try {
+        	List<User> userList = null;
+        	if(!StringUtils.isEmpty(surveyorusercode)) {
+        		userList = userService.getAllAssistantsBySurveyorUserCode(surveyorusercode);
+        	}
+        	return (CollectionUtils.isEmpty(userList)) ? generateEmptyResponse(request, "Assistant user(s) not found") 
+            		: ResponseEntity.status(HttpStatus.OK).body(userList);
+        } catch (Exception exception) {
+            return generateFailureResponse(request, exception);
+        }
+    }//getSurveyorAssistants
+	
+	@GetMapping("/getMySurveyors")
+	public ResponseEntity<?> getAssistantsSurveyor(HttpServletRequest request, @RequestParam String assistantusercode) {
+        try {
+        	List<User> userList = null;
+        	if(!StringUtils.isEmpty(assistantusercode)) {
+        		userList = userService.getAllSurveyorsByAssistantsUserCode(assistantusercode);
+        	}
+        	return (CollectionUtils.isEmpty(userList)) ? generateEmptyResponse(request, "Assistant user(s) not found") 
+            		: ResponseEntity.status(HttpStatus.OK).body(userList);
+        } catch (Exception exception) {
+            return generateFailureResponse(request, exception);
+        }
+    }//getAssistantsSurveyor
+	
 	@GetMapping("/getAssistantsForPendingApproval")
     public ResponseEntity<?> getAssistantsForPendingApproval(HttpServletRequest request, @RequestParam String surveyorusercode) {
         try {
