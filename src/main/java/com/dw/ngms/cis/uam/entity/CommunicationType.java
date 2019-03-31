@@ -53,7 +53,7 @@ public class CommunicationType implements Serializable {
     
     @Temporal(TemporalType.DATE)
     @Column(name = "CREATEDDATE", nullable = false)
-    private Date creationDate; 
+    private Date creationDate = new Date(); 
        
     @Override
 	public int hashCode() {
