@@ -2,8 +2,9 @@ package com.dw.ngms.cis.uam.enums;
 
 public enum Status {
 
-	Y("Active"),
-	N("InActive");
+	Y("Approved"),
+	N("Waiting"),
+	PND("Pending");
 
 	String status;
 	

@@ -24,13 +24,17 @@ public interface UserRepository extends JpaRepository<User, Long> {
    @Query("SELECT u FROM User u WHERE u.isApproved = :approvalStatus")
    List<User> findByApprovalStatus(@Param("approvalStatus") String approvalStatus);
    
-   @Query(value = "SELECT U.* FROM USERS U INNER JOIN EXTERNALUSERROLES EUR ON (EUR.USERCODE = U.USERCODE) "
-	   		+ "WHERE U.USERTYPENAME = 'EXTERNAL' AND U.ISAPPROVED = ?1 AND EUR.USERPROVINCECODE = ?2", nativeQuery = true)
-   List<User> findExternalUsersByApprovalStatusAndProvinceCode(String approvalStatus, String provincecode);
+   @Query(value = "SELECT U.* FROM USERS U INNER JOIN EXTERNALUSERASSISTANTS EUA ON (EUA.USERID = U.USERID) "
+	   		+ "WHERE U.USERTYPENAME = 'EXTERNAL' AND U.ISAPPROVED = ?1 AND EUA.ISAPPROVED = ?2", nativeQuery = true)
+   List<User> findExternalUsersByApprovalStatus(String userApprovalStatus, String assistantApprovalStatus);
+   
+   @Query(value = "SELECT U.* FROM USERS U INNER JOIN EXTERNALUSERROLES EUR ON (EUR.USERCODE = U.USERCODE) INNER JOIN EXTERNALUSERASSISTANTS EUA ON (EUA.USERID = U.USERID) "
+	   		+ "WHERE U.USERTYPENAME = 'EXTERNAL' AND U.ISAPPROVED = ?1 AND EUA.ISAPPROVED = ?2 AND EUR.USERPROVINCECODE = ?3", nativeQuery = true)
+   List<User> findExternalUsersByApprovalStatusAndProvinceCode(String userApprovalStatus, String assistantApprovalStatus, String provincecode);
    
    @Query(value = "SELECT U.* FROM USERS U INNER JOIN EXTERNALUSERASSISTANTS EUA ON (EUA.USERID = U.USERID) "
-	   		+ "WHERE U.USERTYPENAME = 'EXTERNAL' AND EUA.ISAPPROVED = ?1 AND EUR.SURVEYORUSERCODE = ?2", nativeQuery = true)
-   List<User> findAssistantsForPendingApprovalStatusAndProvinceCode(String approvalStatus, String surveyorusercode);
+	   		+ "WHERE U.USERTYPENAME = 'EXTERNAL' AND U.ISAPPROVED = ?1 AND EUA.ISAPPROVED = ?2 AND EUA.SURVEYORUSERCODE = ?3", nativeQuery = true)
+   List<User> findAssistantsForPendingApprovalStatusAndProvinceCode(String userApprovalStatus, String assistantApprovalStatus, String surveyorusercode);
   
    @Query(value = "SELECT U.* FROM USERS U INNER JOIN INTERNALUSERROLES IUR ON (IUR.USERCODE = u.USERCODE) "
    		+ "WHERE U.USERTYPENAME = 'INTERNAL' AND IUR.USERPROVINCECODE = ?1", nativeQuery = true)

@@ -1,5 +1,7 @@
 package com.dw.ngms.cis.uam.controller;
 
+import static org.springframework.util.StringUtils.isEmpty;
+
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
@@ -7,25 +9,27 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
-import com.dw.ngms.cis.uam.dto.UserDTO;
-import com.dw.ngms.cis.uam.entity.User;
-import com.dw.ngms.cis.uam.enums.Status;
-import com.dw.ngms.cis.uam.jsonresponse.UserControllerResponse;
-import com.dw.ngms.cis.uam.storage.StorageService;
-import com.dw.ngms.cis.uam.utilities.Constants;
-import com.google.gson.Gson;
-import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
+import com.dw.ngms.cis.uam.dto.UserDTO;
+import com.dw.ngms.cis.uam.entity.User;
+import com.dw.ngms.cis.uam.enums.Status;
+import com.dw.ngms.cis.uam.jsonresponse.UserControllerResponse;
 import com.dw.ngms.cis.uam.service.UserService;
-import org.springframework.web.multipart.MultipartFile;
+import com.google.gson.Gson;
 
-import static org.springframework.util.StringUtils.isEmpty;
+import io.swagger.annotations.ApiOperation;
 
 @RestController
 @RequestMapping("/cisorigin.uam/api/v1")
@@ -33,8 +37,6 @@ public class UserController extends MessageController {
 
 	private static final String INTERNAL_USER_TYPE_NAME = "INTERNAL";
 	private static final String EXTERNAL_USER_TYPE_NAME = "EXTERNAL";
-	private static final String APPROVAL_STATUS_PENDING = "N";
-	private static final String APPROVAL_STATUS_APPROVE = "Y";
 	
 	@Autowired
     private UserService userService;
@@ -52,7 +54,7 @@ public class UserController extends MessageController {
 	public ResponseEntity<?> submitInternalUserForApproval(HttpServletRequest request, @RequestParam String usercode, 
 			@RequestParam String username, @RequestParam String isapproved) {
 		try {
-        	User user = userService.submitInternalUserForApproval(usercode, username, INTERNAL_USER_TYPE_NAME, APPROVAL_STATUS_APPROVE);
+        	User user = userService.submitInternalUserForApproval(usercode, username, INTERNAL_USER_TYPE_NAME, Status.PND.name());
         	return (user == null) ? generateEmptyResponse(request, "User(s) not found") : 
         				ResponseEntity.status(HttpStatus.OK).body(user);
         } catch (Exception exception) {
@@ -90,8 +92,8 @@ public class UserController extends MessageController {
     public ResponseEntity<?> getUsersForPendingApproval(HttpServletRequest request, @RequestParam String provincecode) {
         try {
         	List<User> userList = (StringUtils.isEmpty(provincecode) || "all".equalsIgnoreCase(provincecode.trim())) ? 
-        		userService.getAllApprovalPendingUsers(APPROVAL_STATUS_PENDING) : 
-        			userService.getAllApprovalPendingUsersByProvinceCode(APPROVAL_STATUS_PENDING, provincecode);
+        		userService.getAllExternalApprovalPendingUsers(Status.PND.name(), Status.Y.name()) : 
+        			userService.getAllExternalApprovalPendingUsersByProvinceCode(Status.PND.name(), Status.Y.name(), provincecode);
         	return (CollectionUtils.isEmpty(userList)) ? generateEmptyResponse(request, "User(s) not found") 
             		: ResponseEntity.status(HttpStatus.OK).body(userList);
         } catch (Exception exception) {
@@ -104,7 +106,7 @@ public class UserController extends MessageController {
         try {
         	List<User> userList = null;
         	if(!StringUtils.isEmpty(surveyorusercode)) {
-        		userList = userService.getAllAssistantsForPendingApprovalBySurveyorUserCode(APPROVAL_STATUS_PENDING, surveyorusercode);
+        		userList = userService.getAllAssistantsForPendingApprovalBySurveyorUserCode(Status.N.name(), Status.PND.name(), surveyorusercode);
         	}
         	return (CollectionUtils.isEmpty(userList)) ? generateEmptyResponse(request, "User(s) not found") 
             		: ResponseEntity.status(HttpStatus.OK).body(userList);

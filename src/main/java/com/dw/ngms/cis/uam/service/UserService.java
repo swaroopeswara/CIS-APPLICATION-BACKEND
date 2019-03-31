@@ -53,13 +53,17 @@ public class UserService {
 		return userRepository.findByApprovalStatus(approvalStatus);
 	}//getAllApprovalPendingUsers
 	
-	public List<User> getAllApprovalPendingUsersByProvinceCode(String approvalStatus, String provinceCode){
-		return userRepository.findExternalUsersByApprovalStatusAndProvinceCode(approvalStatus, provinceCode);
-	}//getAllApprovalPendingUsersByProvinceCode
+	public List<User> getAllExternalApprovalPendingUsers(String userApprovalStatus, String assistantApprovalStatus){
+		return userRepository.findExternalUsersByApprovalStatus(userApprovalStatus, assistantApprovalStatus);
+	}//getAllExternalApprovalPendingUsers
 	
-	public List<User> getAllAssistantsForPendingApprovalBySurveyorUserCode(String approvalPendingStatus,
+	public List<User> getAllExternalApprovalPendingUsersByProvinceCode(String userApprovalStatus, String assistantApprovalStatus, String provinceCode){
+		return userRepository.findExternalUsersByApprovalStatusAndProvinceCode(userApprovalStatus, assistantApprovalStatus, provinceCode);
+	}//getAllExternalApprovalPendingUsersByProvinceCode
+	
+	public List<User> getAllAssistantsForPendingApprovalBySurveyorUserCode(String userApprovalStatus, String assistantApprovalStatus,
 			String surveyorusercode) {
-		return userRepository.findAssistantsForPendingApprovalStatusAndProvinceCode(approvalPendingStatus, surveyorusercode);
+		return userRepository.findAssistantsForPendingApprovalStatusAndProvinceCode(userApprovalStatus, assistantApprovalStatus, surveyorusercode);
 	}//getAllAssistantsForPendingApprovalBySurveyorUserCode
 	
 	public User findByEmail(String email) {

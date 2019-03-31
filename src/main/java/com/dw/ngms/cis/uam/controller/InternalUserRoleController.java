@@ -155,7 +155,7 @@ public class InternalUserRoleController extends MessageController {
     		@RequestParam String username, @RequestParam String internalrolecode) {
     	try {
     		internalUserRoleService.deleteInternalUserRole(usercode, username, internalrolecode);
-    		return ResponseEntity.status(HttpStatus.OK).body("InternalUserRoles deleted successfully");//FIXME need to confirm
+    		return ResponseEntity.status(HttpStatus.OK).body("Successful");
         } catch (Exception exception) {
             return generateFailureResponse(request, exception);
         }
