@@ -25,8 +25,8 @@ public class InternalUserRoleService {
     		throw new RuntimeException("Usercode and username and internalrolecode required");
     	
     	InternalUserRoles internalUserRoles = internalUserRoleRepository.findByEmail(username);
-    	
-    	internalUserRoleRepository.delete(internalUserRoles);
+    	System.out.println(internalUserRoles);
+//    	internalUserRoleRepository.delete(internalUserRoles);
     }//deleteInternalUserRole
     
     public InternalUserRoles getInternalUserRole(String usercode, String username, String internalrolecode) {

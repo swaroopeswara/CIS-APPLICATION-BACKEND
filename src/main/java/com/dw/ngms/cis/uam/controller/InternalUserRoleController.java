@@ -151,10 +151,10 @@ public class InternalUserRoleController extends MessageController {
     }//getInternalUserRolesByEmail
     
     @PostMapping("/deleteInternalUserRole")
-    public ResponseEntity<?> deleteInternalUserRoles(HttpServletRequest request, @RequestParam String usercode,
-    		@RequestParam String username, @RequestParam String internalrolecode) {
+    public ResponseEntity<?> deleteInternalUserRoles(HttpServletRequest request, @RequestBody @Valid InternalUserRoleDTO internalUserRole) {
     	try {
-    		internalUserRoleService.deleteInternalUserRole(usercode, username, internalrolecode);
+    		internalUserRoleService.deleteInternalUserRole(internalUserRole.getUserCode(), 
+    				internalUserRole.getUserName(), internalUserRole.getInternalRoleCode());
     		return ResponseEntity.status(HttpStatus.OK).body("Successful");
         } catch (Exception exception) {
             return generateFailureResponse(request, exception);
