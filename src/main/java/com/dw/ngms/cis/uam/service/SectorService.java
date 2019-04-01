@@ -13,7 +13,9 @@ public class SectorService {
 	
     @Autowired
     private SectorRepository sectorRepository;
-
+    @Autowired
+	private CodeGeneratorService codeGeneratorService;
+    
     public List<Sector> getAllSectors() {
         return this.sectorRepository.findAll();
     }
@@ -25,10 +27,7 @@ public class SectorService {
     }//addSector
     
     private String getSectorCode() {
-		String code = null;
-		// TODO need to complete this impl
-		code = "SECT0010";
-		return code;
+    	return codeGeneratorService.getSectorNextCode();
 	}//getSectorCode
 
 }

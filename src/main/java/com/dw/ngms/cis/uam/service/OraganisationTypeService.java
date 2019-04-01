@@ -13,6 +13,8 @@ public class OraganisationTypeService {
 	
 	@Autowired
 	private OrganisationTypeRepository organisationTypeRepository;
+	@Autowired
+	private CodeGeneratorService codeGeneratorService;
 	
 	public List<OrganisationType> getAllOrganisationTypes() {
 		return organisationTypeRepository.findAll();
@@ -25,9 +27,6 @@ public class OraganisationTypeService {
 	}//getAllOrganisatioTypes
 
 	private String getOrganisationTypeCode() {
-		String code = null;
-		// TODO need to complete this impl
-		code = "ORGTY0010";
-		return code;
+		return codeGeneratorService.getOrganisationTypeNextCode();
 	}//getOrganisationTypeCode
 }

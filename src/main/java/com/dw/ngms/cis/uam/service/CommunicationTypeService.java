@@ -13,6 +13,8 @@ public class CommunicationTypeService {
 	
 	@Autowired
 	private CommunicationTypeRepository communicationTypeRepository;
+	@Autowired
+	private CodeGeneratorService codeGeneratorService;
 	
 	public List<CommunicationType> getAllCommunicationTypes(){
 		return communicationTypeRepository.findAll();
@@ -25,7 +27,7 @@ public class CommunicationTypeService {
 	}//createAndPersistCommunicationType
 
 	private String generateCommTypeCode() {
-		return "COMM005";//TODO Need to generate sequence
+		return codeGeneratorService.getCommunicationTypeNextCode();
 	}//generateCommTypeCode
 
 }
