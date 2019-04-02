@@ -33,7 +33,7 @@ public class OrganisationTypeController extends MessageController {
 		}
 	}//getAllOrganisationTypes
 	
-	/*@PostMapping("/createOrgType")
+	@PostMapping("/createOrgType")
 	public ResponseEntity<?> createOrganisationType(HttpServletRequest request, @RequestBody @Valid OrganisationType organisationType) {
 		try{
 			organisationType = oraganisationTypeService.addOrganisationType(organisationType);
@@ -43,5 +43,5 @@ public class OrganisationTypeController extends MessageController {
 			return generateFailureResponse(request, exception);
 		}
 	}//createOrganisationType
-	*/
+
 }

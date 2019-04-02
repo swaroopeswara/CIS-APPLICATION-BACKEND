@@ -21,12 +21,12 @@ public class OraganisationTypeService {
 	}//getAllOrganisatioTypes
 
 
-/*
+
 	public OrganisationType addOrganisationType(OrganisationType organisationType) {
 		if(organisationType == null|| organisationType.getOrganizationTypeCode() != null) return null;
-		organisationType.setOrganisationCode(getOrganisationTypeCode());
+		organisationType.setOrganizationTypeCode(getOrganisationTypeCode());
 		return organisationTypeRepository.save(organisationType);
-	}//getAllOrganisatioTypes*/
+	}//getAllOrganisatioTypes
 
 	private String getOrganisationTypeCode() {
 		return codeGeneratorService.getOrganisationTypeNextCode();
