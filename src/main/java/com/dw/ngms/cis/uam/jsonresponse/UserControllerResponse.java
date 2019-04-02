@@ -15,6 +15,8 @@ public class UserControllerResponse {
 
     private String exists;
     private String valid;
+	private String isApproved;
+	private String active;
     
 	public String getExists() {
 		return exists;

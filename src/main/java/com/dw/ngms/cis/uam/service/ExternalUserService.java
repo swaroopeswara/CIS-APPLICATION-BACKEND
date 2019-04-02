@@ -25,6 +25,13 @@ public class ExternalUserService {
         return this.externalUserRepository.findByUserCode(userDTO.getUsercode());
     }
 
+    public void deleteAssistant(ExternalUser externalUser) {
+    this.externalUserRepository.delete(externalUser);
+    }
+
+
+
+
 
 
 

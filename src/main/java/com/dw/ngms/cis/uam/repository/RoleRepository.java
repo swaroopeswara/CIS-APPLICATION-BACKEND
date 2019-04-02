@@ -11,7 +11,7 @@ import java.util.List;
 @Repository
 public interface RoleRepository extends JpaRepository<Roles, Integer> {
 
-    @Query("SELECT u FROM Roles u WHERE u.roletype=:roletype")
+    @Query("SELECT u FROM Roles u WHERE u.roletype=:roletype order by u.rolename")
     List<Roles> findByRoleType(@Param("roletype") String roletype);
 
     @Query("SELECT u FROM Roles u WHERE u.rolecode=?1")

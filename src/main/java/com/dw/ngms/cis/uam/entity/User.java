@@ -2,24 +2,15 @@ package com.dw.ngms.cis.uam.entity;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import javax.persistence.*;
 
 import com.dw.ngms.cis.uam.enums.ApprovalStatus;
 import com.dw.ngms.cis.uam.enums.Status;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -40,14 +31,20 @@ public class User implements Serializable {
 
 	@Id
     @Column(name = "USERID")
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @SequenceGenerator(name = "generator", sequenceName = "user_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "generator")
     private Long userId;
 
-    @Column(name = "USERCODE", nullable = true, length = 50, unique=true)
+
+    @Column(name = "USERCODE", length = 50, unique=true)
     private String userCode;
 
     @OneToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER, mappedBy="user")
     private ExternalUser externaluser;
+
+    @OneToMany(mappedBy="externalUserRole",fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<ExternalUserRoles> externalUserRoles;
 
     @Column(name = "USERNAME", nullable = true, length = 255)
     private String userName;
@@ -92,7 +89,8 @@ public class User implements Serializable {
     @Column(name = "ISAPPREJUSERNAME",length = 255)
     private String isApprejuserName;
 
-    @Column(name = "ISAPPREJDATE")    private Date isApprejDate;
+    @Column(name = "ISAPPREJDATE")
+    private Date isApprejDate;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "ISACTIVE", nullable = true, length = 10)
@@ -101,8 +99,13 @@ public class User implements Serializable {
     @Temporal(TemporalType.DATE)
     @Column(name = "CREATEDDATE", nullable = true)
     private Date createdDate = new Date();
-    
-	@Override
+
+
+    @Column(name = "FIRSTLOGIN",nullable = true, length = 1)
+    private String firstLogin;
+
+
+    @Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;

@@ -6,10 +6,7 @@ import com.dw.ngms.cis.uam.service.ExternalUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -22,6 +19,7 @@ import static org.springframework.util.StringUtils.isEmpty;
  */
 @RestController
 @RequestMapping("/cisorigin.uam/api/v1")
+@CrossOrigin(origins = "*")
 public class ExternalController extends MessageController {
 
     @Autowired
@@ -53,5 +51,24 @@ public class ExternalController extends MessageController {
             return generateFailureResponse(request, exception);
         }
     }
+
+
+    @RequestMapping(value = "/deleteExternalUser", method = RequestMethod.DELETE)
+    public ResponseEntity<?> deleteAssistant(HttpServletRequest request, @RequestBody @Valid UserDTO externalUserDTO) throws IOException {
+        try {
+            ExternalUser externalUser = this.externalUserService.findByUserCode(externalUserDTO);
+            if (isEmpty(externalUser)){
+                return generateEmptyResponse(request, "Users are  not found");
+            }
+            if (!isEmpty(externalUser)) {
+                this.externalUserService.deleteAssistant(externalUser);
+            }
+            //todo Send Email to User
+            return ResponseEntity.status(HttpStatus.OK).body("User Deleted Successfully");
+        } catch (Exception exception) {
+            return generateFailureResponse(request, exception);
+        }
+    }
+
 
 }

@@ -6,10 +6,7 @@ import com.dw.ngms.cis.uam.service.ExternalUserAssistantService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -22,7 +19,8 @@ import static org.springframework.util.StringUtils.isEmpty;
  * Created by swaroop on 2019/03/26.
  */
 @RestController
-@RequestMapping("cisorigin.uam/api/v1")
+@RequestMapping("/cisorigin.uam/api/v1")
+@CrossOrigin(origins = "*")
 public class ExternalUserAssistantController extends MessageController {
 
 
@@ -40,7 +38,7 @@ public class ExternalUserAssistantController extends MessageController {
             if (!isEmpty(externalUserAssistant)) {
                 externalUserAssistant.setIsApproved(externalUserAssistantDTO.getIsapproved());
                 externalUserAssistant.setRejectionreason(externalUserAssistantDTO.getRejectionreason());
-                externalUserAssistant.setApprejdate(new Date());
+                externalUserAssistant.setIsapprejdate(new Date());
             }
              this.externalUserAssistantService.updateExternalAssistant(externalUserAssistant);
             //todo Send Email to User
@@ -49,5 +47,25 @@ public class ExternalUserAssistantController extends MessageController {
             return generateFailureResponse(request, exception);
         }
     }
+
+
+    @RequestMapping(value = "/deleteAssistant", method = RequestMethod.DELETE)
+    public ResponseEntity<?> deleteAssistant(HttpServletRequest request, @RequestBody @Valid ExternalUserAssistantDTO externalUserAssistantDTO) throws IOException {
+        try {
+            ExternalUserAssistant externalUserAssistant = this.externalUserAssistantService.findByUserCodeName(externalUserAssistantDTO);
+            if (isEmpty(externalUserAssistant)){
+                return generateEmptyResponse(request, "External User Assistant not found");
+            }
+            if (!isEmpty(externalUserAssistant)) {
+                this.externalUserAssistantService.deleteAssistant(externalUserAssistant);
+            }
+            //todo Send Email to User
+            return ResponseEntity.status(HttpStatus.OK).body("Assistant Deleted Successfully");
+        } catch (Exception exception) {
+            return generateFailureResponse(request, exception);
+        }
+    }
+
+
 
 }

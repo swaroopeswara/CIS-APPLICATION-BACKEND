@@ -35,10 +35,10 @@ public class Province implements Serializable {
 
 	private static final long serialVersionUID = -9126471965162438729L;
 
-	@Column(name = "PROVINCEID")
+/*	@Column(name = "PROVINCEID")
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    private Long id;*/
 
     @Column(name = "ORGCODE", nullable = true, length = 50)
     private String organisationCode;
@@ -46,7 +46,7 @@ public class Province implements Serializable {
     @Column(name = "ORGNAME", nullable = true, length = 100)
     private String organisationName;    
     
-    @NaturalId
+    @Id
     @Column(name = "PROVINCECODE", nullable = true, length = 50)
     private String code; 
     
@@ -71,7 +71,7 @@ public class Province implements Serializable {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime * result + ((code == null) ? 0 : code.hashCode());
 		return result;
 	}
 
@@ -84,10 +84,10 @@ public class Province implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		Province other = (Province) obj;
-		if (id == null) {
-			if (other.id != null)
+		if (code == null) {
+			if (other.code != null)
 				return false;
-		} else if (!id.equals(other.id))
+		} else if (!code.equals(other.code))
 			return false;
 		return true;
 	}

@@ -20,6 +20,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.data.jpa.repository.Query;
 
 /**
  * Created by swaroop on 2019/03/24.
@@ -35,19 +36,25 @@ public class ExternalUser implements Serializable {
 
     private static final long serialVersionUID = -955002950121265546L;
 
-    @Id
+  /*  @Id
     @Column(name = "EXTERNALUSERDATAID")
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long externaluserdataid;
+*/
 
     @JsonIgnore
     @OneToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "USERID", referencedColumnName="USERID", nullable = false)
+    @JoinColumn(name = "USERID",updatable =false, insertable = false, referencedColumnName="USERID", nullable = false)
     private User user;
-    
+
+
+
+    @Id
     @Column(name = "USERCODE", nullable = true, length = 50)
     @NotEmpty(message = "USERCODE must not be empty")
     private String usercode;
+
+    @Column(name = "USERID", nullable = true, length = 50)
+    private Long userId;
 
     @Column(name = "ORGANIZATIONTYPECODE", nullable = true, length = 50)
     @NotEmpty(message = "ORGANIZATION TYPE CODE must not be empty")
@@ -147,7 +154,7 @@ public class ExternalUser implements Serializable {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((externaluserdataid == null) ? 0 : externaluserdataid.hashCode());
+		//result = prime * result + ((externaluserdataid == null) ? 0 : externaluserdataid.hashCode());
 		return result;
 	}
 
@@ -160,11 +167,11 @@ public class ExternalUser implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		ExternalUser other = (ExternalUser) obj;
-		if (externaluserdataid == null) {
+		/*if (externaluserdataid == null) {
 			if (other.externaluserdataid != null)
 				return false;
 		} else if (!externaluserdataid.equals(other.externaluserdataid))
-			return false;
+			return false;*/
 		return true;
 	}
 

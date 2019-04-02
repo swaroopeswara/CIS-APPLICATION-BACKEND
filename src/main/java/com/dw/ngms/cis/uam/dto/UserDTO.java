@@ -25,7 +25,7 @@ public class UserDTO implements Serializable {
 	
 	@NotEmpty(message = "User Code must not be empty")
     private String usercode;
-    @NotEmpty(message = "User Name must not be empty")
+
     private String username;
     private String isapproved;
     private String rejectionreason;

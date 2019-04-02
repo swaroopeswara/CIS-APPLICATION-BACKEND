@@ -23,6 +23,16 @@ public class ExternalUserAssistantService {
         return this.externalUserAssistantRepository.save(externalUserAssistant);
     }
 
+    public void deleteAssistant(ExternalUserAssistant externalUserAssistant) {
+         this.externalUserAssistantRepository.delete(externalUserAssistant);
+    }
+
+
+    public ExternalUserAssistant saveExternalAssistant(ExternalUserAssistant externalUserAssistant) {
+        return this.externalUserAssistantRepository.save(externalUserAssistant);
+    }
+
+
 
 
 

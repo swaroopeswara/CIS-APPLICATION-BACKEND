@@ -80,6 +80,12 @@ public class UserService {
 		return this.userRepository.findByEmail(email);
 	} //FindUserByEmail
 
+	public Long getUserId() {
+		return this.userRepository.getUserId();
+	} //FindUserByEmail
+
+
+
 	public User findByUserByNameAndCode(UserDTO userDTO) {
 		return this.userRepository.findByUserByNameAndCode(userDTO.getUsercode(), userDTO.getUsername());
 	}//FindUserByNameAndCode

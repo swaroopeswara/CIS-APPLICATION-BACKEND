@@ -47,6 +47,8 @@ public class LoginController extends MessageController {
             String decodeLoggedUserPassword = decodeUserPassword(user);
             if (decodeLoggedUserPassword.equalsIgnoreCase(loggedUser.getPassword()) && user.getUserTypeName().equalsIgnoreCase(typeName)) {
                 userControllerResponse.setValid("true");
+                userControllerResponse.setIsApproved(user.getIsApproved().getStatus());
+                userControllerResponse.setActive(user.getIsActive().getStatus());
                 json = gson.toJson(userControllerResponse);
             } else {
                 userControllerResponse.setValid("false");

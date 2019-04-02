@@ -20,11 +20,13 @@ public class OraganisationTypeService {
 		return organisationTypeRepository.findAll();
 	}//getAllOrganisatioTypes
 
+
+/*
 	public OrganisationType addOrganisationType(OrganisationType organisationType) {
-		if(organisationType == null|| organisationType.getId() != null) return null;
+		if(organisationType == null|| organisationType.getOrganizationTypeCode() != null) return null;
 		organisationType.setOrganisationCode(getOrganisationTypeCode());
 		return organisationTypeRepository.save(organisationType);
-	}//getAllOrganisatioTypes
+	}//getAllOrganisatioTypes*/
 
 	private String getOrganisationTypeCode() {
 		return codeGeneratorService.getOrganisationTypeNextCode();
