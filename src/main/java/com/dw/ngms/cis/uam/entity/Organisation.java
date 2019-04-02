@@ -29,21 +29,27 @@ import lombok.ToString;
 @Setter
 @ToString
 @NoArgsConstructor
-@Table(name = "ORGANIZATIONTYPES")
-public class OrganisationType implements Serializable {
+@Table(name = "ORGANIZATION")
+public class Organisation implements Serializable {
 
 	private static final long serialVersionUID = -3791837488494889093L;
 
+	@Column(name = "ORGANIZATIONID")
 	@Id
-	@Column(name = "ORGANIZATIONTYPECODE", nullable = false, length = 30)
-	private String organizationTypeCode;
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private Long id; 
 	
-	@Column(name = "ORGANIZATIONTYPENAME", nullable = false, length = 10)
-	private String organizationTypeName;
+	@Column(name = "ORGCODE", nullable = false, length = 30)
+	private String organisationCode;
 	
-	@Column(name = "DESCRIPTION", nullable = true, length = 500)
+	@Column(name = "ORGNAME", nullable = false, length = 10)
+	private String organisationName;
+	
+	@Column(name = "ADDRESS", nullable = true, length = 500)
+	private String address;
+	
+	@Column(name = "DESCRIPTION", nullable = false, length = 500)
 	private String description;
-
 	
 	@Enumerated(EnumType.STRING)
 	@Column(name = "ISACTIVE", nullable = false, length = 10)

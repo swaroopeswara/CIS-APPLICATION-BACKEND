@@ -35,13 +35,6 @@ public class Sector implements Serializable {
 
 	private static final long serialVersionUID = 4886062577781722631L;
 
-	/*@Column(name = "SECTORID")
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private Long id;
-	*/
-
-
 	@Id
 	@Column(name = "SECTORCODE", nullable = true, length = 50)
     private String code; 
