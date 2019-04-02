@@ -31,7 +31,15 @@ public class CodeGeneratorService {
 		return "ORGTY"+ getNextValueOfSequence("ORGANISATION_TYPE_ID_SEQ");
 	}
 
+	public String getOrganisationNextCode() {
+		return "ORG"+ getNextValueOfSequence("ORGANISATION_ID_SEQ");
+	}
+	
 	public String getCommunicationTypeNextCode() {
 		return "COMM"+ getNextValueOfSequence("COMMUNICATION_TYPE_ID_SEQ");
+	}
+
+	public String getPlsUserNextCode() {
+		return "PLS"+ getNextValueOfSequence("PLS_USER_ID_SEQ");
 	}
 }

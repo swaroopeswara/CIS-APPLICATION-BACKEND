@@ -47,9 +47,6 @@ public class UserController extends MessageController {
 
     private static final String INTERNAL_USER_TYPE_NAME = "INTERNAL";
     private static final String EXTERNAL_USER_TYPE_NAME = "EXTERNAL";
-    private static final String APPROVAL_STATUS_PENDING = "N";
-    private static final String APPROVAL_STATUS_APPROVE = "Y";
-
 
     @Autowired
     private UserService userService;

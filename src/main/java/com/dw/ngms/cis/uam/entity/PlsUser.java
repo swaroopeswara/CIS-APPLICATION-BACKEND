@@ -4,8 +4,12 @@ import java.io.Serializable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.persistence.Table;
+
+import com.dw.ngms.cis.uam.enums.Status;
 
 import lombok.Data;
 import lombok.Getter;
@@ -99,5 +103,12 @@ public class PlsUser implements Serializable {
 	
 	@Column(name = "SG_OFFICE_ID")
 	private String sgofficeid;
+	
+	@Column(name = "ISACTIVE")
+	private Status isActive = Status.Y;
+	
+	@Enumerated(EnumType.STRING)
+	@Column(name = "ISVALID")
+	private Status isValid = Status.Y;
 	
 }
