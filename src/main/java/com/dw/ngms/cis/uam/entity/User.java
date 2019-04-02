@@ -78,7 +78,7 @@ public class User implements Serializable {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "ISAPPROVED",length = 3)
-    private ApprovalStatus isApproved = ApprovalStatus.N;
+    private ApprovalStatus isApproved = ApprovalStatus.YES;
 
     @Column(name = "REJECTIONREASON",length = 500)
     private String rejectionReason;

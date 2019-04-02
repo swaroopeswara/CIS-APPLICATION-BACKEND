@@ -10,6 +10,9 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import com.dw.ngms.cis.uam.dto.RolesDTO;
+import com.dw.ngms.cis.uam.dto.UpdateAccessRightsDTO;
+import com.dw.ngms.cis.uam.entity.*;
 import org.apache.commons.lang.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -28,10 +31,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.dw.ngms.cis.exception.ExceptionConstants;
 import com.dw.ngms.cis.uam.dto.MailDTO;
 import com.dw.ngms.cis.uam.dto.UserDTO;
-import com.dw.ngms.cis.uam.entity.ExternalRole;
-import com.dw.ngms.cis.uam.entity.ExternalUserAssistant;
-import com.dw.ngms.cis.uam.entity.ExternalUserRoles;
-import com.dw.ngms.cis.uam.entity.User;
 import com.dw.ngms.cis.uam.enums.ApprovalStatus;
 import com.dw.ngms.cis.uam.enums.Status;
 import com.dw.ngms.cis.uam.jsonresponse.UserControllerResponse;
@@ -71,7 +70,7 @@ public class UserController extends MessageController {
     public ResponseEntity<?> submitInternalUserForApproval(HttpServletRequest request, @RequestParam String usercode,
                                                            @RequestParam String username, @RequestParam String isapproved) {
         try {
-            User user = userService.submitInternalUserForApproval(usercode, username, INTERNAL_USER_TYPE_NAME, ApprovalStatus.PND);
+            User user = userService.submitInternalUserForApproval(usercode, username, INTERNAL_USER_TYPE_NAME, ApprovalStatus.PENDING);
             return (user == null) ? generateEmptyResponse(request, "User(s) not found") :
                     ResponseEntity.status(HttpStatus.OK).body(user);
         } catch (Exception exception) {
@@ -116,12 +115,39 @@ public class UserController extends MessageController {
         }
     }//updateExternalUser
 
+
+  /*  @PostMapping("/updateAccessRights")
+    public ResponseEntity<?> updateAccessRights(HttpServletRequest request, @RequestBody @Valid UpdateAccessRightsDTO updateAccessRightsDTO) {
+        try {
+            System.out.println("User Type is "+updateAccessRightsDTO.getUsertype());
+            if(updateAccessRightsDTO.getUsertype().equalsIgnoreCase("Internal")){
+                InternalRole internalRole = this.
+
+            }else{
+
+            }
+            System.out.println("Acces right Json Type is "+updateAccessRightsDTO.getAccessrightjson());
+            for(RolesDTO roles : updateAccessRightsDTO.getRoles()){
+                System.out.println(roles.getProvincecode());
+                System.out.println(roles.getRolecode());
+                System.out.println(roles.getSectioncode());
+            }
+        } catch (Exception exception) {
+            return generateFailureResponse(request, exception);
+        }
+
+        return null;
+    }
+    //updateAccessRights*/
+
+    //
+
     @GetMapping("/getUsersForPendingApproval")
     public ResponseEntity<?> getUsersForPendingApproval(HttpServletRequest request, @RequestParam String provincecode) {
         try {
             List<User> userList = (StringUtils.isEmpty(provincecode) || "all".equalsIgnoreCase(provincecode.trim())) ?
-                    userService.getAllExternalApprovalPendingUsers(ApprovalStatus.PND.name(), ApprovalStatus.Y.name()) :
-                    userService.getAllExternalApprovalPendingUsersByProvinceCode(ApprovalStatus.PND.name(), ApprovalStatus.Y.name(), provincecode);
+                    userService.getAllExternalApprovalPendingUsers(ApprovalStatus.PENDING.name(), ApprovalStatus.YES.name()) :
+                    userService.getAllExternalApprovalPendingUsersByProvinceCode(ApprovalStatus.PENDING.name(), ApprovalStatus.YES.name(), provincecode);
             return (CollectionUtils.isEmpty(userList)) ? generateEmptyResponse(request, "User(s) not found")
                     : ResponseEntity.status(HttpStatus.OK).body(userList);
         } catch (Exception exception) {
@@ -164,7 +190,7 @@ public class UserController extends MessageController {
         try {
             List<User> userList = null;
             if (!StringUtils.isEmpty(surveyorusercode)) {
-                userList = userService.getAllAssistantsForPendingApprovalBySurveyorUserCode(ApprovalStatus.N.name(), ApprovalStatus.PND.name(), surveyorusercode);
+                userList = userService.getAllAssistantsForPendingApprovalBySurveyorUserCode(ApprovalStatus.WAITING.name(), ApprovalStatus.PENDING.name(), surveyorusercode);
             }
             return (CollectionUtils.isEmpty(userList)) ? generateEmptyResponse(request, "User(s) not found")
                     : ResponseEntity.status(HttpStatus.OK).body(userList);
@@ -221,6 +247,7 @@ public class UserController extends MessageController {
 
         String mailResponse = null;
         Long userID = this.userService.getUserId();
+        System.out.println("UserId is "+userID);
         mapUserDetails(user, userID);
         if (!user.getExternalUserRoles().isEmpty()) {
             ArrayList<ExternalUserRoles> externalRoleCode = new ArrayList<>();
@@ -236,7 +263,9 @@ public class UserController extends MessageController {
         }
         userService.saveExternalUser(user);
         MailDTO mailDTO = getMailDTO(user);
+        System.out.println("test here "+mailDTO.getBody());
         sendMailInformation(user, mailDTO);
+        System.out.println("test there "+mailDTO.getBody());
         return user;
     }//createExternalUser
 
@@ -343,7 +372,12 @@ public class UserController extends MessageController {
         MailDTO mailDTO = new MailDTO();
         mailDTO.setHeader(ExceptionConstants.header);
         mailDTO.setFooter(ExceptionConstants.footer);
-        mailDTO.setBody(ExceptionConstants.body + " Please login with the password "+ user.getPassword());
+        System.out.println("user.getIsApproved().getDisplayString() "+user.getIsApproved().getDisplayString());
+        if(user.getIsApproved().getDisplayString().equalsIgnoreCase("YES")){
+            mailDTO.setBody(ExceptionConstants.body+  "\\n"+ ". Your password is "+ user.getPassword() +" User have been approved");
+        }else{
+            mailDTO.setBody(ExceptionConstants.body +   ".Your password is "+ user.getPassword()  + " User is waiting for approval");
+        }
         mailDTO.setSubject(ExceptionConstants.subject);
         return mailDTO;
     }

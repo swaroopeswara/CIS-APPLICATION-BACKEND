@@ -64,12 +64,10 @@ public class ExternalUser implements Serializable {
     @NotEmpty(message = "ORGANIZATION TYPE ENAME must not be empty")
     private String organizationtypename;
 
-    @Column(name = "PPNNO", nullable = true, length = 70)
-    @NotEmpty(message = "PPNNO must not be empty")
+    @Column(name = "PPNNO", length = 70)
     private String ppno;
 
-    @Column(name = "PRACTISENAME", nullable = true, length = 100)
-    @NotEmpty(message = "PRACTICE NAME must not be empty")
+    @Column(name = "PRACTISENAME", length = 100)
     private String practicename;
 
     @Column(name = "POSTALADDRESSLINE1", nullable = true, length = 70)
@@ -80,8 +78,7 @@ public class ExternalUser implements Serializable {
     @NotEmpty(message = "POSTAL ADDRESSLINE2 must not be empty")
     private String postaladdressline2;
 
-    @Column(name = "POSTALADDRESSLINE3", nullable = true, length = 70)
-    @NotEmpty(message = "POSTAL ADDRESSLINE3 must not be empty")
+    @Column(name = "POSTALADDRESSLINE3", length = 70)
     private String postaladdressline3;
 
     @Column(name = "POSTALCODE", nullable = true, length = 15)

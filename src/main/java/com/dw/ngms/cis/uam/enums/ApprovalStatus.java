@@ -2,22 +2,22 @@ package com.dw.ngms.cis.uam.enums;
 
 public enum ApprovalStatus {
 
-	Y("Approved"),
-	N("Waiting"),
-	PND("Pending");
+	YES("YES"),
+	WAITING("Waiting"),
+	PENDING("Pending");
 
-	String status;
+	String displayString;
 	
-	private ApprovalStatus(String status) {
-		this.status = status;
+	private ApprovalStatus(String displayString) {
+		this.displayString = displayString;
 	}
 
-	public String getStatus() {
-		return status;
+	public String getDisplayString() {
+		return displayString;
 	}
 
-	public void setStatus(String status) {
-		this.status = status;
+	public void setDisplayString(String displayString) {
+		this.displayString = displayString;
 	}
 	
 }
