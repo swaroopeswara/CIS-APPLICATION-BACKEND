@@ -6,7 +6,7 @@
     <groupId>com.dw.ngms</groupId>
     <artifactId>cis_uam</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <packaging>jar</packaging>
+    <packaging>war</packaging>
 
     <name>cis_uam</name>
     <description>uam project with spring data jpa and oracle db</description>
@@ -34,6 +34,15 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
+
+        <!-- https://mvnrepository.com/artifact/com.oracle/ojdbc7 -->
+        <dependency>
+            <groupId>com.oracle</groupId>
+            <artifactId>ojdbc7</artifactId>
+            <version>12.1.0.2</version>
+        </dependency>
+
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
@@ -45,6 +54,22 @@
             <artifactId>mysql-connector-java</artifactId>
             <scope>runtime</scope>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/com.sendinblue/sendinblue -->
+        <dependency>
+            <groupId>com.sendinblue</groupId>
+            <artifactId>sendinblue</artifactId>
+            <version>2.0</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/commons-codec/commons-codec -->
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>1.2</version>
+        </dependency>
+
+
 
         <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
 		<dependency>
@@ -87,10 +112,18 @@
             <artifactId>jaxb-api</artifactId>
             <version>2.1</version>
         </dependency>
-      
+        <!-- https://mvnrepository.com/artifact/commons-lang/commons-lang -->
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+            <version>2.6</version>
+        </dependency>
+
+
     </dependencies>
 
     <build>
+        <finalName>cis_uam</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
