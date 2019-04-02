@@ -21,7 +21,7 @@ public class SectorService {
     }
 
     public Sector addSector(Sector sector) {
-    	if(sector == null || sector.getId() != null) return null;
+    	if(sector == null || sector.getCode() != null) return null;
     	sector.setCode(getSectorCode());
         return this.sectorRepository.save(sector);
     }//addSector

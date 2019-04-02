@@ -30,12 +30,12 @@ public class SecurityQuestion implements Serializable {
 	private static final long serialVersionUID = 1699353954812191931L;
 
 
-	@Id
+	/*@Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "SECURITYQUESTIONTYPEID")
-    private Long securityquestiontypeid;
+    private Long securityquestiontypeid;*/
 
-
+    @Id
     @Column(name = "securityquestioncode",nullable = true, length = 50)
     private String securityquestionCode;
 

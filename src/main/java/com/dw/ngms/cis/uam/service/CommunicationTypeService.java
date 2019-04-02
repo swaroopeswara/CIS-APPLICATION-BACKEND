@@ -21,7 +21,8 @@ public class CommunicationTypeService {
 	}//getAllCommunicationTypes
 	
 	public CommunicationType addCommunicationType(CommunicationType communicationType) throws Exception {
-		if(communicationType == null || communicationType.getId() != null) return null;
+		/*if(communicationType == null || communicationType.getId() != null) return null;*/
+		if(communicationType == null || communicationType.getCommunicationTypeCode() != null) return null;
 		communicationType.setCommunicationTypeCode(generateCommTypeCode());
 		return communicationTypeRepository.save(communicationType);
 	}//createAndPersistCommunicationType

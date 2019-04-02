@@ -33,11 +33,13 @@ public class CommunicationType implements Serializable {
 
 	private static final long serialVersionUID = -7263662741431187675L;
 
-	@Column(name = "COMMUNICATIONMODETYPEID")
+	/*@Column(name = "COMMUNICATIONMODETYPEID")
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+*/
 
+	@Id
     @Column(name = "COMMUNICATIONMODETYPECODE", nullable = false, length = 50)
     private String communicationTypeCode;
 
@@ -59,7 +61,7 @@ public class CommunicationType implements Serializable {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime * result + ((communicationTypeCode == null) ? 0 : communicationTypeCode.hashCode());
 		return result;
 	}
 
@@ -72,10 +74,10 @@ public class CommunicationType implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		CommunicationType other = (CommunicationType) obj;
-		if (id == null) {
-			if (other.id != null)
+		if (communicationTypeCode == null) {
+			if (other.communicationTypeCode != null)
 				return false;
-		} else if (!id.equals(other.id))
+		} else if (!communicationTypeCode.equals(other.communicationTypeCode))
 			return false;
 		return true;
 	}

@@ -23,10 +23,10 @@ public class Roles implements Serializable {
 
     private static final long serialVersionUID = 8072176445175268887L;
 
-    @Id
+  /*  @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "ROLEID")
-    private Long roleid;
+    private Long roleid;*/
 
     @Column(name = "ROLENAME")
     private String rolename;
@@ -37,6 +37,7 @@ public class Roles implements Serializable {
     @Column(name = "NEEDAPPROVAL")
     private String needapproval;
 
+    @Id
     @Column(name = "ROLECODE")
     private String rolecode;
 }
