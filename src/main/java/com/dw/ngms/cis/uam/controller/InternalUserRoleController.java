@@ -16,6 +16,7 @@ import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -142,8 +143,8 @@ public class InternalUserRoleController extends MessageController {
     @GetMapping("/getInternalUserRolesByEmail")
     public ResponseEntity<?> getInternalUserRolesByEmail(HttpServletRequest request, @RequestParam String email) {
     	try {
-    		InternalUserRoles internalUserRoles = internalUserRoleService.getInternalUserRole(email);
-        	return (internalUserRoles == null) ? generateEmptyResponse(request, "InternalUserRole not found") 
+    		List<InternalUserRoles> internalUserRoles = internalUserRoleService.getInternalUserRole(email);
+        	return (CollectionUtils.isEmpty(internalUserRoles)) ? generateEmptyResponse(request, "InternalUserRole not found") 
             		: ResponseEntity.status(HttpStatus.OK).body(internalUserRoles);
         } catch (Exception exception) {
             return generateFailureResponse(request, exception);

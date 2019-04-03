@@ -1,5 +1,7 @@
 package com.dw.ngms.cis.uam.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +18,7 @@ public class InternalUserRoleService {
     @Autowired
     private InternalUserRoleRepository internalUserRoleRepository;
     
-    public InternalUserRoles getInternalUserRole(String email) {
+    public List<InternalUserRoles> getInternalUserRole(String email) {
     	return internalUserRoleRepository.findByEmail(email);
     }//getInternalUserRole
 	
