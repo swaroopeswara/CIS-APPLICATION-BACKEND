@@ -44,11 +44,12 @@ public class LoginController extends MessageController {
             } else {
                 typeName = "External";
             }
-            String decodeLoggedUserPassword = decodeUserPassword(user);
-            if (decodeLoggedUserPassword.equalsIgnoreCase(loggedUser.getPassword()) && user.getUserTypeName().equalsIgnoreCase(typeName)) {
+            //String decodeLoggedUserPassword = decodeUserPassword(user);
+            if (user.getPassword().equalsIgnoreCase(loggedUser.getPassword()) && user.getUserTypeName().equalsIgnoreCase(typeName)) {
                 userControllerResponse.setValid("true");
                 userControllerResponse.setIsApproved(user.getIsApproved().getDisplayString());
                 userControllerResponse.setActive(user.getIsActive().getStatus());
+                userControllerResponse.setFirstLogin(user.getFirstLogin());
                 json = gson.toJson(userControllerResponse);
             } else {
                 userControllerResponse.setValid("false");

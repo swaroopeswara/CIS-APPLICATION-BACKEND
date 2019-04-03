@@ -33,11 +33,12 @@ public class Section implements Serializable {
 
 	private static final long serialVersionUID = -1043469818773504678L;
 
-	@Id
+	/*@Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "SECTIONID")
-    private Long id;
-	
+    private Long id;*/
+
+    @Id
 	@Column(name = "SECTIONCODE", nullable = true, length = 50)
     private String code; 
     
