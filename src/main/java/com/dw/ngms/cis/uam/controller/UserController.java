@@ -91,12 +91,15 @@ public class UserController extends MessageController {
 
 
     @PostMapping("/submitInternalUserForApproval")
-    public ResponseEntity<?> submitInternalUserForApproval(HttpServletRequest request, @RequestParam String usercode,
-                                                           @RequestParam String username, @RequestParam String isapproved) {
-
+    public ResponseEntity<?> submitInternalUserForApproval(HttpServletRequest request, @RequestBody @Valid UserDTO userDto) {
+    	if(userDto == null || userDto.getUsercode() == null || 
+    			userDto.getUsername() == null || userDto.getIsapproved() == null) {
+    		return generateFailureResponse(request, new Exception("Required params missing"));
+    	}
 
         try {
-            User user = userService.submitInternalUserForApproval(usercode, username, INTERNAL_USER_TYPE_NAME, ApprovalStatus.PENDING);
+            User user = userService.submitInternalUserForApproval(userDto.getUsercode(), userDto.getUsername(), 
+            		INTERNAL_USER_TYPE_NAME, ApprovalStatus.valueOf(userDto.getIsapproved()));
             return (user == null) ? generateEmptyResponse(request, "User(s) not found") :
                     ResponseEntity.status(HttpStatus.OK).body(user);
         } catch (Exception exception) {
