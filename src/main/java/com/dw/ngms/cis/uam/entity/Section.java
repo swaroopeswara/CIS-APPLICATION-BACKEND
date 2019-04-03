@@ -7,8 +7,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -32,11 +30,6 @@ import lombok.ToString;
 public class Section implements Serializable {
 
 	private static final long serialVersionUID = -1043469818773504678L;
-
-	/*@Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "SECTIONID")
-    private Long id;*/
 
     @Id
 	@Column(name = "SECTIONCODE", nullable = true, length = 50)

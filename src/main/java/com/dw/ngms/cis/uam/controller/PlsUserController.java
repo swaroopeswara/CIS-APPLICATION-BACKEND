@@ -43,7 +43,7 @@ public class PlsUserController extends MessageController {
     public ResponseEntity<?> validatePlsUser(HttpServletRequest request, @RequestParam String plscode) {
         try {
         	PlsUser plsUser = plsUserService.findByCode(plscode);
-        	return (plsUser == null) ? ResponseEntity.status(HttpStatus.OK).body("PlsUser does not exist") 
+        	return (plsUser == null) ? generateEmptyWithOKResponse(request, "PlsUser does not exist") 
             		: ResponseEntity.status(HttpStatus.OK).body(plsUser);
         } catch (Exception exception) {
             return generateFailureResponse(request, exception);
