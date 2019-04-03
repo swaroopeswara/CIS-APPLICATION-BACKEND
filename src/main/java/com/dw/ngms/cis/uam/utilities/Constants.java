@@ -5,5 +5,6 @@ package com.dw.ngms.cis.uam.utilities;
  */
 public class Constants {
 
-    public static final String uploadDirectoryPath = "/Users/swaroop/Documents/test-upload/";
+    //public static final String uploadDirectoryPath = "/Users/swaroop/Documents/test-upload/";
+    public static final String uploadDirectoryPath = "C:/Users/Administrator/Documents/signed/";
 }
