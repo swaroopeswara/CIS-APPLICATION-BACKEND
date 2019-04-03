@@ -343,7 +343,7 @@ public class UserController extends MessageController {
         String json = null;
         try {
             User userExists = this.userService.findByEmail(internalUser.getEmail());
-            if (userExists.getEmail() != null) {
+            if (userExists != null && userExists.getEmail() != null) {
                 userControllerResponse.setMessage("User Already Exist with this email ID");
                 json = gson.toJson(userControllerResponse);
                 return ResponseEntity.status(HttpStatus.OK).body(json);
