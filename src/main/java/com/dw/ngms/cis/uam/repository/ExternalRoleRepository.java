@@ -20,4 +20,10 @@ public interface ExternalRoleRepository extends JpaRepository<ExternalRole, Long
     ExternalRole getByRoleCodeRoleProvince(@Param("roleCode") String roleCode, @Param("provinceCode") String provinceCode);
 
 
+
+    @Query("SELECT u FROM ExternalRole u WHERE u.roleCode = :roleCode and u.provinceCode = :provinceCode")
+    ExternalRole updateAccessRight(
+            @Param("provinceCode") String provinceCode, @Param("roleCode") String roleCode);
+
+
 }

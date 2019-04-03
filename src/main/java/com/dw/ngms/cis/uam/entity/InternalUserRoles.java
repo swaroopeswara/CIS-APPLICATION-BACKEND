@@ -76,7 +76,7 @@ public class InternalUserRoles implements Serializable {
     @Column(name = "CREATEDDATE", nullable = true)
     Date createddate;
 
-    @Column(name = "SIGNEDACCESSDOCPATH")
+    @Column(name = "SIGNEDACCESSDOCPATH", nullable = false)
     private String signedAccessDocPath;
 
     @Column(name = "INTERNALROLECODE",length = 50)

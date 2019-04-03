@@ -27,7 +27,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.dw.ngms.cis.exception.ExceptionConstants;
 import com.dw.ngms.cis.uam.dto.MailDTO;
+import com.dw.ngms.cis.uam.dto.RolesDTO;
+import com.dw.ngms.cis.uam.dto.UpdateAccessRightsDTO;
 import com.dw.ngms.cis.uam.dto.UserDTO;
+import com.dw.ngms.cis.uam.entity.*;
 import com.dw.ngms.cis.uam.entity.ExternalRole;
 import com.dw.ngms.cis.uam.entity.ExternalUserAssistant;
 import com.dw.ngms.cis.uam.entity.ExternalUserRoles;
@@ -37,8 +40,25 @@ import com.dw.ngms.cis.uam.enums.Status;
 import com.dw.ngms.cis.uam.jsonresponse.UserControllerResponse;
 import com.dw.ngms.cis.uam.service.ExternalRoleService;
 import com.dw.ngms.cis.uam.service.ExternalUserAssistantService;
+import com.dw.ngms.cis.uam.service.InternalRoleService;
 import com.dw.ngms.cis.uam.service.UserService;
 import com.google.gson.Gson;
+import org.apache.commons.lang.RandomStringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import static org.springframework.util.StringUtils.isEmpty;
 
 @RestController
 @RequestMapping("/cisorigin.uam/api/v1")
@@ -53,6 +73,9 @@ public class UserController extends MessageController {
 
     @Autowired
     private ExternalRoleService externalRoleService;
+
+    @Autowired
+    private InternalRoleService internalRoleService;
 
     @Autowired
     private ExternalUserAssistantService externalUserAssistantService;
@@ -119,29 +142,53 @@ public class UserController extends MessageController {
     }//updateExternalUser
 
 
-  /*  @PostMapping("/updateAccessRights")
+    @PostMapping("/updateAccessRights")
     public ResponseEntity<?> updateAccessRights(HttpServletRequest request, @RequestBody @Valid UpdateAccessRightsDTO updateAccessRightsDTO) {
         try {
-            System.out.println("User Type is "+updateAccessRightsDTO.getUsertype());
-            if(updateAccessRightsDTO.getUsertype().equalsIgnoreCase("Internal")){
-                InternalRole internalRole = this.
+            UserControllerResponse userControllerResponse = new UserControllerResponse();
+            Gson gson = new Gson();
+            String json = null;
+            System.out.println("User Type is " + updateAccessRightsDTO.getUsertype());
+            if (updateAccessRightsDTO.getUsertype().equalsIgnoreCase("Internal")) {
+                for (RolesDTO roles : updateAccessRightsDTO.getRoles()) {
+                    if (!isEmpty(roles)) {
+                        InternalRole internalRole = this.internalRoleService.updateAccessRight(roles.getProvincecode(), roles.getRolecode(), roles.getSectioncode());
+                        if (!isEmpty(internalRole)) {
+                            internalRole.setAccessRightJson(updateAccessRightsDTO.getAccessrightjson());
+                            this.internalRoleService.updateInternalRole(internalRole);
+                            userControllerResponse.setMessage("updated Rights access successfully");
+                            json = gson.toJson(userControllerResponse);
+                            return ResponseEntity.status(HttpStatus.OK).body(userControllerResponse);
+                        } else {
+                            return generateEmptyResponse(request, "No roles found");
+                        }
 
-            }else{
-
+                    } else {
+                        return generateEmptyResponse(request, "No roles found");
+                    }
+                }
+            } else {
+                for (RolesDTO roles : updateAccessRightsDTO.getRoles()) {
+                    if (!isEmpty(roles)) {
+                        ExternalRole externalRole = this.externalRoleService.updateAccessRight(roles.getProvincecode(), roles.getRolecode());
+                        if (!isEmpty(externalRole)) {
+                            externalRole.setAccessRightJson(updateAccessRightsDTO.getAccessrightjson());
+                            this.externalRoleService.updateExternalRole(externalRole);
+                            userControllerResponse.setMessage("updated Rights access successfully");
+                            json = gson.toJson(userControllerResponse);
+                            return ResponseEntity.status(HttpStatus.OK).body(userControllerResponse);
+                        } else {
+                            return generateEmptyResponse(request, "No roles found");
+                        }
+                    }
+                }
             }
-            System.out.println("Acces right Json Type is "+updateAccessRightsDTO.getAccessrightjson());
-            for(RolesDTO roles : updateAccessRightsDTO.getRoles()){
-                System.out.println(roles.getProvincecode());
-                System.out.println(roles.getRolecode());
-                System.out.println(roles.getSectioncode());
-            }
+            return generateEmptyResponse(request, "No roles found");
         } catch (Exception exception) {
             return generateFailureResponse(request, exception);
         }
-
-        return null;
     }
-    //updateAccessRights*/
+    //updateAccessRights
 
     //
 
@@ -246,40 +293,65 @@ public class UserController extends MessageController {
     }//getUserInfoByMail
 
     @PostMapping("/registerExternalUser")
-    public User createExternalUser(@Valid @RequestBody User user) {
+    public ResponseEntity<?> createExternalUser(HttpServletRequest request, @Valid @RequestBody User user) {
+        Gson gson = new Gson();
+        String json = null;
+        UserControllerResponse userControllerResponse = new UserControllerResponse();
+        try {
 
-        String mailResponse = null;
-        Long userID = this.userService.getUserId();
-        System.out.println("UserId is "+userID);
-        mapUserDetails(user, userID);
-        if (!user.getExternalUserRoles().isEmpty()) {
-            ArrayList<ExternalUserRoles> externalRoleCode = new ArrayList<>();
-            for (ExternalUserRoles externalUserRoles : user.getExternalUserRoles()) {
-                if (externalUserRoles.getUserRoleCode().equalsIgnoreCase("EX011")) {
-                    saveExternalUserAssistant(user, externalRoleCode, externalUserRoles);
-                } else {
-                    ExternalRole externalRole = this.externalRoleService.getByRoleCodeRoleProvince(externalUserRoles.getUserRoleCode(), externalUserRoles.getUserProvinceCode());
-                    externalUserRolesMapping(user, externalUserRoles, externalRole);
-                    externalRoleCode.add(externalUserRoles);
+            User userExists = this.userService.findByEmail(user.getEmail());
+            if (userExists.getEmail() != null) {
+                userControllerResponse.setMessage("User Already Exist with this email ID");
+                json = gson.toJson(userControllerResponse);
+                return ResponseEntity.status(HttpStatus.OK).body(json);
+            }
+
+            String mailResponse = null;
+            Long userID = this.userService.getUserId();
+            System.out.println("UserId is " + userID);
+            mapUserDetails(user, userID);
+            if (!user.getExternalUserRoles().isEmpty()) {
+                ArrayList<ExternalUserRoles> externalRoleCode = new ArrayList<>();
+                for (ExternalUserRoles externalUserRoles : user.getExternalUserRoles()) {
+                    if (externalUserRoles.getUserRoleCode().equalsIgnoreCase("EX011")) {
+                        saveExternalUserAssistant(user, externalRoleCode, externalUserRoles);
+                    } else {
+                        ExternalRole externalRole = this.externalRoleService.getByRoleCodeRoleProvince(externalUserRoles.getUserRoleCode(), externalUserRoles.getUserProvinceCode());
+                        externalUserRolesMapping(user, externalUserRoles, externalRole);
+                        externalRoleCode.add(externalUserRoles);
+                    }
                 }
             }
+            User response = userService.saveExternalUser(user);
+            MailDTO mailDTO = getMailDTO(user);
+            sendMailInformation(user, mailDTO);
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        } catch (Exception exception) {
+            return generateFailureResponse(request, exception);
         }
-        userService.saveExternalUser(user);
-        MailDTO mailDTO = getMailDTO(user);
-        System.out.println("test here "+mailDTO.getBody());
-        sendMailInformation(user, mailDTO);
-        System.out.println("test there "+mailDTO.getBody());
-        return user;
     }//createExternalUser
 
 
     @PostMapping("/registerInternalUser")
-    public User createInternalUser(@RequestBody @Valid User internalUser) {
-        System.out.println("user.getIsApproved().getDisplayString() "+internalUser.getIsApproved().getDisplayString());
-        Long userID = this.userService.getUserId();
-        internalUser.setUserId(userID);
-        internalUser.setUserCode("USR000" + Long.toString(internalUser.getUserId()));
-        return userService.saveInternalUser(internalUser);
+    public ResponseEntity<?> createInternalUser(HttpServletRequest request, @RequestBody @Valid User internalUser) {
+        Gson gson = new Gson();
+        UserControllerResponse userControllerResponse = new UserControllerResponse();
+        String json = null;
+        try {
+            User userExists = this.userService.findByEmail(internalUser.getEmail());
+            if (userExists.getEmail() != null) {
+                userControllerResponse.setMessage("User Already Exist with this email ID");
+                json = gson.toJson(userControllerResponse);
+                return ResponseEntity.status(HttpStatus.OK).body(json);
+            }
+            Long userID = this.userService.getUserId();
+            internalUser.setUserId(userID);
+            internalUser.setUserCode("USR000" + Long.toString(internalUser.getUserId()));
+            User response = userService.saveInternalUser(internalUser);
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        } catch (Exception exception) {
+            return generateFailureResponse(request, exception);
+        }
     }//saveInternalUser
 
 
@@ -379,11 +451,11 @@ public class UserController extends MessageController {
         MailDTO mailDTO = new MailDTO();
         mailDTO.setHeader(ExceptionConstants.header);
         mailDTO.setFooter(ExceptionConstants.footer);
-        System.out.println("user.getIsApproved().getDisplayString() "+user.getIsApproved().getDisplayString());
-        if(user.getIsApproved().getDisplayString().equalsIgnoreCase("YES")){
-            mailDTO.setBody(ExceptionConstants.body+  "\\n"+ ". Your password is "+ user.getPassword() +" User have been approved");
-        }else{
-            mailDTO.setBody(ExceptionConstants.body +   ".Your password is "+ user.getPassword()  + " User is waiting for approval");
+        System.out.println("user.getIsApproved().getDisplayString() " + user.getIsApproved().getDisplayString());
+        if (user.getIsApproved().getDisplayString().equalsIgnoreCase("YES")) {
+            mailDTO.setBody(ExceptionConstants.body + "\\n" + ". Your password is " + user.getPassword() + " User have been approved");
+        } else {
+            mailDTO.setBody(ExceptionConstants.body + ".Your password is " + user.getPassword() + " User is waiting for approval");
         }
         mailDTO.setSubject(ExceptionConstants.subject);
         return mailDTO;

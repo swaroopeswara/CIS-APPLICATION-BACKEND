@@ -62,7 +62,6 @@ public class ExternalRole implements Serializable {
     private String roleName;
 
     @Column(name = "DESCRIPTION", nullable = true, length = 500)
-    @NotEmpty(message = "DESCRIPTION must not be empty")
     private String description;
 
     @Column(name = "ISACTIVE", nullable = true, length = 10)
