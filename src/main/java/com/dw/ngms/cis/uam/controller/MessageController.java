@@ -58,6 +58,11 @@ public class MessageController implements ExceptionConstants {
 		return ResponseEntity.status(HttpStatus.OK).body(emptyResponse);
 	}//generateEmptyResponse
 
+	protected ResponseEntity<?> generateEmptyWithOKResponse() {
+		RestResponse emptyResponse = responseBuilderAgent.createErrorResponse();
+		return ResponseEntity.status(HttpStatus.OK).body(emptyResponse);
+	}//generateEmptyResponse
+
 
 	public String sendMail(MailDTO mailDTO) {
 		SendBlueMailService http = new SendBlueMailService(ExceptionConstants.sendBlueMailLinkURL, ExceptionConstants.sendBlueMailPassword);

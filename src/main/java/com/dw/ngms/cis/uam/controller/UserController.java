@@ -10,6 +10,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import com.dw.ngms.cis.uam.dto.*;
 import org.apache.commons.lang.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,10 +27,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dw.ngms.cis.exception.ExceptionConstants;
-import com.dw.ngms.cis.uam.dto.MailDTO;
-import com.dw.ngms.cis.uam.dto.RolesDTO;
-import com.dw.ngms.cis.uam.dto.UpdateAccessRightsDTO;
-import com.dw.ngms.cis.uam.dto.UserDTO;
 import com.dw.ngms.cis.uam.entity.*;
 import com.dw.ngms.cis.uam.entity.ExternalRole;
 import com.dw.ngms.cis.uam.entity.ExternalUserAssistant;
@@ -378,6 +375,33 @@ public class UserController extends MessageController {
             return generateFailureResponse(request, exception);
         }
     }//approveRejectAssitant
+
+
+   /*@RequestMapping(value = "/updatePassword", method = RequestMethod.POST)
+    public ResponseEntity<?> updatePassword(HttpServletRequest request, @RequestBody @Valid UpdatePasswordDTO updatePasswordDTO) throws IOException {
+        try {
+
+            UserDTO userDTO = new UserDTO();
+            userDTO.setUsercode(updatePasswordDTO.getUsercode());
+            userDTO.setUsername(updatePasswordDTO.getUsername());
+            User user = this.userService.findByUserByNameAndCode(userDTO);
+            if (isEmpty(user)) {
+                return generateEmptyResponse(request, "Users not found");
+            }
+            if (!isEmpty(user)) {
+                if (user.getPassword().equalsIgnoreCase(updatePasswordDTO.getOldpassword())) {
+                    user.setPassword(updatePasswordDTO.getNewpassword());
+                }
+            }
+            this.userService.updateUserApproval(user);
+            //todo Send Email to User
+            return ResponseEntity.status(HttpStatus.OK).body("User Approval Updated Sucessfully");
+        } catch (Exception exception) {
+            return generateFailureResponse(request, exception);
+        }
+    }//updatePassword*/
+
+
 
     @RequestMapping(value = "/deactivateUser", method = RequestMethod.PUT)
     public ResponseEntity<?> deactivateUser(HttpServletRequest request, @RequestBody @Valid UserDTO userDTO) throws IOException {

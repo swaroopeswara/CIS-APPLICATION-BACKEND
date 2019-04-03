@@ -131,7 +131,7 @@ public class InternalUserRoleController extends MessageController {
     public ResponseEntity<?> getInternalUserRolesByEmail(HttpServletRequest request, @RequestParam String email) {
     	try {
     		List<InternalUserRoles> internalUserRoles = internalUserRoleService.getInternalUserRole(email);
-        	return (CollectionUtils.isEmpty(internalUserRoles)) ? generateEmptyResponse(request, "InternalUserRole not found") 
+        	return (CollectionUtils.isEmpty(internalUserRoles)) ? ResponseEntity.status(HttpStatus.OK).body(internalUserRoles)
             		: ResponseEntity.status(HttpStatus.OK).body(internalUserRoles);
         } catch (Exception exception) {
             return generateFailureResponse(request, exception);
