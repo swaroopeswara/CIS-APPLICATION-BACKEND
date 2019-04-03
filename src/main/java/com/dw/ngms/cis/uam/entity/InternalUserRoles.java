@@ -39,11 +39,11 @@ public class InternalUserRoles implements Serializable {
     
     @Column(name = "USERROLECODE", nullable = true, length = 50)
     @NotEmpty(message = "USER ROLE CODE must not be empty")
-    private String userRoleCode;
+    private String roleCode;
 
     @Column(name = "USERROLENAME", nullable = true, length = 50)
     @NotEmpty(message = "USER ROLE NAME must not be empty")
-    private String userRoleName;
+    private String roleName;
 
     @Column(name = "USERCODE", nullable = true, length = 50)
     @NotEmpty(message = "USER CODE must not be empty")
@@ -55,22 +55,22 @@ public class InternalUserRoles implements Serializable {
     
     @Column(name = "USERPROVINCECODE", nullable = true, length = 100)
     @NotEmpty(message = "USER PROVINCE CODE must not be empty")
-    private String userProvinceCode;
+    private String provinceCode;
 
     @Column(name = "USERPROVINCENAME", nullable = true, length = 50)
     @NotEmpty(message = "USER PROVINCE NAME must not be empty")
-    private String userProvinceName;
+    private String provinceName;
 
     @Column(name = "USERSECTIONCODE", nullable = true, length = 100)
     @NotEmpty(message = "USER SECTION CODE must not be empty")
-    private String userSectionCode;
+    private String sectionCode;
 
     @Column(name = "USERSECTIONNAME", nullable = true, length = 50)
     @NotEmpty(message = "USER SECTION NAME must not be empty")
-    private String userSectionName;
+    private String sectionName;
 
     @Column(name = "ISACTIVE", nullable = true, length = 10)
-    private String isactive;
+    private String isActive;
 
     @Temporal(TemporalType.DATE)
     @Column(name = "CREATEDDATE", nullable = true)

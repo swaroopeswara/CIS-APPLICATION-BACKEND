@@ -50,17 +50,15 @@ public class InternalUserRoleController extends MessageController {
         InternalUserRoles internalUserRoles = new InternalUserRoles();
         internalUserRoles.setUserCode(internalUserRoleDTO.getUserCode());
         internalUserRoles.setUserName(internalUserRoleDTO.getUserName());
-        internalUserRoles.setUserProvinceCode(internalUserRoleDTO.getProvinceCode());
-        internalUserRoles.setUserProvinceName(internalUserRoleDTO.getProvinceName());
-        internalUserRoles.setUserSectionCode(internalUserRoleDTO.getSectionCode());
-        internalUserRoles.setUserSectionName(internalUserRoleDTO.getSectionName());
-        internalUserRoles.setUserRoleCode(internalUserRoleDTO.getRoleCode());
-        internalUserRoles.setUserRoleName(internalUserRoleDTO.getRoleName());
+        internalUserRoles.setProvinceCode(internalUserRoleDTO.getProvinceCode());
+        internalUserRoles.setProvinceName(internalUserRoleDTO.getProvinceName());
+        internalUserRoles.setSectionCode(internalUserRoleDTO.getSectionCode());
+        internalUserRoles.setSectionName(internalUserRoleDTO.getSectionName());
+        internalUserRoles.setRoleCode(internalUserRoleDTO.getRoleCode());
+        internalUserRoles.setRoleName(internalUserRoleDTO.getRoleName());
         internalUserRoles.setCreateddate(new Date());
-        InternalRole internalRole = this.internalUserService.createInternalRoleCode(internalUserRoles.getUserProvinceCode(),internalUserRoles.getUserSectionCode(),internalUserRoles.getUserRoleCode());
+        InternalRole internalRole = this.internalUserService.createInternalRoleCode(internalUserRoles.getProvinceCode(),internalUserRoles.getSectionCode(),internalUserRoles.getRoleCode());
         internalUserRoles.setInternalRoleCode(internalRole.getInternalRoleCode());
-        System.out.println("Internal Role Code "+internalRole.getInternalRoleCode());
-        System.out.println("User Province Name "+internalUserRoles.getUserProvinceName());
         return internalUserService.saveInternalUserRole(internalUserRoles);
     }//createInternalUserRole
     
@@ -80,35 +78,24 @@ public class InternalUserRoleController extends MessageController {
     ) {
         String message = "";
         List<String> files = new ArrayList<String>();
-
         try {
             if(file.isEmpty()){
                 return generateEmptyResponse(request, "File Not Found to upload, Please upload a file");
             }else{
-                InternalUserRoles internalUserRoles = new InternalUserRoles();
-                internalUserRoles.setUserCode(userCode);
-                internalUserRoles.setUserName(userName);
-                internalUserRoles.setUserProvinceCode(provinceCode);
-                internalUserRoles.setUserProvinceName(provinceName);
-                internalUserRoles.setUserSectionCode(sectionCode);
-                internalUserRoles.setInternalRoleCode(internalRoleCode);
-                internalUserRoles.setUserSectionName(sectionName);
-                internalUserRoles.setUserRoleCode(roleCode);
-                internalUserRoles.setUserRoleName(roleName);
-                internalUserRoles.setCreateddate(new Date());
-                internalUserRoles.setIsactive(isActive);
-                InternalRole internalRole = this.internalUserService.getInternalRoleCode(internalUserRoles.getUserProvinceCode(),internalUserRoles.getUserSectionCode(),internalUserRoles.getUserRoleCode(),internalUserRoles.getInternalRoleCode());
-                System.out.println("Internal Role is "+internalRole.getInternalRoleCode());
-                internalUserRoles.setInternalRoleCode(internalRole.getInternalRoleCode());
+                System.out.println("test "+userCode+ " "+ userName+ " "+ provinceCode+ " "+ sectionCode + " "+roleCode + " "+internalRoleCode);
+                InternalUserRoles internalUserRoles = this.internalUserRoleService.getInternalUserRoleCode(userCode,userName,provinceCode,sectionCode,roleCode,internalRoleCode);
+                System.out.println(internalUserRoles.getUserRoleId());
+                if(internalUserRoles!= null   && internalUserRoles.getUserRoleId() != null){
+                      String fileName =  testService.store(file);
+                     files.add(file.getOriginalFilename());
+                     internalUserRoles.setSignedAccessDocPath(Constants.uploadDirectoryPath + fileName);
+                      message = "You successfully uploaded " + internalUserRoles.getSignedAccessDocPath() + "!";
+                     internalUserService.saveInternalUserRole(internalUserRoles);
+                     return ResponseEntity.status(HttpStatus.OK).body(message);
+                 }else{
+                       return generateEmptyResponse(request, "No Internal User Roles  found");
+                 }
 
-               String fileName =  testService.store(file);
-                files.add(file.getOriginalFilename());
-                System.out.println("original Name File is "+file.getOriginalFilename() );
-
-                internalUserRoles.setSignedAccessDocPath(Constants.uploadDirectoryPath + fileName);
-                message = "You successfully uploaded " + internalUserRoles.getSignedAccessDocPath() + "!";
-                internalUserService.saveInternalUserRole(internalUserRoles);
-                return ResponseEntity.status(HttpStatus.OK).body(message);
             }
 
         } catch (Exception exception) {

@@ -2,6 +2,7 @@ package com.dw.ngms.cis.uam.service;
 
 import java.util.List;
 
+import com.dw.ngms.cis.uam.entity.InternalRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -34,5 +35,12 @@ public class InternalUserRoleService {
     public InternalUserRoles getInternalUserRole(String usercode, String username, String internalrolecode) {
     	return internalUserRoleRepository.findByUserCodeUserNameAndInternalRoleCode(usercode, username, internalrolecode);
     }//getInternalUserRole
+
+
+
+    public InternalUserRoles getInternalUserRoleCode(String userCode, String userName,String provinceCode, String sectionCode, String roleCode, String internalRoleCode) {
+        return this.internalUserRoleRepository.getInternalRoleCode(userCode,userName,provinceCode,sectionCode,roleCode,internalRoleCode);
+    }//get Internal Role Code
+
 
 }
