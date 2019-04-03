@@ -24,7 +24,11 @@ public class InternalUserService {
         return this.internalUserRepository.save(internalUserRoles);
     }//saveExternalUser
 
-    public InternalRole getInternalRoleCode(String provinceCode, String sectionCode, String roleCode) {
+    public InternalRole getInternalRoleCode(String provinceCode, String sectionCode, String roleCode, String internalRoleCode) {
+        return this.internalUserRepository.getInternalRoleCode(provinceCode,sectionCode,roleCode,internalRoleCode);
+    }//get Internal Role Code
+
+    public InternalRole createInternalRoleCode(String provinceCode, String sectionCode, String roleCode) {
         return this.internalUserRepository.getInternalRoleCode(provinceCode,sectionCode,roleCode);
     }//get Internal Role Code
 

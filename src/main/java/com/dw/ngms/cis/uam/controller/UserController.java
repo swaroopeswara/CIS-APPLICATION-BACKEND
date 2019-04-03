@@ -69,6 +69,8 @@ public class UserController extends MessageController {
     @PostMapping("/submitInternalUserForApproval")
     public ResponseEntity<?> submitInternalUserForApproval(HttpServletRequest request, @RequestParam String usercode,
                                                            @RequestParam String username, @RequestParam String isapproved) {
+
+
         try {
             User user = userService.submitInternalUserForApproval(usercode, username, INTERNAL_USER_TYPE_NAME, ApprovalStatus.PENDING);
             return (user == null) ? generateEmptyResponse(request, "User(s) not found") :
@@ -272,6 +274,10 @@ public class UserController extends MessageController {
 
     @PostMapping("/registerInternalUser")
     public User createInternalUser(@RequestBody @Valid User internalUser) {
+        System.out.println("user.getIsApproved().getDisplayString() "+internalUser.getIsApproved().getDisplayString());
+        Long userID = this.userService.getUserId();
+        internalUser.setUserId(userID);
+        internalUser.setUserCode("USR000" + Long.toString(internalUser.getUserId()));
         return userService.saveInternalUser(internalUser);
     }//saveInternalUser
 

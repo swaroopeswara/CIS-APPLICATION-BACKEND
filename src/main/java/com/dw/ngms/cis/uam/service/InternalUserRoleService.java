@@ -24,7 +24,7 @@ public class InternalUserRoleService {
     	if(usercode == null || username == null || internalrolecode == null)
     		throw new RuntimeException("Usercode and username and internalrolecode required");
     	
-    	InternalUserRoles internalUserRoles = internalUserRoleRepository.findByEmail(username);
+    	InternalUserRoles internalUserRoles = internalUserRoleRepository.findByUserCodeUserNameAndInternalRoleCode(usercode,username,internalrolecode);
 
     	internalUserRoleRepository.delete(internalUserRoles);
     }//deleteInternalUserRole

@@ -56,7 +56,7 @@ public class InternalUserRoleController extends MessageController {
         internalUserRoles.setUserRoleCode(internalUserRoleDTO.getRoleCode());
         internalUserRoles.setUserRoleName(internalUserRoleDTO.getRoleName());
         internalUserRoles.setCreateddate(new Date());
-        InternalRole internalRole = this.internalUserService.getInternalRoleCode(internalUserRoles.getUserProvinceCode(),internalUserRoles.getUserSectionCode(),internalUserRoles.getUserRoleCode());
+        InternalRole internalRole = this.internalUserService.createInternalRoleCode(internalUserRoles.getUserProvinceCode(),internalUserRoles.getUserSectionCode(),internalUserRoles.getUserRoleCode());
         internalUserRoles.setInternalRoleCode(internalRole.getInternalRoleCode());
         System.out.println("Internal Role Code "+internalRole.getInternalRoleCode());
         System.out.println("User Province Name "+internalUserRoles.getUserProvinceName());
@@ -72,7 +72,9 @@ public class InternalUserRoleController extends MessageController {
                                               @RequestParam("sectionCode") String sectionCode,
                                               @RequestParam("sectionName") String sectionName,
                                               @RequestParam("roleCode") String roleCode,
-                                              @RequestParam("roleName") String roleName
+                                              @RequestParam("roleName") String roleName,
+                                              @RequestParam("internalRoleCode") String internalRoleCode,
+                                              @RequestParam("isActive") String isActive
 
     ) {
         String message = "";
@@ -88,11 +90,13 @@ public class InternalUserRoleController extends MessageController {
                 internalUserRoles.setUserProvinceCode(provinceCode);
                 internalUserRoles.setUserProvinceName(provinceName);
                 internalUserRoles.setUserSectionCode(sectionCode);
+                internalUserRoles.setInternalRoleCode(internalRoleCode);
                 internalUserRoles.setUserSectionName(sectionName);
                 internalUserRoles.setUserRoleCode(roleCode);
                 internalUserRoles.setUserRoleName(roleName);
                 internalUserRoles.setCreateddate(new Date());
-                InternalRole internalRole = this.internalUserService.getInternalRoleCode(internalUserRoles.getUserProvinceCode(),internalUserRoles.getUserSectionCode(),internalUserRoles.getUserRoleCode());
+                internalUserRoles.setIsactive(isActive);
+                InternalRole internalRole = this.internalUserService.getInternalRoleCode(internalUserRoles.getUserProvinceCode(),internalUserRoles.getUserSectionCode(),internalUserRoles.getUserRoleCode(),internalUserRoles.getInternalRoleCode());
                 System.out.println("Internal Role is "+internalRole.getInternalRoleCode());
                 internalUserRoles.setInternalRoleCode(internalRole.getInternalRoleCode());
 

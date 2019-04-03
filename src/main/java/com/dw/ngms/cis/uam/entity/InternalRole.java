@@ -89,7 +89,7 @@ public class InternalRole implements Serializable {
     @Column(name = "CREATEDDATE", nullable = true)
     Date createddate;
 
-    @Column(name = "ACCESSRIGHTJSON", length=2000)
+    @Column(name = "ACCESSRIGHTSJSON", length=2000)
     private String accessRightJson;
 
     @Column(name = "INTERNALROLECODE",length = 50)
