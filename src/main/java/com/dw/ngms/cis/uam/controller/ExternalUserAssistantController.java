@@ -28,7 +28,7 @@ public class ExternalUserAssistantController extends MessageController {
     private ExternalUserAssistantService externalUserAssistantService;
 
 
-    @RequestMapping(value = "/approveRejectAssitant", method = RequestMethod.PUT)
+    @RequestMapping(value = "/approveRejectAssitant", method = RequestMethod.POST)
     public ResponseEntity<?> approveRejectAssitant(HttpServletRequest request, @RequestBody @Valid ExternalUserAssistantDTO externalUserAssistantDTO) throws IOException {
         try {
             ExternalUserAssistant externalUserAssistant = this.externalUserAssistantService.findByUserCodeName(externalUserAssistantDTO);
@@ -49,7 +49,7 @@ public class ExternalUserAssistantController extends MessageController {
     }
 
 
-    @RequestMapping(value = "/deleteAssistant", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/deleteAssistant", method = RequestMethod.GET)
     public ResponseEntity<?> deleteAssistant(HttpServletRequest request, @RequestBody @Valid ExternalUserAssistantDTO externalUserAssistantDTO) throws IOException {
         try {
             ExternalUserAssistant externalUserAssistant = this.externalUserAssistantService.findByUserCodeName(externalUserAssistantDTO);

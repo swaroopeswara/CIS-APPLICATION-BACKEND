@@ -2,6 +2,7 @@ package com.dw.ngms.cis.uam.service;
 
 import java.util.List;
 
+import com.dw.ngms.cis.uam.entity.ExternalUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -84,6 +85,10 @@ public class UserService {
 		return this.userRepository.getUserId();
 	} //FindUserByEmail
 
+	public ExternalUser getChildElements(String userCode) {
+		return this.userRepository.getChildElements(userCode);
+	} //FindUserByEmail
+
 
 
 	public User findByUserByNameAndCode(UserDTO userDTO) {
@@ -93,6 +98,10 @@ public class UserService {
 
 
 	public User updateUserApproval(User user) {
+		return this.userRepository.save(user);
+	}//updateUserApproval
+
+	public User updatePassword(User user) {
 		return this.userRepository.save(user);
 	}//updateUserApproval
 

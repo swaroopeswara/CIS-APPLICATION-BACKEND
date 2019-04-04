@@ -2,6 +2,7 @@ package com.dw.ngms.cis.uam.repository;
 
 import java.util.List;
 
+import com.dw.ngms.cis.uam.entity.ExternalUser;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -61,5 +62,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
    @Query(value = "SELECT user_seq.nextval FROM dual", nativeQuery =
            true)
    Long getUserId();
+
+
+    @Query("SELECT u FROM ExternalUser u WHERE u.usercode = :usercode")
+    ExternalUser getChildElements(@Param("usercode") String usercode);
+
 
 }

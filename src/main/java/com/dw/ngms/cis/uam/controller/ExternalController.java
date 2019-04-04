@@ -25,7 +25,7 @@ public class ExternalController extends MessageController {
     @Autowired
     private ExternalUserService externalUserService;
 
-    @RequestMapping(value = "/updateSecurityQuestions", method = RequestMethod.PUT)
+    @RequestMapping(value = "/updateSecurityQuestions", method = RequestMethod.POST)
     public ResponseEntity<?> updateSecurityQuestions(HttpServletRequest request, @RequestBody @Valid UserDTO userDTO) throws IOException {
 
         try {
@@ -53,7 +53,7 @@ public class ExternalController extends MessageController {
     }
 
 
-    @RequestMapping(value = "/deleteExternalUser", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/deleteExternalUser", method = RequestMethod.GET)
     public ResponseEntity<?> deleteAssistant(HttpServletRequest request, @RequestBody @Valid UserDTO externalUserDTO) throws IOException {
         try {
             ExternalUser externalUser = this.externalUserService.findByUserCode(externalUserDTO);

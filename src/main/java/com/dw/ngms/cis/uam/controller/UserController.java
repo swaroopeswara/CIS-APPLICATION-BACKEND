@@ -282,9 +282,15 @@ public class UserController extends MessageController {
     @GetMapping("/getUserInfoByEmail")
     public ResponseEntity<?> getUserInfoByMail(HttpServletRequest request, @RequestParam String email) {
 
+        System.out.println("email is "+email);
         try {
             User userInfo = this.userService.findByEmail(email);
-
+            System.out.println("User Code is "+userInfo.getUserTypeName());
+            if(userInfo.getUserTypeName().equalsIgnoreCase("EXTERNAL")) {
+                ExternalUser externalUser = this.userService.getChildElements(userInfo.getUserCode());
+                System.out.println("User info is is " + externalUser.getPostaladdressline1());
+                userInfo.setExternaluser(externalUser);
+            }
             return (isEmpty(userInfo)) ? generateEmptyWithOKResponse(request, "Users not found")
                     : ResponseEntity.status(HttpStatus.OK).body(userInfo);
         } catch (Exception exception) {
@@ -377,7 +383,7 @@ public class UserController extends MessageController {
     }//approveRejectAssitant
 
 
-   /*@RequestMapping(value = "/updatePassword", method = RequestMethod.POST)
+   @RequestMapping(value = "/updatePassword", method = RequestMethod.POST)
     public ResponseEntity<?> updatePassword(HttpServletRequest request, @RequestBody @Valid UpdatePasswordDTO updatePasswordDTO) throws IOException {
         try {
 
@@ -389,13 +395,17 @@ public class UserController extends MessageController {
                 return generateEmptyResponse(request, "Users not found");
             }
             if (!isEmpty(user)) {
-                if (user.getPassword().equalsIgnoreCase(updatePasswordDTO.getOldpassword())) {
+                if(updatePasswordDTO.getType().equalsIgnoreCase("change")) {
+                    if (user.getPassword().equalsIgnoreCase(updatePasswordDTO.getOldpassword())) {
+                        user.setPassword(updatePasswordDTO.getNewpassword());
+                    }
+                }else if(updatePasswordDTO.getType().equalsIgnoreCase("reset")){
                     user.setPassword(updatePasswordDTO.getNewpassword());
                 }
             }
-            this.userService.updateUserApproval(user);
+            this.userService.updatePassword(user);
             //todo Send Email to User
-            return ResponseEntity.status(HttpStatus.OK).body("User Approval Updated Sucessfully");
+            return ResponseEntity.status(HttpStatus.OK).body("User Password Updated Sucessfully");
         } catch (Exception exception) {
             return generateFailureResponse(request, exception);
         }
@@ -403,7 +413,7 @@ public class UserController extends MessageController {
 
 
 
-    @RequestMapping(value = "/deactivateUser", method = RequestMethod.PUT)
+    @RequestMapping(value = "/deactivateUser", method = RequestMethod.POST)
     public ResponseEntity<?> deactivateUser(HttpServletRequest request, @RequestBody @Valid UserDTO userDTO) throws IOException {
         try {
             User user = this.userService.findByUserByNameAndCode(userDTO);
