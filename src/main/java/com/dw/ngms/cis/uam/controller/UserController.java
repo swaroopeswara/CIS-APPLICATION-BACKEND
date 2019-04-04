@@ -41,6 +41,7 @@ import com.dw.ngms.cis.uam.entity.User;
 import com.dw.ngms.cis.uam.enums.ApprovalStatus;
 import com.dw.ngms.cis.uam.enums.Status;
 import com.dw.ngms.cis.uam.jsonresponse.UserControllerResponse;
+import com.dw.ngms.cis.uam.ldap.UserCredentials;
 import com.dw.ngms.cis.uam.service.ExternalRoleService;
 import com.dw.ngms.cis.uam.service.ExternalUserAssistantService;
 import com.dw.ngms.cis.uam.service.InternalRoleService;
@@ -71,10 +72,14 @@ public class UserController extends MessageController {
     @Autowired
     private InternalUserRoleService internalUserRoleService;
 
-    @GetMapping("/checkADUserExists")
-    public ResponseEntity<?> isADUserExists(HttpServletRequest request, @RequestParam String username, @RequestParam String password) {
+    @PostMapping("/checkADUserExists")
+    public ResponseEntity<?> isADUserExists(HttpServletRequest request, @RequestBody @Valid UserCredentials userCredentials) {
+    	if(userCredentials == null || StringUtils.isEmpty(userCredentials.getUsername()) ||
+    			StringUtils.isEmpty(userCredentials.getPassword())) {
+    		return generateFailureResponse(request, new Exception("Invalid credentials passed"));
+    	}
         try {
-            return ResponseEntity.status(HttpStatus.OK).body(userService.isADUserExists(username, password));
+            return ResponseEntity.status(HttpStatus.OK).body(userService.isADUserExists(userCredentials.getUsername(), userCredentials.getPassword()));
         } catch (Exception exception) {
             return generateFailureResponse(request, exception);
         }
