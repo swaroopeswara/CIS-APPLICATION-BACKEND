@@ -59,6 +59,13 @@ public interface UserRepository extends JpaRepository<User, Long> {
    @Query("SELECT u FROM User u WHERE u.userCode = :usercode and u.userName = :username and u.userTypeName = :usertypename")
    User findByUserCodeUserNameAndTypeName(@Param("usercode") String usercode,@Param("username") String username, @Param("usertypename") String usertypename);
 
+
+   @Query("SELECT u FROM User u WHERE u.userCode = :usercode")
+   User findByUserCode(@Param("usercode") String usercode);
+
+   @Query("SELECT u FROM User u WHERE u.userCode = :usercode")
+   User deleteUserAndChild(@Param("usercode") String usercode);
+
    @Query(value = "SELECT user_seq.nextval FROM dual", nativeQuery =
            true)
    Long getUserId();

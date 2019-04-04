@@ -2,7 +2,9 @@ package com.dw.ngms.cis.uam.controller;
 
 import com.dw.ngms.cis.uam.dto.UserDTO;
 import com.dw.ngms.cis.uam.entity.ExternalUser;
+import com.dw.ngms.cis.uam.entity.User;
 import com.dw.ngms.cis.uam.service.ExternalUserService;
+import com.dw.ngms.cis.uam.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +26,9 @@ public class ExternalController extends MessageController {
 
     @Autowired
     private ExternalUserService externalUserService;
+
+    @Autowired
+    private UserService userService;
 
     @RequestMapping(value = "/updateSecurityQuestions", method = RequestMethod.POST)
     public ResponseEntity<?> updateSecurityQuestions(HttpServletRequest request, @RequestBody @Valid UserDTO userDTO) throws IOException {
@@ -53,22 +58,7 @@ public class ExternalController extends MessageController {
     }
 
 
-    @RequestMapping(value = "/deleteExternalUser", method = RequestMethod.GET)
-    public ResponseEntity<?> deleteAssistant(HttpServletRequest request, @RequestBody @Valid UserDTO externalUserDTO) throws IOException {
-        try {
-            ExternalUser externalUser = this.externalUserService.findByUserCode(externalUserDTO);
-            if (isEmpty(externalUser)){
-                return generateEmptyResponse(request, "Users are  not found");
-            }
-            if (!isEmpty(externalUser)) {
-                this.externalUserService.deleteAssistant(externalUser);
-            }
-            //todo Send Email to User
-            return ResponseEntity.status(HttpStatus.OK).body("User Deleted Successfully");
-        } catch (Exception exception) {
-            return generateFailureResponse(request, exception);
-        }
-    }
+
 
 
 }

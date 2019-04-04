@@ -2,6 +2,8 @@ package com.dw.ngms.cis.uam.service;
 
 import java.util.List;
 
+import com.dw.ngms.cis.uam.entity.ExternalUser;
+import com.dw.ngms.cis.uam.entity.InternalUserRoles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -24,7 +26,7 @@ public class UserService {
 	private UserRepository userRepository;
 	@Autowired
 	private LdapClient ldapClient;
-	
+
 	public List<User> getAllUsersByUserTypeName(String userTypeName){
 		return userRepository.findByUserTypeName(userTypeName);
 	}//getAllUsersByUserTypeName
@@ -97,9 +99,20 @@ public class UserService {
 
 
 
+
 	public User findByUserByNameAndCode(UserDTO userDTO) {
 		return this.userRepository.findByUserByNameAndCode(userDTO.getUsercode(), userDTO.getUsername());
 	}//FindUserByNameAndCode
+
+
+	public User findByUserCode(UserDTO userDTO) {
+		return this.userRepository.findByUserCode(userDTO.getUsercode());
+	}
+
+	public void deleteUserAndChild(User user) {
+		 this.userRepository.delete(user);
+	}
+
 
 
 

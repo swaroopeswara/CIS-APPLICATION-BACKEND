@@ -104,6 +104,9 @@ public class User implements Serializable {
     @Column(name = "FIRSTLOGIN",nullable = true, length = 1)
     private String firstLogin;
 
+    @Transient
+    private InternalUserRoles internalUserRoles;
+
 
     @Override
 	public int hashCode() {

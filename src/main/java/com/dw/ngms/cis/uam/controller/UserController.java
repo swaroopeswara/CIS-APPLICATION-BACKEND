@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import com.dw.ngms.cis.uam.dto.*;
+import com.dw.ngms.cis.uam.service.*;
 import org.apache.commons.lang.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -35,10 +36,6 @@ import com.dw.ngms.cis.uam.entity.User;
 import com.dw.ngms.cis.uam.enums.ApprovalStatus;
 import com.dw.ngms.cis.uam.enums.Status;
 import com.dw.ngms.cis.uam.jsonresponse.UserControllerResponse;
-import com.dw.ngms.cis.uam.service.ExternalRoleService;
-import com.dw.ngms.cis.uam.service.ExternalUserAssistantService;
-import com.dw.ngms.cis.uam.service.InternalRoleService;
-import com.dw.ngms.cis.uam.service.UserService;
 import com.google.gson.Gson;
 import org.apache.commons.lang.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,6 +73,9 @@ public class UserController extends MessageController {
 
     @Autowired
     private ExternalUserAssistantService externalUserAssistantService;
+
+    @Autowired
+    private InternalUserRoleService internalUserRoleService;
 
     @GetMapping("/checkADUserExists")
     public ResponseEntity<?> isADUserExists(HttpServletRequest request, @RequestParam String username, @RequestParam String password) {
@@ -285,11 +285,28 @@ public class UserController extends MessageController {
         System.out.println("email is "+email);
         try {
             User userInfo = this.userService.findByEmail(email);
-            System.out.println("User Code is "+userInfo.getUserTypeName());
-            if(userInfo.getUserTypeName().equalsIgnoreCase("EXTERNAL")) {
+            if(!isEmpty(userInfo) && userInfo!= null && userInfo.getUserTypeName().equalsIgnoreCase("EXTERNAL")) {
                 ExternalUser externalUser = this.userService.getChildElements(userInfo.getUserCode());
                 System.out.println("User info is is " + externalUser.getPostaladdressline1());
                 userInfo.setExternaluser(externalUser);
+            }else if(!isEmpty(userInfo) && userInfo!= null && userInfo.getUserTypeName().equalsIgnoreCase("INTERNAL")) {
+                InternalUserRoles internalUserRoles = this.internalUserRoleService.getChildElementsInternal(userInfo.getUserCode());
+                if(!isEmpty(internalUserRoles) && internalUserRoles!= null ) {
+                    System.out.println("Internal user roles" + internalUserRoles.getInternalRoleCode());
+                    InternalUserRoles internalUserRoles1 = new InternalUserRoles();
+                    internalUserRoles1.setInternalRoleCode(internalUserRoles.getInternalRoleCode());
+                    internalUserRoles1.setRoleCode(internalUserRoles.getRoleCode());
+                    internalUserRoles1.setRoleName(internalUserRoles.getRoleName());
+                    internalUserRoles1.setProvinceCode(internalUserRoles.getProvinceCode());
+                    internalUserRoles1.setProvinceName(internalUserRoles.getProvinceName());
+                    internalUserRoles1.setSectionCode(internalUserRoles.getSectionCode());
+                    internalUserRoles1.setSectionName(internalUserRoles.getSectionName());
+                    internalUserRoles1.setUserRoleId(internalUserRoles.getUserRoleId());
+                    internalUserRoles1.setIsActive(internalUserRoles.getIsActive());
+                    internalUserRoles1.setUserName(internalUserRoles.getUserName());
+                    internalUserRoles1.setCreateddate(internalUserRoles.getCreateddate());
+                    userInfo.setInternalUserRoles(internalUserRoles1);
+                }
             }
             return (isEmpty(userInfo)) ? generateEmptyWithOKResponse(request, "Users not found")
                     : ResponseEntity.status(HttpStatus.OK).body(userInfo);
@@ -298,6 +315,25 @@ public class UserController extends MessageController {
         }
     }//getUserInfoByMail
 
+
+    @RequestMapping(value = "/deleteExternalUser", method = RequestMethod.POST)
+    public ResponseEntity<?> deleteAssistant(HttpServletRequest request, @RequestBody @Valid UserDTO userDTO) throws IOException {
+        try {
+            User user = this.userService.findByUserCode(userDTO);
+            if (isEmpty(user)){
+                return generateEmptyResponse(request, "Users are  not found");
+            }
+            if (!isEmpty(user)) {
+                ExternalUser externalUser = this.userService.getChildElements(userDTO.getUsercode());
+                user.setExternaluser(externalUser);
+                this.userService.deleteUserAndChild(user);
+            }
+            //todo Send Email to User
+            return ResponseEntity.status(HttpStatus.OK).body("User Deleted Successfully");
+        } catch (Exception exception) {
+            return generateFailureResponse(request, exception);
+        }
+    }
     @PostMapping("/registerExternalUser")
     public ResponseEntity<?> createExternalUser(HttpServletRequest request, @Valid @RequestBody User user) {
         Gson gson = new Gson();
@@ -313,7 +349,6 @@ public class UserController extends MessageController {
                 return ResponseEntity.status(HttpStatus.OK).body(json);
             }
 
-            String mailResponse = null;
             Long userID = this.userService.getUserId();
             System.out.println("UserId is " + userID);
             mapUserDetails(user, userID);
@@ -362,7 +397,7 @@ public class UserController extends MessageController {
     }//saveInternalUser
 
 
-    @RequestMapping(value = "/approveRejectUser", method = RequestMethod.PUT)
+    @RequestMapping(value = "/approveRejectUser", method = RequestMethod.POST)
     public ResponseEntity<?> approveRejectAssitant(HttpServletRequest request, @RequestBody @Valid UserDTO userDTO) throws IOException {
         try {
             User user = this.userService.findByUserByNameAndCode(userDTO);
@@ -386,7 +421,9 @@ public class UserController extends MessageController {
    @RequestMapping(value = "/updatePassword", method = RequestMethod.POST)
     public ResponseEntity<?> updatePassword(HttpServletRequest request, @RequestBody @Valid UpdatePasswordDTO updatePasswordDTO) throws IOException {
         try {
-
+            UserControllerResponse userControllerResponse = new UserControllerResponse();
+            Gson gson = new Gson();
+            String  json = null;
             UserDTO userDTO = new UserDTO();
             userDTO.setUsercode(updatePasswordDTO.getUsercode());
             userDTO.setUsername(updatePasswordDTO.getUsername());
@@ -398,6 +435,10 @@ public class UserController extends MessageController {
                 if(updatePasswordDTO.getType().equalsIgnoreCase("change")) {
                     if (user.getPassword().equalsIgnoreCase(updatePasswordDTO.getOldpassword())) {
                         user.setPassword(updatePasswordDTO.getNewpassword());
+                    }else{
+                        userControllerResponse.setMessage("Old Password and new password do not match");
+                          json = gson.toJson(userControllerResponse);
+                        return ResponseEntity.status(HttpStatus.OK).body(json);
                     }
                 }else if(updatePasswordDTO.getType().equalsIgnoreCase("reset")){
                     user.setPassword(updatePasswordDTO.getNewpassword());
@@ -405,7 +446,9 @@ public class UserController extends MessageController {
             }
             this.userService.updatePassword(user);
             //todo Send Email to User
-            return ResponseEntity.status(HttpStatus.OK).body("User Password Updated Sucessfully");
+            userControllerResponse.setMessage("User Password Updated Sucessfully");
+            json = gson.toJson(userControllerResponse);
+            return ResponseEntity.status(HttpStatus.OK).body(json);
         } catch (Exception exception) {
             return generateFailureResponse(request, exception);
         }
