@@ -2,22 +2,28 @@ package com.dw.ngms.cis.uam.service;
 
 import java.util.List;
 
-import com.dw.ngms.cis.uam.entity.ExternalUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import com.dw.ngms.cis.uam.dto.ADUserDTO;
 import com.dw.ngms.cis.uam.dto.UserDTO;
+import com.dw.ngms.cis.uam.entity.ExternalUser;
 import com.dw.ngms.cis.uam.entity.User;
 import com.dw.ngms.cis.uam.enums.ApprovalStatus;
+import com.dw.ngms.cis.uam.ldap.LdapClient;
+import com.dw.ngms.cis.uam.ldap.UserProfile;
 import com.dw.ngms.cis.uam.repository.UserRepository;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service
 public class UserService {
 
 	@Autowired
 	private UserRepository userRepository;
+	@Autowired
+	private LdapClient ldapClient;
 	
 	public List<User> getAllUsersByUserTypeName(String userTypeName){
 		return userRepository.findByUserTypeName(userTypeName);
@@ -144,16 +150,18 @@ public class UserService {
 		return this.userRepository.save(user);
 	}//saveInternalUser
 
-	public ADUserDTO isADUserExists(String username, String password) {
-		// TODO Need to build LDAP UTILIES client and confirm user existence
-		
-		ADUserDTO adUser = new ADUserDTO();
-		adUser.setFirstname(username);
-		adUser.setLastname(username);
-		adUser.setDesignation(username);
-		adUser.setExists(Boolean.FALSE);
-		
-		return adUser;
-	}//isADUserExists
+	public UserProfile isADUserExists(String username, String password) {
+		UserProfile userProfile = new UserProfile();
+		try {
+			if (ldapClient.authenticate(username, password)) {
+				List<UserProfile> userProfileList = ldapClient.searchUser(username);
+				userProfile = (userProfileList != null && userProfileList.size() == 1) ? userProfileList.get(0)
+						: userProfile;
+			}
+		} catch (Exception e) {
+			log.error("User '{}' LDAP authentication failed", username);
+		}
+		return userProfile;
+	}// isADUserExists
 
 }
