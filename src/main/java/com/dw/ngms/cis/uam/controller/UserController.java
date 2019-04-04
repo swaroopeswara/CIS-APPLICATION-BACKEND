@@ -116,6 +116,22 @@ public class UserController extends MessageController {
         }
     }//getAllInternalUsers
 
+
+    @GetMapping("/getUserRegisteredCounts")
+    public ResponseEntity<?> getCountOfRegisteredUsers(HttpServletRequest request, @RequestParam String provincecode) {
+        try {
+            List<User> userList = (StringUtils.isEmpty(provincecode) || "all".equalsIgnoreCase(provincecode.trim())) ?
+                    userService.getAllUsersByUserTypeName(INTERNAL_USER_TYPE_NAME) :
+                    userService.getAllInternalUsersByProvinceCode(provincecode);
+            return (CollectionUtils.isEmpty(userList)) ? generateEmptyResponse(request, "User(s) not found")
+                    : ResponseEntity.status(HttpStatus.OK).body(userList);
+        } catch (Exception exception) {
+            return generateFailureResponse(request, exception);
+        }
+    }//getCountOfRegisteredUsers
+
+
+
     @GetMapping("/getAllExternalUsers")
     public ResponseEntity<?> getAllExternalUsers(HttpServletRequest request, @RequestParam String provincecode) {
         try {

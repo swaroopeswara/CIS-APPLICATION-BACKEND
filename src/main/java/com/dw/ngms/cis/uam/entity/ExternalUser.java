@@ -127,7 +127,7 @@ public class ExternalUser implements Serializable {
 
     @Column(name = "SECURITYANSWER3", nullable = true, length = 50)
     @NotEmpty(message = "SECURITY ANSWER3 must not be empty")
-    private String securityanswer3;
+    private String securityanswer3;;
 
     @Column(name = "CREATEDDATE", nullable = true)
     private Date createdDate;
@@ -142,10 +142,10 @@ public class ExternalUser implements Serializable {
     private String subscribeevents;
     
     @Column(name = "SECTORCODE",length = 50)
-    private String sectorcode;
+    private String sectorCode;
 
     @Column(name = "SECTORNAME",length = 100)
-    private String sectorname;
+    private String sectorName;
 
     @Override
 	public int hashCode() {

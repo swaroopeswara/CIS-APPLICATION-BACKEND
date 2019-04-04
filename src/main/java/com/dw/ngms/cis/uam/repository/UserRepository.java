@@ -75,4 +75,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
     ExternalUser getChildElements(@Param("usercode") String usercode);
 
 
+   @Query(value = "SELECT U.* FROM USERS U INNER JOIN INTERNALUSERROLES IUR ON (IUR.USERCODE = u.USERCODE) "
+           + "WHERE IUR.USERPROVINCECODE = ?1", nativeQuery = true)
+   List<User> findAllUsersByProvinceCode(@Param("usercode") String usercode);
+
+
 }
