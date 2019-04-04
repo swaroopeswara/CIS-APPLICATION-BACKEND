@@ -2,8 +2,6 @@ package com.dw.ngms.cis.uam.service;
 
 import java.util.List;
 
-import com.dw.ngms.cis.uam.entity.ExternalUser;
-import com.dw.ngms.cis.uam.entity.InternalUserRoles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -166,8 +164,8 @@ public class UserService {
 	public UserProfile isADUserExists(String username, String password) {
 		UserProfile userProfile = new UserProfile();
 		try {
-			if (ldapClient.authenticate(username, password)) {
-				List<UserProfile> userProfileList = ldapClient.searchUser(username);
+			if (ldapClient.authenticate(username.trim(), password.trim())) {
+				List<UserProfile> userProfileList = ldapClient.searchUser(username.trim());
 				userProfile = (userProfileList != null && userProfileList.size() == 1) ? userProfileList.get(0)
 						: userProfile;
 			}

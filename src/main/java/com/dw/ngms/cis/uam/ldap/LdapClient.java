@@ -44,15 +44,18 @@ public class LdapClient {
 			@Override
 			public Object mapFromAttributes(Attributes attrs) throws NamingException {
 				UserProfile profile = new UserProfile();
-
+				String designationKey = env.getRequiredProperty("ldap.user.designation");
+				
+				profile.setExists(Boolean.TRUE);
+				
 				if (attrs.get("givenName") != null)
 					profile.setFirstName((String) attrs.get("givenName").get());
 
 				if (attrs.get("sn") != null)
-					profile.setLastName((String) attrs.get("sn").get());
-
-				if (attrs.get("designation") != null)
-					profile.setDesignation((String) attrs.get("designation").get());
+					profile.setLastName((String) attrs.get("sn").get());				
+				
+				if (attrs.get(designationKey) != null)
+					profile.setDesignation((String) attrs.get(designationKey).get());
 
 				return profile;
 			}
