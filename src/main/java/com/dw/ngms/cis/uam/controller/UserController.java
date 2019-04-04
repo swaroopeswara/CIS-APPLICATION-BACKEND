@@ -4,6 +4,7 @@ import static org.springframework.util.StringUtils.isEmpty;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -105,7 +106,75 @@ public class UserController extends MessageController {
 
     @GetMapping("/getAllInternalUsers")
     public ResponseEntity<?> getAllInternalUsers(HttpServletRequest request, @RequestParam String provincecode) {
+
         try {
+            List<User> userList = new ArrayList<>();
+
+            if(StringUtils.isEmpty(provincecode) || "all".equalsIgnoreCase(provincecode.trim())){
+                userList =  userService.getAllUsersByUserTypeName(INTERNAL_USER_TYPE_NAME);
+
+                for(User userInfo: userList) {
+                    ArrayList<InternalUserRoles> interUserRolesList = new ArrayList<>();
+                    ArrayList<InternalUserRoles> internalUserRoles = this.internalUserRoleService.getChildElementsInternal(userInfo.getUserCode());
+                    if (!isEmpty(internalUserRoles) && internalUserRoles != null) {
+                        for (InternalUserRoles in : internalUserRoles) {
+                            System.out.println("Internal user roles" + in.getInternalRoleCode());
+                            InternalUserRoles internalUserRoles1 = new InternalUserRoles();
+                            internalUserRoles1.setInternalRoleCode(in.getInternalRoleCode());
+                            internalUserRoles1.setRoleCode(in.getRoleCode());
+                            internalUserRoles1.setRoleName(in.getRoleName());
+                            internalUserRoles1.setProvinceCode(in.getProvinceCode());
+                            internalUserRoles1.setProvinceName(in.getProvinceName());
+                            internalUserRoles1.setSectionCode(in.getSectionCode());
+                            internalUserRoles1.setSectionName(in.getSectionName());
+                            internalUserRoles1.setUserRoleId(in.getUserRoleId());
+                            internalUserRoles1.setIsActive(in.getIsActive());
+                            internalUserRoles1.setUserName(in.getUserName());
+                            internalUserRoles1.setCreateddate(in.getCreateddate());
+                            interUserRolesList.add(internalUserRoles1);
+                            userInfo.setInternalUserRoles(interUserRolesList);
+                        }
+                    }else{
+                        userInfo.setInternalUserRoles(new ArrayList<InternalUserRoles>());
+                    }
+                }
+            }else
+            {
+                userList =   userService.getAllInternalUsersByProvinceCode(provincecode);
+
+                for(User userInfo: userList) {
+                    ArrayList<InternalUserRoles> interUserRolesList = new ArrayList<>();
+                    ArrayList<InternalUserRoles> internalUserRoles = this.internalUserRoleService.getChildElementsInternal(userInfo.getUserCode());
+                    if (!isEmpty(internalUserRoles) && internalUserRoles != null) {
+                        for (InternalUserRoles in : internalUserRoles) {
+                            System.out.println("Internal user roles" + in.getInternalRoleCode());
+                            InternalUserRoles internalUserRoles1 = new InternalUserRoles();
+                            internalUserRoles1.setInternalRoleCode(in.getInternalRoleCode());
+                            internalUserRoles1.setRoleCode(in.getRoleCode());
+                            internalUserRoles1.setRoleName(in.getRoleName());
+                            internalUserRoles1.setProvinceCode(in.getProvinceCode());
+                            internalUserRoles1.setProvinceName(in.getProvinceName());
+                            internalUserRoles1.setSectionCode(in.getSectionCode());
+                            internalUserRoles1.setSectionName(in.getSectionName());
+                            internalUserRoles1.setUserRoleId(in.getUserRoleId());
+                            internalUserRoles1.setIsActive(in.getIsActive());
+                            internalUserRoles1.setUserName(in.getUserName());
+                            internalUserRoles1.setCreateddate(in.getCreateddate());
+                            interUserRolesList.add(internalUserRoles1);
+                            userInfo.setInternalUserRoles(interUserRolesList);
+                        }
+                    }else{
+                        userInfo.setInternalUserRoles(new ArrayList<InternalUserRoles>());
+                    }
+                }
+            }
+
+            return (CollectionUtils.isEmpty(userList)) ? generateEmptyResponse(request, "User(s) not found")
+                    : ResponseEntity.status(HttpStatus.OK).body(userList);
+        } catch (Exception exception) {
+            return generateFailureResponse(request, exception);
+        }
+       /* try {
             List<User> userList = (StringUtils.isEmpty(provincecode) || "all".equalsIgnoreCase(provincecode.trim())) ?
                     userService.getAllUsersByUserTypeName(INTERNAL_USER_TYPE_NAME) :
                     userService.getAllInternalUsersByProvinceCode(provincecode);
@@ -113,7 +182,7 @@ public class UserController extends MessageController {
                     : ResponseEntity.status(HttpStatus.OK).body(userList);
         } catch (Exception exception) {
             return generateFailureResponse(request, exception);
-        }
+        }*/
     }//getAllInternalUsers
 
 
@@ -299,28 +368,33 @@ public class UserController extends MessageController {
 
         System.out.println("email is "+email);
         try {
+
             User userInfo = this.userService.findByEmail(email);
             if(!isEmpty(userInfo) && userInfo!= null && userInfo.getUserTypeName().equalsIgnoreCase("EXTERNAL")) {
                 ExternalUser externalUser = this.userService.getChildElements(userInfo.getUserCode());
-                System.out.println("User info is is " + externalUser.getPostaladdressline1());
                 userInfo.setExternaluser(externalUser);
             }else if(!isEmpty(userInfo) && userInfo!= null && userInfo.getUserTypeName().equalsIgnoreCase("INTERNAL")) {
-                InternalUserRoles internalUserRoles = this.internalUserRoleService.getChildElementsInternal(userInfo.getUserCode());
+                System.out.println("User code is: " + userInfo.getUserCode());
+                List<InternalUserRoles> interUserRolesList = new ArrayList<>();
+                List<InternalUserRoles> internalUserRoles = this.internalUserRoleService.getChildElementsInternal(userInfo.getUserCode());
                 if(!isEmpty(internalUserRoles) && internalUserRoles!= null ) {
-                    System.out.println("Internal user roles" + internalUserRoles.getInternalRoleCode());
-                    InternalUserRoles internalUserRoles1 = new InternalUserRoles();
-                    internalUserRoles1.setInternalRoleCode(internalUserRoles.getInternalRoleCode());
-                    internalUserRoles1.setRoleCode(internalUserRoles.getRoleCode());
-                    internalUserRoles1.setRoleName(internalUserRoles.getRoleName());
-                    internalUserRoles1.setProvinceCode(internalUserRoles.getProvinceCode());
-                    internalUserRoles1.setProvinceName(internalUserRoles.getProvinceName());
-                    internalUserRoles1.setSectionCode(internalUserRoles.getSectionCode());
-                    internalUserRoles1.setSectionName(internalUserRoles.getSectionName());
-                    internalUserRoles1.setUserRoleId(internalUserRoles.getUserRoleId());
-                    internalUserRoles1.setIsActive(internalUserRoles.getIsActive());
-                    internalUserRoles1.setUserName(internalUserRoles.getUserName());
-                    internalUserRoles1.setCreateddate(internalUserRoles.getCreateddate());
-                    userInfo.setInternalUserRoles(internalUserRoles1);
+                    for(InternalUserRoles in: internalUserRoles) {
+                        System.out.println("Internal user roles" + in.getInternalRoleCode());
+                        InternalUserRoles internalUserRoles1 = new InternalUserRoles();
+                        internalUserRoles1.setInternalRoleCode(in.getInternalRoleCode());
+                        internalUserRoles1.setRoleCode(in.getRoleCode());
+                        internalUserRoles1.setRoleName(in.getRoleName());
+                        internalUserRoles1.setProvinceCode(in.getProvinceCode());
+                        internalUserRoles1.setProvinceName(in.getProvinceName());
+                        internalUserRoles1.setSectionCode(in.getSectionCode());
+                        internalUserRoles1.setSectionName(in.getSectionName());
+                        internalUserRoles1.setUserRoleId(in.getUserRoleId());
+                        internalUserRoles1.setIsActive(in.getIsActive());
+                        internalUserRoles1.setUserName(in.getUserName());
+                        internalUserRoles1.setCreateddate(in.getCreateddate());
+                        interUserRolesList.add(internalUserRoles1);
+                        userInfo.setInternalUserRoles(interUserRolesList);
+                    }
                 }
             }
             return (isEmpty(userInfo)) ? generateEmptyWithOKResponse(request, "Users not found")

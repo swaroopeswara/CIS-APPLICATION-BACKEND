@@ -1,5 +1,6 @@
 package com.dw.ngms.cis.uam.repository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -24,7 +25,7 @@ public interface InternalUserRoleRepository  extends JpaRepository<InternalUserR
 	InternalUserRoles getInternalRoleCode(@Param("userCode") String userCode,@Param("userName") String userName,@Param("provinceCode") String provinceCode,@Param("sectionCode") String sectionCode,@Param("roleCode") String roleCode, @Param("internalRoleCode") String internalRoleCode);
 
 	@Query("select u from InternalUserRoles u where u.userCode = :userCode")
-	InternalUserRoles getChildElementsInternal(@Param("userCode") String userCode);
+	ArrayList<InternalUserRoles> getChildElementsInternal(@Param("userCode") String userCode);
 
 
 

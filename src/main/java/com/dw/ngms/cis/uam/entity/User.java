@@ -105,7 +105,7 @@ public class User implements Serializable {
     private String firstLogin;
 
     @Transient
-    private InternalUserRoles internalUserRoles;
+    private List<InternalUserRoles> internalUserRoles;
 
 
     @Override

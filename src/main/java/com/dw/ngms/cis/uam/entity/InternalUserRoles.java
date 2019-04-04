@@ -32,6 +32,8 @@ public class InternalUserRoles implements Serializable {
 
 	private static final long serialVersionUID = 1098484893268694655L;
 
+
+
 	@Id
     @Column(name = "USERROLEID")
     @GeneratedValue(strategy = GenerationType.AUTO)

@@ -1,5 +1,6 @@
 package com.dw.ngms.cis.uam.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.dw.ngms.cis.uam.entity.InternalRole;
@@ -42,7 +43,7 @@ public class InternalUserRoleService {
         return this.internalUserRoleRepository.getInternalRoleCode(userCode,userName,provinceCode,sectionCode,roleCode,internalRoleCode);
     }//get Internal Role Code
 
-    public InternalUserRoles getChildElementsInternal(String userCode) {
+    public ArrayList<InternalUserRoles> getChildElementsInternal(String userCode) {
         return this.internalUserRoleRepository.getChildElementsInternal(userCode);
     } //getChildElementsInternal
 
