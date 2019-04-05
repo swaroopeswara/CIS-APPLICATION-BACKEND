@@ -15,4 +15,8 @@ public interface ExternalUserRepository extends JpaRepository<ExternalUser, Long
     @Query("SELECT u FROM ExternalUser u WHERE u.usercode = :usercode")
     ExternalUser findByUserCode(@Param("usercode") String usercode);
 
+
+    @Query(value = "SELECT user_role_seq.nextval FROM dual", nativeQuery =
+            true)
+    Long getRoleId();
 }

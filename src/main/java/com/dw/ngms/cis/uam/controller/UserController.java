@@ -252,7 +252,7 @@ public class UserController extends MessageController {
     @PostMapping("/updateExternalUser")
     public ResponseEntity<?> updateExternalUser(HttpServletRequest request, @RequestBody UserUpdateDTO externalUserDTO) {
         try {
-            if(externalUserDTO.getType().equalsIgnoreCase("INTERNAL")) {
+            if(externalUserDTO.getUserTypeName().equalsIgnoreCase("EXTERNAL")) {
                 User externalUser = this.userService.updateUser(externalUserDTO);
                 return (externalUser == null) ? generateEmptyResponse(request, "Failed to update external user") :
                         ResponseEntity.status(HttpStatus.OK).body("Update Successful");
@@ -267,7 +267,7 @@ public class UserController extends MessageController {
     @PostMapping("/updateInternalUser")
     public ResponseEntity<?> updateInternalUser(HttpServletRequest request, @RequestBody UserUpdateDTO externalUserDTO) {
         try {
-            if(externalUserDTO.getType().equalsIgnoreCase("INTERNAL")) {
+            if(externalUserDTO.getUserTypeName().equalsIgnoreCase("INTERNAL")) {
                 System.out.println("User Code " + externalUserDTO.getUserCode());
                 User internalUser = this.userService.updateInternalUser(externalUserDTO);
                 return (internalUser == null) ? generateEmptyResponse(request, "Failed to update internal user") :
@@ -502,15 +502,19 @@ public class UserController extends MessageController {
             if (!user.getExternalUserRoles().isEmpty()) {
                 ArrayList<ExternalUserRoles> externalRoleCode = new ArrayList<>();
                 for (ExternalUserRoles externalUserRoles : user.getExternalUserRoles()) {
-                    if (externalUserRoles.getUserRoleCode().equalsIgnoreCase("EX011")) {
+                    if (user.getMainRoleCode().equalsIgnoreCase("EX011")) {
                         saveExternalUserAssistant(user, externalRoleCode, externalUserRoles);
                     } else {
-                        ExternalRole externalRole = this.externalRoleService.getByRoleCodeRoleProvince(externalUserRoles.getUserRoleCode(), externalUserRoles.getUserProvinceCode());
+                        System.out.println("Main Role Code "+user.getMainRoleCode());
+                        ExternalRole externalRole = this.externalRoleService.getByRoleCodeRoleProvince(user.getMainRoleCode(), externalUserRoles.getUserProvinceCode());
                         externalUserRolesMapping(user, externalUserRoles, externalRole);
+                        externalUserRoles.setUserRoleName(user.getMainRoleName());
+                        externalUserRoles.setUserRoleCode(user.getMainRoleCode());
                         externalRoleCode.add(externalUserRoles);
                     }
                 }
             }
+            System.out.println("test here" +user.getExternalUserRoles().get(0).getUserRoleCode());
             User response = userService.saveExternalUser(user);
             MailDTO mailDTO = getMailDTO(user);
             sendMailInformation(user, mailDTO);
@@ -582,6 +586,7 @@ public class UserController extends MessageController {
                 if(updatePasswordDTO.getType().equalsIgnoreCase("change")) {
                     if (user.getPassword().equalsIgnoreCase(updatePasswordDTO.getOldpassword())) {
                         user.setPassword(updatePasswordDTO.getNewpassword());
+                        user.setFirstLogin(updatePasswordDTO.getFirstlogin());
                     }else{
                         userControllerResponse.setMessage("Old Password and new password do not match");
                           json = gson.toJson(userControllerResponse);
@@ -644,12 +649,34 @@ public class UserController extends MessageController {
 
     private void externalUserRolesMapping(@RequestBody @Valid User user, ExternalUserRoles externalUserRoles, ExternalRole externalRole) {
         externalUserRoles.setExternalRoleCode(externalRole.getExternalRoleCode());
+        Long userRoleID = this.externalUserService.getRoleId();
+        System.out.println("userRoleID "+userRoleID);
+        externalUserRoles.setUserRoleID(userRoleID);
         externalUserRoles.setUserCode(user.getUserCode());
         externalUserRoles.setUserId(user.getUserId());
         externalUserRoles.setUserName(user.getUserName());
+        externalUserRoles.setUserRoleCode(user.getMainRoleCode());
+        externalUserRoles.setUserRoleName(user.getMainRoleName());
     }
 
+    /*private void externalUserRolesMapping(@RequestBody @Valid User user, ExternalUserRoles externalUserRoles, ExternalRole externalRole) {
+        externalUserRoles.setExternalRoleCode(externalRole.getExternalRoleCode());
+        externalUserRoles.setUserCode(user.getUserCode());
+        externalUserRoles.setUserId(user.getUserId());
+        externalUserRoles.setUserName(user.getUserName());
+    }*/
+
     private void saveExternalUserAssistant(@RequestBody @Valid User user, ArrayList<ExternalUserRoles> externalRoleCode, ExternalUserRoles externalUserRoles) {
+        ExternalUserAssistant externalUserAssistant = new ExternalUserAssistant();
+        externalUserAssistantMapping(user, externalUserAssistant);
+        ExternalRole externalRole = this.externalRoleService.getByRoleCodeRoleProvince(user.getMainRoleCode(), externalUserRoles.getUserProvinceCode());
+        externalUserRolesMapping(user, externalUserRoles, externalRole);
+        externalRoleCode.add(externalUserRoles);
+        ExternalUserAssistant externalUserAssistant1 = this.externalUserAssistantService.saveExternalAssistant(externalUserAssistant);
+        //// TODO: 2019/04/01 Send email to surveyor
+    }
+
+  /*  private void saveExternalUserAssistant(@RequestBody @Valid User user, ExternalUserRoles externalUserRoles) {
         System.out.println("Inside the role code " + externalUserRoles.getUserRoleCode());
         ExternalUserAssistant externalUserAssistant = new ExternalUserAssistant();
         externalUserAssistantMapping(user, externalUserAssistant);
@@ -662,7 +689,7 @@ public class UserController extends MessageController {
         externalRoleCode.add(externalUserRoles);
         ExternalUserAssistant externalUserAssistant1 = this.externalUserAssistantService.saveExternalAssistant(externalUserAssistant);
         //// TODO: 2019/04/01 Send email to surveyor
-    }
+    }*/
 
     private void externalUserAssistantMapping(@RequestBody @Valid User user, ExternalUserAssistant externalUserAssistant) {
         externalUserAssistant.setSurveyorusercode(user.getUserCode());

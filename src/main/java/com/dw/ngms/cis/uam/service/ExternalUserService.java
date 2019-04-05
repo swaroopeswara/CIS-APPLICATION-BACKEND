@@ -27,6 +27,14 @@ public class ExternalUserService {
         return this.externalUserRepository.findByUserCode(userDTO.getUsercode());
     }
 
+
+    public Long getRoleId() {
+        return this.externalUserRepository.getRoleId();
+    } //FindUserByEmail
+
+
+
+
     public void deleteAssistant(ExternalUser externalUser) {
     this.externalUserRepository.delete(externalUser);
     }

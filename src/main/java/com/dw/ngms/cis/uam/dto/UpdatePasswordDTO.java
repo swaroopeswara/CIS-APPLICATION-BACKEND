@@ -23,6 +23,7 @@ public class UpdatePasswordDTO implements Serializable {
     private String oldpassword;
     private String newpassword;
     private String type;
+    private String firstlogin;
 
 
 }

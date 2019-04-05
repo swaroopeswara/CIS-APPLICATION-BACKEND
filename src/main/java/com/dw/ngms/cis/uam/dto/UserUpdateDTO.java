@@ -17,7 +17,6 @@ import java.util.Date;
 @Setter
 public class UserUpdateDTO implements Serializable {
 
-    private String type;
     private String firstName;
     private String userCode;
     private String userTypeCode;

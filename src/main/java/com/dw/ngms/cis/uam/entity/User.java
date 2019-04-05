@@ -106,6 +106,12 @@ public class User implements Serializable {
     @Transient
     private List<InternalUserRoles> internalUserRoles;
 
+    @Transient
+    private String mainRoleCode;
+
+    @Transient
+    private String mainRoleName;
+
 
     @Override
 	public int hashCode() {

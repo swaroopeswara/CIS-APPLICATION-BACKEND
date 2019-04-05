@@ -32,7 +32,14 @@ public class ExternalUserRoles implements Serializable {
     @Column(name = "USERID", nullable = true, length = 50, insertable = false, updatable = false)
     private Long userId;
 
+
     @Id
+    @Column(name = "USERROLEID")
+    @SequenceGenerator(name = "generator", sequenceName = "user_role_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "generator")
+    private Long userRoleID;
+
+
     @Column(name = "USERROLECODE", nullable = true, length = 50)
     @NotEmpty(message = "USER ROLE CODE must not be empty")
     private String userRoleCode;
@@ -46,6 +53,7 @@ public class ExternalUserRoles implements Serializable {
     @JoinColumn(name="USERID", nullable=false)
     @JsonBackReference
     private User externalUserRole;
+
 
     @Column(name = "USERCODE", nullable = true, length = 50)
     @NotEmpty(message = "USER CODE must not be empty")
