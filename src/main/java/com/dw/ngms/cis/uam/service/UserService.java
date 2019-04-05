@@ -2,6 +2,8 @@ package com.dw.ngms.cis.uam.service;
 
 import java.util.List;
 
+import com.dw.ngms.cis.uam.dto.ExternalUserDTO;
+import com.dw.ngms.cis.uam.dto.UserUpdateDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -160,6 +162,65 @@ public class UserService {
 		if(user == null) return null;
 		return this.userRepository.save(user);
 	}//saveInternalUser
+
+	public User updateUser(UserUpdateDTO uiUser) {
+		if(uiUser == null || uiUser.getUserCode() == null) return null;
+		User user = this.userRepository.findByUserCode(uiUser.getUserCode());
+		System.out.println("Test update" +uiUser.getUserCode());
+		if(user == null) return null;
+		return this.userRepository.save(getPopulatedUserWithUpdate(user, uiUser));
+	}//updateExternalUser
+
+
+	private User getPopulatedUserWithUpdate(User user, UserUpdateDTO uiUser) {
+		if(uiUser.getFirstName() != null && uiUser.getFirstName() != "") user.setFirstName(uiUser.getFirstName());
+
+		if(uiUser.getUserTypeCode() != null && uiUser.getUserTypeCode() != "") user.setFirstName(uiUser.getUserTypeCode());
+		if(uiUser.getUserTypeName() != null && uiUser.getUserTypeName() != "") user.setUserTypeName(uiUser.getUserTypeName());
+		if(uiUser.getTitle() != null && uiUser.getTitle() != "") user.setTitle(uiUser.getTitle());
+		if(uiUser.getUserName() != null && uiUser.getUserName() != "") user.setUserName(uiUser.getUserName());
+		if(uiUser.getSurname() != null && uiUser.getSurname() != "") user.setSurname(uiUser.getSurname());
+		if(uiUser.getFirstLogin() != null && uiUser.getFirstLogin() != "") user.setFirstLogin(uiUser.getFirstLogin());
+
+
+		if(uiUser.getMobileNo() != null && uiUser.getMobileNo() != "") user.setMobileNo(uiUser.getMobileNo());
+		if(uiUser.getTelephoneNo() != null && uiUser.getTelephoneNo() != "") user.setTelephoneNo(uiUser.getTelephoneNo());
+		if(uiUser.getEmail() != null && uiUser.getEmail() != "") user.setEmail(uiUser.getEmail());
+		if(uiUser.getIsApproved().getDisplayString() != null && uiUser.getIsApproved().getDisplayString() != "") user.setIsApproved(uiUser.getIsApproved());
+
+		if(uiUser.getRejectionReason() != null && uiUser.getRejectionReason() != "") user.setRejectionReason(uiUser.getRejectionReason());
+		if(uiUser.getIsApprejuserCode() != null && uiUser.getIsApprejuserCode() != "") user.setIsApprejuserCode(uiUser.getIsApprejuserCode());
+		if(uiUser.getIsApprejuserName() != null && uiUser.getIsApprejuserName() != "") user.setIsApprejuserName(uiUser.getIsApprejuserName());
+		if(uiUser.getIsApprejDate() != null) user.setIsApprejDate(uiUser.getIsApprejDate());
+
+		ExternalUser externalUser = this.userRepository.getChildElements(uiUser.getUserCode());
+		user.setExternaluser(externalUser);
+		if(uiUser.getExternaluser().getOrganizationtypecode() != null && uiUser.getExternaluser().getOrganizationtypecode() != "")user.getExternaluser().setOrganizationtypecode(uiUser.getExternaluser().getOrganizationtypecode());
+		if(uiUser.getExternaluser().getOrganizationtypename() != null && uiUser.getExternaluser().getOrganizationtypecode() != "") user.getExternaluser().setOrganizationtypename(uiUser.getExternaluser().getOrganizationtypename());
+
+		if(uiUser.getExternaluser().getSectorCode() != null && uiUser.getExternaluser().getSectorCode() != ""){
+			user.getExternaluser().setSectorCode(uiUser.getExternaluser().getSectorCode());
+		}
+		if(uiUser.getExternaluser().getSectorName() != null && uiUser.getExternaluser().getSectorName() != "") user.getExternaluser().setSectorName(uiUser.getExternaluser().getSectorName());
+		if(uiUser.getExternaluser().getPostaladdressline1() != null && uiUser.getExternaluser().getPostaladdressline1() != "") user.getExternaluser().setPostaladdressline1(uiUser.getExternaluser().getPostaladdressline1());
+		if(uiUser.getExternaluser().getPostaladdressline2() != null && uiUser.getExternaluser().getPostaladdressline2() != "") user.getExternaluser().setPostaladdressline2(uiUser.getExternaluser().getPostaladdressline2());
+		if(uiUser.getExternaluser().getPostaladdressline3() != null && uiUser.getExternaluser().getPostaladdressline3() != "") user.getExternaluser().setPostaladdressline3(uiUser.getExternaluser().getPostaladdressline3());
+		if(uiUser.getExternaluser().getPostalcode() != null && uiUser.getExternaluser().getPostalcode() != "") user.getExternaluser().setPostalcode(uiUser.getExternaluser().getPostalcode());
+		if(uiUser.getExternaluser().getCommunicationmodetypecode() != null && uiUser.getExternaluser().getCommunicationmodetypecode() != "") user.getExternaluser().setCommunicationmodetypecode(uiUser.getExternaluser().getCommunicationmodetypecode());
+		if(uiUser.getExternaluser().getCommunicationmodetypename() != null && uiUser.getExternaluser().getCommunicationmodetypename() != "") user.getExternaluser().setCommunicationmodetypename(uiUser.getExternaluser().getCommunicationmodetypename());
+		if(uiUser.getExternaluser().getSubscribenotifications() != null && uiUser.getExternaluser().getSubscribenotifications() != "") user.getExternaluser().setSubscribenotifications(uiUser.getExternaluser().getSubscribenotifications());
+		if(uiUser.getExternaluser().getSubscribeevents() != null && uiUser.getExternaluser().getSubscribeevents() != "") user.getExternaluser().setSubscribeevents(uiUser.getExternaluser().getSubscribeevents());
+		if(uiUser.getExternaluser().getSubscribenews() != null && uiUser.getExternaluser().getSubscribenews() != "") user.getExternaluser().setSubscribenews(uiUser.getExternaluser().getSubscribenews());
+
+
+
+
+
+		return user;
+	}//getPopulatedUserWithModifiedDetails
+
+
+
 
 	public UserProfile isADUserExists(String username, String password) {
 		UserProfile userProfile = new UserProfile();

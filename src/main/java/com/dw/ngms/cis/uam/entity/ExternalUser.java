@@ -29,7 +29,6 @@ import org.springframework.data.jpa.repository.Query;
 @Entity
 @Getter
 @Setter
-@ToString
 @NoArgsConstructor
 @Table(name = "EXTERNALUSERDATA")
 public class ExternalUser implements Serializable {

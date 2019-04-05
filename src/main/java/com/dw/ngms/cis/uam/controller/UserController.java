@@ -181,25 +181,61 @@ public class UserController extends MessageController {
     }//getAllInternalUsers
 
 
-   /* @GetMapping("/getUserRegisteredCounts")
-    public ResponseEntity<?> getCountOfRegisteredUsers(HttpServletRequest request, @RequestParam String provincecode) {
+    /*@GetMapping("/getUserRegisteredCounts")
+    public ResponseEntity<?> getCountOfRegisteredUsers(HttpServletRequest request, @RequestParam String provincecode,  @RequestParam String type) {
         try {
+            ArrayList<InternalUserRoles> internalUserRoles = null;
+            ArrayList<InternalUserRoles> interUserRolesList = null;
+            List<InternalUserRoles> roles = new ArrayList<>();
+            if((StringUtils.isEmpty(provincecode) || "all".equalsIgnoreCase(provincecode.trim()))){
+                if(type.equalsIgnoreCase("Internal")){
+                    List<User> userList =   userService.getAllUsersByUserTypeName(INTERNAL_USER_TYPE_NAME);
+                    for(User userInfo: userList) {
+                        interUserRolesList = new ArrayList<>();
+                        internalUserRoles = this.internalUserRoleService.getChildElementsInternal(userInfo.getUserCode());
+                        System.out.println("User code" +userInfo.getUserCode());
+                        if (!isEmpty(internalUserRoles) && internalUserRoles != null) {
+                            for (InternalUserRoles in : internalUserRoles) {
+                                System.out.println("Internal user roles" + in.getInternalRoleCode());
+                                InternalUserRoles internalUserRoles1 = new InternalUserRoles();
+                                internalUserRoles1.setProvinceCode(in.getProvinceCode());
+                                internalUserRoles1.setProvinceName(in.getProvinceName());
+                                internalUserRoles1.setCreateddate(in.getCreateddate());
+                                interUserRolesList.add(internalUserRoles1);
+                                userInfo.setInternalUserRoles(interUserRolesList);
+                            }
+                        }
+                    }
 
-            if((StringUtils.isEmpty(provincecode) || "all".equalsIgnoreCase(provincecode.trim())){
-
+                    for(User userListInfo : userList) {
+                        if (userListInfo.getInternalUserRoles() != null) {
+                            for (InternalUserRoles internal : userListInfo.getInternalUserRoles()) {
+                                InternalUserRoles internalUserRoles1 = new InternalUserRoles();
+                                roles = userListInfo.getInternalUserRoles();
+                                internalUserRoles1.setProvinceCode(internal.getProvinceCode());
+                                internalUserRoles1.setProvinceName(internal.getProvinceName());
+                                internalUserRoles1.setCreateddate(internal.getCreateddate());
+                                roles.add(internalUserRoles1);
+                            }
+                        }
+                    }
+                    if (!isEmpty(interUserRolesList)) {
+                        return ResponseEntity.status(HttpStatus.OK).body(roles);
+                    } else {
+                        return ResponseEntity.status(HttpStatus.OK).body(roles);
+                    }
+                }
             }
-            List<User> userList = (StringUtils.isEmpty(provincecode) || "all".equalsIgnoreCase(provincecode.trim())) ?
-                    userService.getAllUsersByUserTypeName(INTERNAL_USER_TYPE_NAME) :
-                    userService.getAllInternalUsersByProvinceCode(provincecode);
-            return (CollectionUtils.isEmpty(userList)) ? generateEmptyResponse(request, "User(s) not found")
-                    : ResponseEntity.status(HttpStatus.OK).body(userList);
+            return ResponseEntity.status(HttpStatus.OK).body("No List");
+
+
         } catch (Exception exception) {
             return generateFailureResponse(request, exception);
         }
-    }//getCountOfRegisteredUsers*/
+    }//getCountOfRegisteredUsers*//*
 
 
-
+*/
     @GetMapping("/getAllExternalUsers")
     public ResponseEntity<?> getAllExternalUsers(HttpServletRequest request, @RequestParam String provincecode) {
         try {
@@ -214,10 +250,10 @@ public class UserController extends MessageController {
     }//getAllExternalUsers
 
     @PostMapping("/updateExternalUser")
-    public ResponseEntity<?> updateExternalUser(HttpServletRequest request, @RequestBody ExternalUserDTO externalUserDTO) {
+    public ResponseEntity<?> updateExternalUser(HttpServletRequest request, @RequestBody UserUpdateDTO externalUserDTO) {
         try {
-            System.out.println("User Code "+externalUserDTO.getUsercode());
-            ExternalUser externalUser = this.externalUserService.updateExternalUser(externalUserDTO);
+            System.out.println("User Code "+externalUserDTO.getUserCode());
+            User externalUser = this.userService.updateUser(externalUserDTO);
 
             return (externalUser == null) ? generateEmptyResponse(request, "Failed to update external user") :
                     ResponseEntity.status(HttpStatus.OK).body("Update Successful");

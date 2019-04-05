@@ -72,7 +72,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
    Long getUserId();
 
 
-    @Query("SELECT u FROM ExternalUser u WHERE u.usercode = :usercode")
+
+
+   @Query("SELECT u FROM ExternalUser u WHERE u.usercode = :usercode")
     ExternalUser getChildElements(@Param("usercode") String usercode);
 
 
