@@ -252,15 +252,34 @@ public class UserController extends MessageController {
     @PostMapping("/updateExternalUser")
     public ResponseEntity<?> updateExternalUser(HttpServletRequest request, @RequestBody UserUpdateDTO externalUserDTO) {
         try {
-            System.out.println("User Code "+externalUserDTO.getUserCode());
-            User externalUser = this.userService.updateUser(externalUserDTO);
-
-            return (externalUser == null) ? generateEmptyResponse(request, "Failed to update external user") :
-                    ResponseEntity.status(HttpStatus.OK).body("Update Successful");
+            if(externalUserDTO.getType().equalsIgnoreCase("INTERNAL")) {
+                User externalUser = this.userService.updateUser(externalUserDTO);
+                return (externalUser == null) ? generateEmptyResponse(request, "Failed to update external user") :
+                        ResponseEntity.status(HttpStatus.OK).body("Update Successful");
+            }else{
+                return ResponseEntity.status(HttpStatus.OK).body("Not a valid External User");
+            }
         } catch (Exception exception) {
             return generateFailureResponse(request, exception);
         }
     }//updateExternalUser
+
+    @PostMapping("/updateInternalUser")
+    public ResponseEntity<?> updateInternalUser(HttpServletRequest request, @RequestBody UserUpdateDTO externalUserDTO) {
+        try {
+            if(externalUserDTO.getType().equalsIgnoreCase("INTERNAL")) {
+                System.out.println("User Code " + externalUserDTO.getUserCode());
+                User internalUser = this.userService.updateInternalUser(externalUserDTO);
+                return (internalUser == null) ? generateEmptyResponse(request, "Failed to update internal user") :
+                        ResponseEntity.status(HttpStatus.OK).body("Update Successful");
+            }else{
+                return ResponseEntity.status(HttpStatus.OK).body("Not a valid Internal User");
+            }
+        } catch (Exception exception) {
+            return generateFailureResponse(request, exception);
+        }
+    }//updateInternalUser
+
 
 
 

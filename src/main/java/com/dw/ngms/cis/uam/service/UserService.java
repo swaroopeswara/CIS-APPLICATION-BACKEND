@@ -166,10 +166,42 @@ public class UserService {
 	public User updateUser(UserUpdateDTO uiUser) {
 		if(uiUser == null || uiUser.getUserCode() == null) return null;
 		User user = this.userRepository.findByUserCode(uiUser.getUserCode());
-		System.out.println("Test update" +uiUser.getUserCode());
+		System.out.println("Test update  user coder" +uiUser.getUserCode());
 		if(user == null) return null;
 		return this.userRepository.save(getPopulatedUserWithUpdate(user, uiUser));
 	}//updateExternalUser
+
+
+	public User updateInternalUser(UserUpdateDTO uiUser) {
+		if(uiUser == null || uiUser.getUserCode() == null) return null;
+		User user = this.userRepository.findByUserCode(uiUser.getUserCode());
+		System.out.println("Test update internal Update" +uiUser.getUserCode());
+		if(user == null) return null;
+		return this.userRepository.save(getPopulatedInternalUserWithUpdate(user, uiUser));
+	}//updateExternalUser
+
+
+
+	private User getPopulatedInternalUserWithUpdate(User user, UserUpdateDTO uiUser) {
+		if(uiUser.getFirstName() != null && uiUser.getFirstName() != "") user.setFirstName(uiUser.getFirstName());
+
+		if(uiUser.getUserTypeCode() != null && uiUser.getUserTypeCode() != "") user.setFirstName(uiUser.getUserTypeCode());
+		if(uiUser.getUserTypeName() != null && uiUser.getUserTypeName() != "") user.setUserTypeName(uiUser.getUserTypeName());
+		if(uiUser.getTitle() != null && uiUser.getTitle() != "") user.setTitle(uiUser.getTitle());
+		if(uiUser.getUserName() != null && uiUser.getUserName() != "") user.setUserName(uiUser.getUserName());
+		if(uiUser.getSurname() != null && uiUser.getSurname() != "") user.setSurname(uiUser.getSurname());
+		if(uiUser.getFirstLogin() != null && uiUser.getFirstLogin() != "") user.setFirstLogin(uiUser.getFirstLogin());
+
+
+		if(uiUser.getMobileNo() != null && uiUser.getMobileNo() != "") user.setMobileNo(uiUser.getMobileNo());
+		if(uiUser.getTelephoneNo() != null && uiUser.getTelephoneNo() != "") user.setTelephoneNo(uiUser.getTelephoneNo());
+		if(uiUser.getEmail() != null && uiUser.getEmail() != "") user.setEmail(uiUser.getEmail());
+		//if(uiUser.getIsApproved().getDisplayString() != null && uiUser.getIsApproved().getDisplayString() != "") user.setIsApproved(uiUser.getIsApproved());
+		return user;
+	}//getPopulatedUserWithModifiedDetails
+
+
+
 
 
 	private User getPopulatedUserWithUpdate(User user, UserUpdateDTO uiUser) {
@@ -186,7 +218,7 @@ public class UserService {
 		if(uiUser.getMobileNo() != null && uiUser.getMobileNo() != "") user.setMobileNo(uiUser.getMobileNo());
 		if(uiUser.getTelephoneNo() != null && uiUser.getTelephoneNo() != "") user.setTelephoneNo(uiUser.getTelephoneNo());
 		if(uiUser.getEmail() != null && uiUser.getEmail() != "") user.setEmail(uiUser.getEmail());
-		if(uiUser.getIsApproved().getDisplayString() != null && uiUser.getIsApproved().getDisplayString() != "") user.setIsApproved(uiUser.getIsApproved());
+		//if(uiUser.getIsApproved().getDisplayString() != null && uiUser.getIsApproved().getDisplayString() != "") user.setIsApproved(uiUser.getIsApproved());
 
 		if(uiUser.getRejectionReason() != null && uiUser.getRejectionReason() != "") user.setRejectionReason(uiUser.getRejectionReason());
 		if(uiUser.getIsApprejuserCode() != null && uiUser.getIsApprejuserCode() != "") user.setIsApprejuserCode(uiUser.getIsApprejuserCode());
@@ -211,11 +243,6 @@ public class UserService {
 		if(uiUser.getExternaluser().getSubscribenotifications() != null && uiUser.getExternaluser().getSubscribenotifications() != "") user.getExternaluser().setSubscribenotifications(uiUser.getExternaluser().getSubscribenotifications());
 		if(uiUser.getExternaluser().getSubscribeevents() != null && uiUser.getExternaluser().getSubscribeevents() != "") user.getExternaluser().setSubscribeevents(uiUser.getExternaluser().getSubscribeevents());
 		if(uiUser.getExternaluser().getSubscribenews() != null && uiUser.getExternaluser().getSubscribenews() != "") user.getExternaluser().setSubscribenews(uiUser.getExternaluser().getSubscribenews());
-
-
-
-
-
 		return user;
 	}//getPopulatedUserWithModifiedDetails
 
