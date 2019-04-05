@@ -134,7 +134,7 @@ public class UserService {
 
 		return this.userRepository.save(getPopulatedUserWithModifiedDetails(user, uiUser));
 	}//updateExternalUser
-	
+
 	private User getPopulatedUserWithModifiedDetails(User user, User uiUser) {
 		if(uiUser.getEmail() != null) user.setEmail(uiUser.getEmail());
 		if(uiUser.getExternaluser() != null) user.setExternaluser(uiUser.getExternaluser());

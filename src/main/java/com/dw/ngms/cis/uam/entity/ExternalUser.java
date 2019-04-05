@@ -57,11 +57,9 @@ public class ExternalUser implements Serializable {
     private Long userId;
 
     @Column(name = "ORGANIZATIONTYPECODE", nullable = true, length = 50)
-    @NotEmpty(message = "ORGANIZATION TYPE CODE must not be empty")
     private String organizationtypecode;
 
     @Column(name = "ORGANIZATIONTYPENAME", nullable = true, length = 70)
-    @NotEmpty(message = "ORGANIZATION TYPE ENAME must not be empty")
     private String organizationtypename;
 
     @Column(name = "PPNNO", length = 70)
@@ -71,62 +69,48 @@ public class ExternalUser implements Serializable {
     private String practicename;
 
     @Column(name = "POSTALADDRESSLINE1", nullable = true, length = 70)
-    @NotEmpty(message = "POSTAL ADDRESSLINE must not be empty")
     private String postaladdressline1;
 
     @Column(name = "POSTALADDRESSLINE2", nullable = true, length = 70)
-    @NotEmpty(message = "POSTAL ADDRESSLINE2 must not be empty")
     private String postaladdressline2;
 
     @Column(name = "POSTALADDRESSLINE3", length = 70)
     private String postaladdressline3;
 
     @Column(name = "POSTALCODE", nullable = true, length = 15)
-    @NotEmpty(message = "POSTALCODE must not be empty")
     private String postalcode;
 
     @Column(name = "COMMUNICATIONMODETYPECODE", nullable = true, length = 50)
-    @NotEmpty(message = "COMMUNICATION MODE TYPE CODE must not be empty")
     private String communicationmodetypecode;
 
     @Column(name = "COMMUNICATIONMODETYPENAME", nullable = true, length = 15)
-    @NotEmpty(message = "COMMUNICATION MODE TYPE NAME must not be empty")
     private String communicationmodetypename;
 
     @Column(name = "SECURITYQUESTIONTYPECODE1", nullable = true, length = 50)
-    @NotEmpty(message = "SECURITY QUESTIONTYPE CODE1 must not be empty")
     private String securityquestiontypecode1;
 
     @Column(name = "SECURITYQUESTION1", nullable = true, length = 150)
-    @NotEmpty(message = "SECURITYQUESTION must not be empty")
     private String securityquestion1;
 
     @Column(name = "SECURITYANSWER1", nullable = true, length = 50)
-    @NotEmpty(message = "SECURITYANSWER must not be empty")
     private String securityanswer1;
 
     @Column(name = "SECURITYQUESTIONTYPECODE2", nullable = true, length = 50)
-    @NotEmpty(message = "SECURITY QUESTION TYPE CODE2 must not be empty")
     private String securityquestiontypecode2;
 
     @Column(name = "SECURITYQUESTION2", nullable = true, length = 150)
-    @NotEmpty(message = "SECURITYQUESTION 2 must not be empty")
     private String securityquestion2;
 
     @Column(name = "SECURITYANSWER2", nullable = true, length = 50)
-    @NotEmpty(message = "SECURITYANSWER2  must not be empty")
     private String securityanswer2;
 
     @Column(name = "SECURITYQUESTIONTYPECODE3", nullable = true, length = 50)
-    @NotEmpty(message = "SECURITY QUESTION TYPE CODE3 must not be empty")
     private String securityquestiontypecode3;
 
     @Column(name = "SECURITYQUESTION3", nullable = true, length = 150)
-    @NotEmpty(message = "SECURITY QUESTION3 must not be empty")
     private String securityquestion3;
 
     @Column(name = "SECURITYANSWER3", nullable = true, length = 50)
-    @NotEmpty(message = "SECURITY ANSWER3 must not be empty")
     private String securityanswer3;;
 
     @Column(name = "CREATEDDATE", nullable = true)
