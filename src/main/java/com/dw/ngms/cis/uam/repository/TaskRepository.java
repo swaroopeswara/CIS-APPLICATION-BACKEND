@@ -17,7 +17,7 @@ import java.util.List;
 public interface TaskRepository extends JpaRepository<Task, Long> {
 
 
-    @Query("SELECT u FROM Task u WHERE u.taskStatus = :taskStatus and u.taskType = :taskType and u.taskAllProvinceCode = :taskAllProvinceCode and u.taskAllOCSectionCode = :taskAllOCSectionCode and u.taskAllOCRoleCode = :taskAllOCRoleCode")
+    @Query("SELECT u FROM Task u WHERE u.taskStatus = :taskStatus OR :taskStatus IS NULL and u.taskType = :taskType OR :taskType IS NULL and u.taskAllProvinceCode = :taskAllProvinceCode OR :taskAllProvinceCode IS NULL and u.taskAllOCSectionCode = :taskAllOCSectionCode OR :taskAllOCSectionCode IS NULL  and u.taskAllOCRoleCode = :taskAllOCRoleCode OR :taskAllOCRoleCode IS NULL ")
     List<Task> getAllTasks(@Param("taskStatus") String taskStatus,
                               @Param("taskType") String taskType,
                               @Param("taskAllProvinceCode") String taskAllProvinceCode,

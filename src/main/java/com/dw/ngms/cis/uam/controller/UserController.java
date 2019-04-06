@@ -487,14 +487,14 @@ public class UserController extends MessageController {
                     if (user.getMainRoleCode().equalsIgnoreCase("EX011")) {
                         String response = saveExternalUserAssistant(user, externalRoleCode, externalUserRoles);
                         if(response.equals("failed")){
-                            userControllerResponse.setActive("Surveyor is not registered with CIS");
+                            userControllerResponse.setMessage("Surveyor is not registered with CIS");
                             json = gson.toJson(userControllerResponse);
                             return ResponseEntity.status(HttpStatus.OK).body(json);
                         }
                     } else if(user.getMainRoleCode().equalsIgnoreCase("EX010") || user.getMainRoleCode().equalsIgnoreCase("EX002")){
                         String response = saveExternalUserAssistantForPLSExUser(user, externalRoleCode, externalUserRoles);
                         if(response.equals("failed")){
-                            userControllerResponse.setActive("PLS user already Registered with this PP NO");
+                            userControllerResponse.setMessage("PLS user already Registered with this PPN NO");
                             json = gson.toJson(userControllerResponse);
                             return ResponseEntity.status(HttpStatus.OK).body(json);
                         }

@@ -42,12 +42,13 @@ public class TaskController extends MessageController {
 
 
     @GetMapping("/getAllTasks")
-    public ResponseEntity<?> getAllExternalUsers(HttpServletRequest request, @RequestParam String taskStatus,
-                                                 @RequestParam String taskType,
-                                                 @RequestParam String taskAllProvinceCode,
-                                                 @RequestParam String taskAllOCSectionCode,
-                                                 @RequestParam String taskAllOCRoleCode) {
+    public ResponseEntity<?> getAllExternalUsers(HttpServletRequest request, @RequestParam(required = false, defaultValue = "") String taskStatus,
+                                                 @RequestParam(required = false, defaultValue = "") String taskType,
+                                                 @RequestParam(required = false, defaultValue = "") String taskAllProvinceCode,
+                                                 @RequestParam(required = false, defaultValue = "") String taskAllOCSectionCode,
+                                                 @RequestParam(required = false, defaultValue = "") String taskAllOCRoleCode) {
         try {
+            System.out.println("taskAllProvinceCode "+taskAllOCSectionCode);
             List<Task> taskList = taskService.getAllTasks(taskStatus,taskType,taskAllProvinceCode,taskAllOCSectionCode,taskAllOCRoleCode);
             return (CollectionUtils.isEmpty(taskList)) ? generateEmptyResponse(request, "Tasks not found")
                     : ResponseEntity.status(HttpStatus.OK).body(taskList);
