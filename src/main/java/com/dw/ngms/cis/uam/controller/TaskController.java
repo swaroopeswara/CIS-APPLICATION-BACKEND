@@ -1,8 +1,11 @@
 package com.dw.ngms.cis.uam.controller;
 
+import com.dw.ngms.cis.uam.dto.TaskDTO;
 import com.dw.ngms.cis.uam.entity.Task;
 import com.dw.ngms.cis.uam.entity.User;
+import com.dw.ngms.cis.uam.jsonresponse.UserControllerResponse;
 import com.dw.ngms.cis.uam.service.TaskService;
+import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,6 +42,34 @@ public class TaskController extends MessageController {
             return generateFailureResponse(request, exception);
         }
     }//createTask
+
+
+    @PostMapping("/closeTask")
+    public ResponseEntity<?> closeTask(HttpServletRequest request, @RequestBody @Valid TaskDTO taskDTO) {
+        try {
+            UserControllerResponse userControllerResponse = new UserControllerResponse();
+            String json = null;
+            Gson gson = new Gson();
+            System.out.println("taskDoneUserName "+taskDTO.getTaskDoneByUserName());
+            Task task = this.taskService.getCloseTask(taskDTO.getTaskCode(),taskDTO.getTaskReferenceCode(),taskDTO.getTaskReferenceType());
+            if (task != null && task.getTaskId() != null) {
+                task.setTaskCode(taskDTO.getTaskCode());
+                task.setTaskReferenceCode(taskDTO.getTaskReferenceCode());
+                task.setTaskReferenceType(taskDTO.getTaskReferenceType());
+                task.setTaskCLoseDESC(taskDTO.getTaskCloseDesc());
+                task.setTaskDoneUserCode(taskDTO.getTaskDoneByUserCode());
+                task.setTaskDoneUserName(taskDTO.getTaskDoneByUserName());
+                this.taskService.saveTask(task);
+                return ResponseEntity.status(HttpStatus.OK).body(task);
+            }
+            userControllerResponse.setMessage("No Task for the given task code and task reference code and reference type");
+            json = gson.toJson(userControllerResponse);
+            return ResponseEntity.status(HttpStatus.OK).body(json);
+        } catch (Exception exception) {
+            return generateFailureResponse(request, exception);
+        }
+    }//createTask
+
 
 
     @GetMapping("/getAllTasks")

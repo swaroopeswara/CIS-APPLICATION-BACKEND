@@ -31,6 +31,10 @@ public class TaskService {
 
     public Long getTaskID() {
         return this.taskRepository.getTaskID();
+    }
+
+    public Task getCloseTask(String taskCode, String taskReferenceCode, String taskReferenceType) {
+        return this.taskRepository.getCloseTask(taskCode,taskReferenceCode,taskReferenceType);
     } //FindUserByEmail
 
 

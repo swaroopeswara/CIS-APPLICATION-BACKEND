@@ -30,5 +30,12 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
             true)
     Long getTaskID();
 
+    @Query("SELECT u FROM Task u WHERE u.taskCode = :taskCode and u.taskReferenceCode = :taskReferenceCode and u.taskReferenceType = :taskReferenceType")
+    public Task getCloseTask(@Param("taskCode") String taskCode,
+                             @Param("taskReferenceCode") String taskReferenceCode,
+                             @Param("taskReferenceType") String taskReferenceType);
+
+
+
 
 }

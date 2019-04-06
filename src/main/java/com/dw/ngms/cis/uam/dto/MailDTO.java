@@ -15,7 +15,10 @@ public class MailDTO {
 
     private String header;
     private String subject;
-    private String body;
+    private String body1;
+    private String body2;
+    private String body3;
+    private String body4;
     private String footer;
     private int id;
     private String toAddress;

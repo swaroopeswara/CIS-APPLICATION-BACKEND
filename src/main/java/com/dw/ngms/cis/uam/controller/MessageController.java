@@ -65,7 +65,10 @@ public class MessageController implements ExceptionConstants {
 		Map<String, String> attr = new HashMap<>();
 		attr.put("HEADER", mailDTO.getHeader());
 		attr.put("SUBJECT", mailDTO.getSubject());
-		attr.put("BODY", mailDTO.getBody());
+		attr.put("BODY1", mailDTO.getBody1());
+		attr.put("BODY2", mailDTO.getBody2());
+		attr.put("BODY3", mailDTO.getBody3());
+		attr.put("BODY4", mailDTO.getBody4());
 		attr.put("FOOTER", mailDTO.getFooter());
 
 		Map<String, String> headers = new HashMap<>();

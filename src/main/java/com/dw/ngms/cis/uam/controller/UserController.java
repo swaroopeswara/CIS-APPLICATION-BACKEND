@@ -492,8 +492,15 @@ public class UserController extends MessageController {
                             return ResponseEntity.status(HttpStatus.OK).body(json);
                         }
                     } else if(user.getMainRoleCode().equalsIgnoreCase("EX010") || user.getMainRoleCode().equalsIgnoreCase("EX002")){
-                        String response = saveExternalUserAssistantForPLSExUser(user, externalRoleCode, externalUserRoles);
-                        if(response.equals("failed")){
+                        //String response = saveExternalUserAssistantForPLSExUser(user, externalRoleCode, externalUserRoles);
+                        String ppNumber = this.userService.getpPNumber(user.getExternaluser().getPpno());
+                        if(ppNumber== null || ppNumber.length() == 0){
+                            ExternalRole externalRole = this.externalRoleService.getByRoleCodeRoleProvince(user.getMainRoleCode(), externalUserRoles.getUserProvinceCode());
+                            externalUserRolesMapping(user, externalUserRoles, externalRole);
+                            externalUserRoles.setUserRoleName(user.getMainRoleName());
+                            externalUserRoles.setUserRoleCode(user.getMainRoleCode());
+                            externalRoleCode.add(externalUserRoles);
+                        }else if(ppNumber!= null || ppNumber.length() > 0){
                             userControllerResponse.setMessage("PLS user already Registered with this PPN NO");
                             json = gson.toJson(userControllerResponse);
                             return ResponseEntity.status(HttpStatus.OK).body(json);
@@ -512,9 +519,15 @@ public class UserController extends MessageController {
             User response = userService.saveExternalUser(user);
             MailDTO mailDTO = getMailDTO(user);
             if (response.getIsApproved().getDisplayString().equalsIgnoreCase("YES")) {
-                mailDTO.setBody(ExceptionConstants.body + "\\n" + ". Your password is " + user.getPassword() + " User have been approved");
+                mailDTO.setBody1("Thank you for registering with us. Your account is approved.");
+                mailDTO.setBody2("Your password is "+user.getPassword());
+                mailDTO.setBody3("");
+                mailDTO.setBody4("");
             } else {
-                mailDTO.setBody(ExceptionConstants.body + ".Your password is " + user.getPassword() + " User is waiting for approval");
+                mailDTO.setBody1("Thank you for registering with us. Your account is pending approval.");
+                mailDTO.setBody2("Your password is "+user.getPassword());
+                mailDTO.setBody3("");
+                mailDTO.setBody4("");
             }
             sendMailInformation(user, mailDTO);
             return ResponseEntity.status(HttpStatus.OK).body(response);
@@ -542,9 +555,15 @@ public class UserController extends MessageController {
             User response = userService.saveInternalUser(internalUser);
             MailDTO mailDTO = getMailDTO(response);
             if (response.getIsApproved().getDisplayString().equalsIgnoreCase("YES")) {
-                mailDTO.setBody(ExceptionConstants.body + " User have been approved");
+                mailDTO.setBody1("Thank you for registering with us. Your account is approved.");
+                mailDTO.setBody2("Your password is "+response.getPassword());
+                mailDTO.setBody3("");
+                mailDTO.setBody4("");
             } else {
-                mailDTO.setBody(ExceptionConstants.body + " User is waiting for approval");
+                mailDTO.setBody1("Thank you for registering with us. Your account is pending approval.");
+                mailDTO.setBody2("Your password is "+response.getPassword());
+                mailDTO.setBody3("");
+                mailDTO.setBody4("");
             }
             sendMailInformation(response, mailDTO);
             return ResponseEntity.status(HttpStatus.OK).body(response);
@@ -569,9 +588,15 @@ public class UserController extends MessageController {
             this.userService.updateUserApproval(user);
             MailDTO mailDTO = getMailDTO(user);
             if (user.getIsApproved().getDisplayString().equalsIgnoreCase("YES")) {
-                mailDTO.setBody(ExceptionConstants.body + " User have been approved");
+                mailDTO.setBody1("Thank you for registering with us. Your account is approved.");
+                mailDTO.setBody2("");
+                mailDTO.setBody3("");
+                mailDTO.setBody4("");
             } else {
-                mailDTO.setBody(ExceptionConstants.body + " User is waiting for approval");
+                mailDTO.setBody1("Thank you for registering with us. Your account is pending approval.");
+                mailDTO.setBody2("");
+                mailDTO.setBody3("");
+                mailDTO.setBody4("");
             }
             sendMailInformation(user, mailDTO);
             //todo Send Email to User
@@ -654,8 +679,9 @@ public class UserController extends MessageController {
 
     private void sendMailInformation(@RequestBody @Valid User user, MailDTO mailDTO) {
         String mailResponse;
+        mailDTO.setSubject("Welcome to CIS");
         mailDTO.setHeader(ExceptionConstants.header + " " + user.getFirstName() + ",");
-        mailDTO.setFooter(ExceptionConstants.footer + " CIS ADMIN");
+        mailDTO.setFooter("CIS ADMIN");
         mailDTO.setToAddress(user.getEmail());//admin user for later
         mailResponse = sendMail(mailDTO);
     }
@@ -708,24 +734,25 @@ public class UserController extends MessageController {
 
     private String externalUserAssistantMappingPlsExUser(@RequestBody @Valid User user, ExternalUserAssistant externalUserAssistant) {
         String message = "Success";
-
+        System.out.println("PP number is "+user.getExternaluser().getPpno());
         String ppNumber = this.userService.getpPNumber(user.getExternaluser().getPpno());
-        if(ppNumber!= null || ppNumber.length() > 0){
+        System.out.println("PP number is "+ppNumber);
+        if(ppNumber == null || ppNumber.length() == 0){
+            String UserCode = this.userService.getUserCode(ppNumber);
+            externalUserAssistant.setSurveyorusercode(user.getUserCode());
+            externalUserAssistant.setSurveyorusername(user.getUserName());
+            externalUserAssistant.setAssistantusercode(UserCode);
+            externalUserAssistant.setAssistantusername(user.getEmail());
+            externalUserAssistant.setIsApproved("Pending");
+            externalUserAssistant.setIsActive("Y");
+            externalUserAssistant.setCreateddate(new Date());
+            externalUserAssistant.setUserId(user.getUserId());
+            message = "Success";
+            return message;
+        }else if(ppNumber!= null || ppNumber.length() > 0){
             message = "failed";
             return message;
         }
-
-        String UserCode = this.userService.getUserCode(ppNumber);
-        String userName = this.userService.getUserName(UserCode);
-        externalUserAssistant.setSurveyorusercode(user.getUserCode());
-        externalUserAssistant.setSurveyorusername(userName);
-        externalUserAssistant.setAssistantusercode(UserCode);
-        externalUserAssistant.setAssistantusername(user.getEmail());
-        externalUserAssistant.setIsApproved("Pending");
-        externalUserAssistant.setIsActive("Y");
-        externalUserAssistant.setCreateddate(new Date());
-        externalUserAssistant.setUserId(user.getUserId());
-
         return message;
     }
 
