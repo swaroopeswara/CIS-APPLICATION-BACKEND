@@ -265,6 +265,32 @@ public class UserController extends MessageController {
     }//updateInternalUser
 
 
+
+    @GetMapping("/getAccessRightsByCode")
+    public ResponseEntity<?> getAccessRightsByCode(HttpServletRequest request, @RequestParam String userType,
+                                                                                 @RequestParam String code) {
+        try {
+            if(userType.equalsIgnoreCase("Internal")){
+                String accessRightJson = this.internalRoleService.getAccessRightJson(code);
+                return (accessRightJson == null) ? generateEmptyResponse(request, "Access Right Json not found")
+                        : ResponseEntity.status(HttpStatus.OK).body(accessRightJson);
+            }else if(userType.equalsIgnoreCase("External")){
+
+                String accessRightJson = this.externalRoleService.getAccessRightJson(code);
+                return (accessRightJson == null) ? generateEmptyResponse(request, "Access Right Json not found")
+                        : ResponseEntity.status(HttpStatus.OK).body(accessRightJson);
+            }else{
+                return  ResponseEntity.status(HttpStatus.OK).body("Access Right Json not found");
+            }
+
+        } catch (Exception exception) {
+            return generateFailureResponse(request, exception);
+        }
+    }//getAllExternalUsers
+
+
+
+
     @PostMapping("/updateAccessRights")
     public ResponseEntity<?> updateAccessRights(HttpServletRequest request, @RequestBody @Valid UpdateAccessRightsDTO updateAccessRightsDTO) {
         try {
@@ -530,6 +556,8 @@ public class UserController extends MessageController {
                 mailDTO.setBody4("");
             }
             sendMailInformation(user, mailDTO);
+            String message = mailDTO.getBody1() + mailDTO.getBody2() +mailDTO.getBody3() +mailDTO.getBody4();
+            sendSMS("+27820808989",message);
             return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (Exception exception) {
             return generateFailureResponse(request, exception);
@@ -599,6 +627,7 @@ public class UserController extends MessageController {
                 mailDTO.setBody4("");
             }
             sendMailInformation(user, mailDTO);
+
             //todo Send Email to User
             return ResponseEntity.status(HttpStatus.OK).body("User Approval Updated Successfully");
         } catch (Exception exception) {

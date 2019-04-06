@@ -26,4 +26,8 @@ public interface ExternalRoleRepository extends JpaRepository<ExternalRole, Long
             @Param("provinceCode") String provinceCode, @Param("roleCode") String roleCode);
 
 
+    @Query("SELECT accessRightJson FROM ExternalRole u WHERE u.externalRoleCode = :externalRoleCode")
+    String getAccessRightJson ( @Param("externalRoleCode") String externalRoleCode);
+
+
 }

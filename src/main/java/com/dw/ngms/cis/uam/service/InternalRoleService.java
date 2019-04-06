@@ -28,4 +28,10 @@ public class InternalRoleService {
         return this.internalRoleRepository.save(internalRole);
     }
 
+    public String getAccessRightJson(String internalRoleCode) {
+        return this.internalRoleRepository.getAccessRightJson(internalRoleCode);
+    }
+
+
+
 }

@@ -29,5 +29,10 @@ public class ExternalRoleService {
         return this.externalRoleRepository.save(externalRole);
     }
 
+    public String getAccessRightJson(String internalRoleCode) {
+        return this.externalRoleRepository.getAccessRightJson(internalRoleCode);
+    }
+
+
 
 }
