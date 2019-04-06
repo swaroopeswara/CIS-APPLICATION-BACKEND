@@ -15,6 +15,9 @@ public interface PlsUserRepository extends JpaRepository<PlsUser, String> {
 	@Query("SELECT u FROM PlsUser u WHERE u.email = ?1")
 	PlsUser findByEmail(String email);
 
+	@Query("SELECT u FROM PlsUser u WHERE u.plscode = ?1 and u.email = ?2")
+	PlsUser findByCodeAndEmail(String plsCode, String email);
+	
 	@Query(value = "SELECT PLS_USER_ID_SEQ.NEXTVAL FROM DUAL", nativeQuery = true)
     Long getPlsUserId();
 }

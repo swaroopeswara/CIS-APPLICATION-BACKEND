@@ -66,7 +66,6 @@ public class UserController extends MessageController {
         }
     }//isADUserExists
 
-
     @PostMapping("/submitInternalUserForApproval")
     public ResponseEntity<?> submitInternalUserForApproval(HttpServletRequest request, @RequestBody @Valid UserDTO userDto) {
         if (userDto == null || userDto.getUsercode() == null ||
