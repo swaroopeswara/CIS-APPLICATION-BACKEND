@@ -17,7 +17,10 @@ public interface ExceptionConstants {
 
 	String header = "Good day";
 	String subject = "User Registered";
-	String body = "User have been registered sucessfully";
+	String body = "Thank you for registering with us. Your account is ";
+	String body1 = "Your password is ";
+	String body2 = "User have been registered sucessfully";
+	String body3 = "User have been registered sucessfully";
 	String footer = "Regards";
 
 }
