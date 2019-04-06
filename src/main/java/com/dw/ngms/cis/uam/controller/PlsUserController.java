@@ -60,4 +60,15 @@ public class PlsUserController extends MessageController {
 			return generateFailureResponse(request, exception);
 		}
     }//registerPlsUser
+    
+    @PostMapping("/updatePlsUser")
+    public ResponseEntity<?> updatePlsUser(HttpServletRequest request, @RequestBody @Valid PlsUser plsuser) {
+    	try{
+    		plsuser = plsUserService.updatePlsUser(plsuser);
+        	return (plsuser == null) ? generateEmptyResponse(request, "Failed to update pls user") :
+				ResponseEntity.status(HttpStatus.OK).body("Successful");
+		} catch (Exception exception) {
+			return generateFailureResponse(request, exception);
+		}
+    }//registerPlsUser
 }

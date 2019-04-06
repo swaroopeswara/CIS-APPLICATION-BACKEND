@@ -41,8 +41,13 @@ public class PlsUserService {
 	
 		plsuser.setPlscode(getPlsCode());
         return this.plsUserRepository.save(plsuser);
-    }//addSector
+    }//addPlsUser
     
+	public PlsUser updatePlsUser(@Valid PlsUser plsuser) {
+		if(plsuser == null || StringUtils.isEmpty(plsuser.getPlscode())) return null;
+        return this.plsUserRepository.save(plsuser);
+    }//updatePlsUser
+	
     private String getPlsCode() {
     	return codeGeneratorService.getPlsUserNextCode();
 	}//getSectorCode

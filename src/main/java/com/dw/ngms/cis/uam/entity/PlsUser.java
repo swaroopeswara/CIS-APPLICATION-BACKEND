@@ -27,11 +27,8 @@ import lombok.ToString;
 public class PlsUser implements Serializable {
 
 	private static final long serialVersionUID = 7700110758724840308L;
-
-	@Column(name = "ID")
-	@Id
-	private String id;
 	
+	@Id
 	@Column(name = "PLSCODE")
 	private String plscode;
 	

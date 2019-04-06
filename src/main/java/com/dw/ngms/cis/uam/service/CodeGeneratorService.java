@@ -1,11 +1,16 @@
 package com.dw.ngms.cis.uam.service;
 
+import java.math.BigDecimal;
+
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service
 public class CodeGeneratorService {
 
@@ -13,14 +18,20 @@ public class CodeGeneratorService {
 	private EntityManager em; 
 	
 	private Long getNextValueOfSequence(String sequenceName) {
+		Long idValue = null;
 		try {
-			String queryString = "select nextval('"+sequenceName+ "')";
+			String queryString = "SELECT "+sequenceName+ ".nextval FROM dual";
 			Query query = em.createNativeQuery(queryString);
-			return (Long)query.getSingleResult();
+			BigDecimal value = (BigDecimal) query.getSingleResult();
+			if(value == null) 
+				throw new RuntimeException("Failed to generate next value for "+sequenceName);	
+			else 
+				idValue = value.longValue();
 		}catch(Exception e) {
-			//TODO log here
-			throw new RuntimeException("Failed to generate next value for "+sequenceName);
+			log.error("Failed to generate next value"+e);
+			throw new RuntimeException("Failed to generate next value for "+sequenceName, e);
 		}
+		return idValue;
 	}//getNextValueOfSequence
 
 	public String getSectorNextCode() {
