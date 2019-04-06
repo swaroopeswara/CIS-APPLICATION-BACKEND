@@ -103,7 +103,8 @@ public class PlsUser implements Serializable {
 	
 	@Column(name = "SG_OFFICE_ID")
 	private String sgofficeid;
-	
+
+	@Enumerated(EnumType.STRING)
 	@Column(name = "ISACTIVE")
 	private Status isActive = Status.Y;
 	

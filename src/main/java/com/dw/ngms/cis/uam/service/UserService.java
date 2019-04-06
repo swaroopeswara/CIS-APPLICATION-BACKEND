@@ -97,6 +97,18 @@ public class UserService {
 		return this.userRepository.getChildElements(userCode);
 	} //FindUserByEmail
 
+	public String getUserCode(String pPNumber) {
+		return this.userRepository.getUserCode(pPNumber);
+	} //getUserCode
+
+	public String getUserName(String userCode) {
+		return this.userRepository.getUserName(userCode);
+	} //getUserCode
+
+	public String getpPNumber(String pPNumber) {
+		return this.userRepository.getpPNumber(pPNumber);
+	} //getUserCode
+
 
 
 

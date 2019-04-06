@@ -4,7 +4,8 @@ public enum ApprovalStatus {
 
 	YES("YES"),
 	WAITING("Waiting"),
-	PENDING("Pending");
+	PENDING("Pending"),
+	REJECTED("Rejected");
 
 	String displayString;
 	

@@ -83,4 +83,16 @@ public interface UserRepository extends JpaRepository<User, Long> {
    List<User> findAllUsersByProvinceCode(@Param("usercode") String usercode);
 
 
+   @Query("SELECT usercode FROM ExternalUser u WHERE u.ppno = :ppno")
+   String getUserCode(@Param("ppno") String ppno);
+
+   @Query("SELECT userName FROM User u WHERE u.userCode = :userCode")
+   String getUserName(@Param("userCode") String userCode);
+
+   @Query("SELECT ppno FROM ExternalUser u WHERE u.ppno = :ppno")
+   String getpPNumber(@Param("ppno") String ppno);
+
+
+
+
 }
