@@ -3,9 +3,9 @@ package com.dw.ngms.cis.uam.enums;
 public enum ApprovalStatus {
 
 	YES("YES"),
-	WAITING("Waiting"),
-	PENDING("Pending"),
-	REJECTED("Rejected");
+	WAITING("WAITING"),
+	PENDING("PENDING"),
+	REJECTED("REJECTED");
 
 	String displayString;
 	
