@@ -48,13 +48,13 @@ public class PlsUserService {
         return this.plsUserRepository.save(plsuser);
     }//addPlsUser
 	
-	public PlsUser updatePlsUser(PlsUser plsuser, String operationType) {
+	public PlsUser updatePlsUser(PlsUser plsuser) {
 		if(plsuser == null) 
-			throw new RuntimeException("PlsUser required to "+operationType);
+			throw new RuntimeException("PlsUser required to update");
 		if(StringUtils.isEmpty(plsuser.getPlscode())) 
-			throw new RuntimeException("PlsUser code required to "+operationType);
+			throw new RuntimeException("PlsUser code required to update");
 		if(StringUtils.isEmpty(plsuser.getEmail())) 
-			throw new RuntimeException("PlsUser email required to "+operationType);
+			throw new RuntimeException("PlsUser email required to update");
 		
 		PlsUser user = findByEmail(plsuser.getEmail());
 		if(user == null)
