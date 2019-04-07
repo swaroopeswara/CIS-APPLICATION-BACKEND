@@ -43,20 +43,34 @@ public class LdapClient {
 
 			@Override
 			public Object mapFromAttributes(Attributes attrs) throws NamingException {
-				UserProfile profile = new UserProfile();
-				String designationKey = env.getRequiredProperty("ldap.user.designation");
-				
+				UserProfile profile = new UserProfile();				
 				profile.setExists(Boolean.TRUE);
 				
+				if (attrs.get("uid") != null)
+					profile.setUid((String) attrs.get("uid").get());				
 				if (attrs.get("givenName") != null)
 					profile.setFirstName((String) attrs.get("givenName").get());
-
 				if (attrs.get("sn") != null)
-					profile.setLastName((String) attrs.get("sn").get());				
+					profile.setLastName((String) attrs.get("sn").get());
+				if (attrs.get("employeeNumber") != null)
+					profile.setEmployeeNumber((String) attrs.get("employeeNumber").get());				
+				if (attrs.get("facsimileTelephoneNumber") != null)
+					profile.setFacsimileTelephoneNumber((String) attrs.get("facsimileTelephoneNumber").get());				
+				if (attrs.get("mail") != null)
+					profile.setMail((String) attrs.get("mail").get());
+				if (attrs.get("mobile") != null)
+					profile.setMobile((String) attrs.get("mobile").get());
+				if (attrs.get("telephoneNumber") != null)
+					profile.setTelephoneNumber((String) attrs.get("telephoneNumber").get());
+				if (attrs.get("street") != null)
+					profile.setStreet((String) attrs.get("street").get());
+				if (attrs.get("l") != null)
+					profile.setCity((String) attrs.get("l").get());
+				if (attrs.get("st") != null)
+					profile.setProvince((String) attrs.get("st").get());
+				if (attrs.get("postalCode") != null)
+					profile.setPostalCode((String) attrs.get("postalCode").get());
 				
-				if (attrs.get(designationKey) != null)
-					profile.setDesignation((String) attrs.get(designationKey).get());
-
 				return profile;
 			}
 		}));
