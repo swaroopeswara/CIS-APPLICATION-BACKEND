@@ -36,7 +36,7 @@ public class InternalRoleController extends MessageController {
                                                    ) {
         try {
             List<InternalRole> internalUserList = this.internalRoleService.getSectionsByProvinceCode(provinceCode);
-            return (CollectionUtils.isEmpty(internalUserList)) ? generateEmptyResponse(request, "Internal User not found for the province code")
+            return (CollectionUtils.isEmpty(internalUserList)) ? ResponseEntity.status(HttpStatus.OK).body(internalUserList)
                     : ResponseEntity.status(HttpStatus.OK).body(internalUserList);
         } catch (Exception exception) {
             return generateFailureResponse(request, exception);
@@ -50,7 +50,7 @@ public class InternalRoleController extends MessageController {
     ) {
         try {
             List<InternalRole> internalUserList = this.internalRoleService.getNationalRoles();
-            return (CollectionUtils.isEmpty(internalUserList)) ? generateEmptyResponse(request, "Internal User not found for the province code")
+            return (CollectionUtils.isEmpty(internalUserList)) ? ResponseEntity.status(HttpStatus.OK).body(internalUserList)
                     : ResponseEntity.status(HttpStatus.OK).body(internalUserList);
         } catch (Exception exception) {
             return generateFailureResponse(request, exception);
@@ -66,7 +66,7 @@ public class InternalRoleController extends MessageController {
     ) {
         try {
             List<InternalRole> internalUserList = this.internalRoleService.getRolesBySectionsAndProvince(sectionCode,provinceCode);
-            return (CollectionUtils.isEmpty(internalUserList)) ? generateEmptyResponse(request, "Internal User not found for the section code")
+            return (CollectionUtils.isEmpty(internalUserList)) ? ResponseEntity.status(HttpStatus.OK).body(internalUserList)
                     : ResponseEntity.status(HttpStatus.OK).body(internalUserList);
         } catch (Exception exception) {
             return generateFailureResponse(request, exception);

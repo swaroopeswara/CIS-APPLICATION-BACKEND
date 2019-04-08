@@ -172,20 +172,11 @@ public class UserController extends MessageController {
                 }
             }
 
-            return (CollectionUtils.isEmpty(userList)) ? generateEmptyResponse(request, "User(s) not found")
+            return (CollectionUtils.isEmpty(userList)) ? ResponseEntity.status(HttpStatus.OK).body(userList)
                     : ResponseEntity.status(HttpStatus.OK).body(userList);
         } catch (Exception exception) {
             return generateFailureResponse(request, exception);
         }
-       /* try {
-            List<User> userList = (StringUtils.isEmpty(provincecode) || "all".equalsIgnoreCase(provincecode.trim())) ?
-                    userService.getAllUsersByUserTypeName(INTERNAL_USER_TYPE_NAME) :
-                    userService.getAllInternalUsersByProvinceCode(provincecode);
-            return (CollectionUtils.isEmpty(userList)) ? generateEmptyResponse(request, "User(s) not found")
-                    : ResponseEntity.status(HttpStatus.OK).body(userList);
-        } catch (Exception exception) {
-            return generateFailureResponse(request, exception);
-        }*/
     }//getAllInternalUsers
 
 
@@ -250,7 +241,7 @@ public class UserController extends MessageController {
             List<User> userList = (StringUtils.isEmpty(provincecode) || "all".equalsIgnoreCase(provincecode.trim())) ?
                     userService.getAllUsersByUserTypeName(EXTERNAL_USER_TYPE_NAME) :
                     userService.getAllExternalUsersByProvinceCode(provincecode);
-            return (CollectionUtils.isEmpty(userList)) ? generateEmptyResponse(request, "User(s) not found")
+            return (CollectionUtils.isEmpty(userList)) ? ResponseEntity.status(HttpStatus.OK).body(userList)
                     : ResponseEntity.status(HttpStatus.OK).body(userList);
         } catch (Exception exception) {
             return generateFailureResponse(request, exception);
@@ -386,7 +377,7 @@ public class UserController extends MessageController {
             if (!StringUtils.isEmpty(surveyorusercode)) {
                 userList = userService.getAllAssistantsBySurveyorUserCode(surveyorusercode);
             }
-            return (CollectionUtils.isEmpty(userList)) ? generateEmptyResponse(request, "Assistant user(s) not found")
+            return (CollectionUtils.isEmpty(userList)) ? ResponseEntity.status(HttpStatus.OK).body(userList)
                     : ResponseEntity.status(HttpStatus.OK).body(userList);
         } catch (Exception exception) {
             return generateFailureResponse(request, exception);
@@ -400,7 +391,7 @@ public class UserController extends MessageController {
             if (!StringUtils.isEmpty(assistantusercode)) {
                 userList = userService.getAllSurveyorsByAssistantsUserCode(assistantusercode);
             }
-            return (CollectionUtils.isEmpty(userList)) ? generateEmptyResponse(request, "Assistant user(s) not found")
+            return (CollectionUtils.isEmpty(userList)) ? ResponseEntity.status(HttpStatus.OK).body(userList)
                     : ResponseEntity.status(HttpStatus.OK).body(userList);
         } catch (Exception exception) {
             return generateFailureResponse(request, exception);
@@ -415,7 +406,7 @@ public class UserController extends MessageController {
             if (!StringUtils.isEmpty(surveyorusercode)) {
                 userList = userService.getAllAssistantsForPendingApprovalBySurveyorUserCode(ApprovalStatus.WAITING.name(), ApprovalStatus.PENDING.name(), surveyorusercode);
             }
-            return (CollectionUtils.isEmpty(userList)) ? generateEmptyResponse(request, "User(s) not found")
+            return (CollectionUtils.isEmpty(userList)) ? ResponseEntity.status(HttpStatus.OK).body(userList)
                     : ResponseEntity.status(HttpStatus.OK).body(userList);
         } catch (Exception exception) {
             return generateFailureResponse(request, exception);
@@ -596,10 +587,10 @@ public class UserController extends MessageController {
             internalUser.setUserId(userID);
             internalUser.setUserCode("USR000" + Long.toString(internalUser.getUserId()));
             User response = userService.saveInternalUser(internalUser);
-            MailDTO mailDTO = getMailDTO(internalUser);
+           /* MailDTO mailDTO = getMailDTO(internalUser);
             sendMailToUser(internalUser, mailDTO);
             sendMailToAdmin(internalUser, mailDTO);
-            sendMailToProvinceAdmin(internalUser, mailDTO);
+            sendMailToProvinceAdmin(internalUser, mailDTO);*/
 
             return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (Exception exception) {
