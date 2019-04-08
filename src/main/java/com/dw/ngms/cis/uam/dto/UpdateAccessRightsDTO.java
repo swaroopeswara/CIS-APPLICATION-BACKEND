@@ -19,4 +19,5 @@ public class UpdateAccessRightsDTO implements Serializable {
     private String usertype;
     private List<RolesDTO> roles;
     private String accessrightjson;
+    private String dashboardrightjson;
 }

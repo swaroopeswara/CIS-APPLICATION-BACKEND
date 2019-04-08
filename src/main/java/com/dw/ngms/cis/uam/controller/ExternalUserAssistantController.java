@@ -2,7 +2,9 @@ package com.dw.ngms.cis.uam.controller;
 
 import com.dw.ngms.cis.uam.dto.ExternalUserAssistantDTO;
 import com.dw.ngms.cis.uam.entity.ExternalUserAssistant;
+import com.dw.ngms.cis.uam.jsonresponse.UserControllerResponse;
 import com.dw.ngms.cis.uam.service.ExternalUserAssistantService;
+import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -49,7 +51,7 @@ public class ExternalUserAssistantController extends MessageController {
     }
 
 
-    @RequestMapping(value = "/deleteAssistant", method = RequestMethod.GET)
+    @RequestMapping(value = "/deleteAssistant", method = RequestMethod.POST)
     public ResponseEntity<?> deleteAssistant(HttpServletRequest request, @RequestBody @Valid ExternalUserAssistantDTO externalUserAssistantDTO) throws IOException {
         try {
             ExternalUserAssistant externalUserAssistant = this.externalUserAssistantService.findByUserCodeName(externalUserAssistantDTO);
@@ -65,6 +67,33 @@ public class ExternalUserAssistantController extends MessageController {
             return generateFailureResponse(request, exception);
         }
     }
+
+
+    @RequestMapping(value = "/deactivateAssistant", method = RequestMethod.POST)
+    public ResponseEntity<?> deactivateAssistant(HttpServletRequest request, @RequestBody @Valid ExternalUserAssistantDTO externalUserAssistantDTO) throws IOException {
+        try {
+            Gson gson = new Gson();
+            UserControllerResponse userControllerResponse = new UserControllerResponse();
+            String json = null;
+            ExternalUserAssistant externalUserAssistant = this.externalUserAssistantService.findByUserCodeName(externalUserAssistantDTO);
+            if (isEmpty(externalUserAssistant)){
+                userControllerResponse.setMessage("External User Assistant not found");
+                json = gson.toJson(userControllerResponse);
+                return ResponseEntity.status(HttpStatus.OK).body(json);
+            }
+            if (!isEmpty(externalUserAssistant)) {
+                externalUserAssistant.setIsActive("N");
+                this.externalUserAssistantService.saveExternalAssistant(externalUserAssistant);
+            }
+            //todo Send Email to User
+            userControllerResponse.setMessage("Assistant de-activated Successfully");
+            json = gson.toJson(userControllerResponse);
+            return ResponseEntity.status(HttpStatus.OK).body(json);
+        } catch (Exception exception) {
+            return generateFailureResponse(request, exception);
+        }
+    }
+
 
 
 

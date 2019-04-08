@@ -22,18 +22,24 @@ public interface InternalRoleRepository extends JpaRepository<InternalRole, Long
     InternalRole updateAccessRight(
             @Param("provinceCode") String provinceCode, @Param("roleCode") String roleCode, @Param("sectionCode") String sectionCode);
 
+    @Query("SELECT u FROM InternalRole u WHERE u.roleCode = :roleCode and u.provinceCode = :provinceCode and u.sectionCode = :sectionCode")
+    InternalRole updateDashBoardAccessRight(
+            @Param("provinceCode") String provinceCode, @Param("roleCode") String roleCode, @Param("sectionCode") String sectionCode);
+
+
 
     @Query("SELECT accessRightJson FROM InternalRole u WHERE u.internalRoleCode = :internalRoleCode")
     String getAccessRightJson ( @Param("internalRoleCode") String internalRoleCode);
+
+    @Query("SELECT dashBoardRightJson FROM InternalRole u WHERE u.internalRoleCode = :internalRoleCode")
+    String getdashBoardRightJson ( @Param("internalRoleCode") String internalRoleCode);
 
 
     @Query("SELECT u FROM InternalRole  u WHERE u.provinceCode = :provinceCode")
     List<InternalRole> getSectionsByProvinceCode (@Param("provinceCode") String provinceCode);
 
-    @Query("SELECT u FROM InternalRole  u WHERE u.sectionCode = :sectionCode")
-    List<InternalRole> getRolesBySections (@Param("sectionCode") String sectionCode);
-
-
+    @Query("SELECT u FROM InternalRole  u WHERE u.sectionCode = :sectionCode and u.provinceCode = :provinceCode")
+    List<InternalRole> getRolesBySectionsAndProvince (@Param("sectionCode") String sectionCode,@Param("provinceCode") String provinceCode);
 
 
     @Query(value = "SELECT U.*  FROM INTERNALROLES  u WHERE u.sectionCode is null and  u.provinceCode is null ",

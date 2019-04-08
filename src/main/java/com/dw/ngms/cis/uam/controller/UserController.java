@@ -585,7 +585,8 @@ public class UserController extends MessageController {
         UserControllerResponse userControllerResponse = new UserControllerResponse();
         String json = null;
         try {
-            User userExists = this.userService.findByEmail(internalUser.getEmail());
+            System.out.println("internalUser.getEmail() "+internalUser.getEmail());
+            User userExists = this.userService.findByEmail(internalUser.getEmail().trim());
             if (userExists != null && userExists.getEmail() != null) {
                 userControllerResponse.setMessage("User Already Exist with this email ID");
                 json = gson.toJson(userControllerResponse);
@@ -594,12 +595,13 @@ public class UserController extends MessageController {
             Long userID = this.userService.getUserId();
             internalUser.setUserId(userID);
             internalUser.setUserCode("USR000" + Long.toString(internalUser.getUserId()));
-            User user = userService.saveInternalUser(internalUser);
-            MailDTO mailDTO = getMailDTO(user);
-            sendMailToUser(user, mailDTO);
-            sendMailToAdmin(user, mailDTO);
-            sendMailToProvinceAdmin(user, mailDTO);
-            return ResponseEntity.status(HttpStatus.OK).body(user);
+            User response = userService.saveInternalUser(internalUser);
+            MailDTO mailDTO = getMailDTO(internalUser);
+            sendMailToUser(internalUser, mailDTO);
+            sendMailToAdmin(internalUser, mailDTO);
+            sendMailToProvinceAdmin(internalUser, mailDTO);
+
+            return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (Exception exception) {
             return generateFailureResponse(request, exception);
         }

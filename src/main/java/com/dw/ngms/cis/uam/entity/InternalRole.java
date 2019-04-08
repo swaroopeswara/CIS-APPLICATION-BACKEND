@@ -92,6 +92,10 @@ public class InternalRole implements Serializable {
     @Column(name = "ACCESSRIGHTSJSON", length=2000)
     private String accessRightJson;
 
+    @Column(name = "DASHBOARDRIGHTSJSON", length=2000)
+    private String dashBoardRightJson;
+
+
     @Column(name = "INTERNALROLECODE",length = 50)
     private String internalRoleCode;
 

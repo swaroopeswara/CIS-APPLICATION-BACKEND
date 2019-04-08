@@ -24,6 +24,13 @@ public class InternalRoleService {
         return this.internalRoleRepository.updateAccessRight(provinceCode,roleCode,sectionCode);
     }
 
+    public InternalRole updateDashBoardAccessRight(String provinceCode, String roleCode,String sectionCode) {
+        return this.internalRoleRepository.updateDashBoardAccessRight(provinceCode,roleCode,sectionCode);
+    }
+
+
+
+
     public InternalRole updateInternalRole(InternalRole internalRole) {
         return this.internalRoleRepository.save(internalRole);
     }
@@ -31,6 +38,12 @@ public class InternalRoleService {
     public String getAccessRightJson(String internalRoleCode) {
         return this.internalRoleRepository.getAccessRightJson(internalRoleCode);
     }
+
+    public String getdashBoardRightJson(String internalRoleCode) {
+        return this.internalRoleRepository.getdashBoardRightJson(internalRoleCode);
+    }
+
+
 
     public List<InternalRole> getSectionsByProvinceCode(String provinceCode) {
         return this.internalRoleRepository.getSectionsByProvinceCode(provinceCode);
@@ -40,8 +53,8 @@ public class InternalRoleService {
         return this.internalRoleRepository.getNationalRoles();
     }
 
-    public List<InternalRole> getRolesBySections(String sectionCode) {
-        return this.internalRoleRepository.getRolesBySections(sectionCode);
+    public List<InternalRole> getRolesBySectionsAndProvince(String sectionCode,String provinceCode) {
+        return this.internalRoleRepository.getRolesBySectionsAndProvince(sectionCode,provinceCode);
     }
 
 
