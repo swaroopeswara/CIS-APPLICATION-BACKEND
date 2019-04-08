@@ -520,14 +520,12 @@ public class UserController extends MessageController {
         UserControllerResponse userControllerResponse = new UserControllerResponse();
         try {
             System.out.println("Email is " + user.getEmail());
-
             User userExists = this.userService.findByEmail(user.getEmail());
             if (userExists != null && userExists.getEmail() != null) {
                 userControllerResponse.setMessage("User Already Exist with this email ID");
                 json = gson.toJson(userControllerResponse);
                 return ResponseEntity.status(HttpStatus.OK).body(json);
             }
-
             Long userID = this.userService.getUserId();
             System.out.println("UserId is " + userID);
             mapUserDetails(user, userID);
@@ -568,20 +566,12 @@ public class UserController extends MessageController {
             System.out.println("test here" + user.getExternalUserRoles().get(0).getUserRoleCode());
             User response = userService.saveExternalUser(user);
             MailDTO mailDTO = getMailDTO(user);
-            if (response.getIsApproved().getDisplayString().equalsIgnoreCase("YES")) {
-                mailDTO.setBody1("Thank you for registering with us. Your account is approved.");
-                mailDTO.setBody2("Your password is "+user.getPassword());
-                mailDTO.setBody3("");
-                mailDTO.setBody4("");
-            } else {
-                mailDTO.setBody1("Thank you for registering with us. Your account is pending approval.");
-                mailDTO.setBody2("Your password is "+user.getPassword());
-                mailDTO.setBody3("");
-                mailDTO.setBody4("");
-            }
-            sendMailInformation(user, mailDTO);
-            String message = mailDTO.getBody1() + mailDTO.getBody2() +mailDTO.getBody3() +mailDTO.getBody4();
-            sendSMS("+27820808989",message);
+            sendMailToUser(user, mailDTO);
+            sendMailToAdmin(user, mailDTO);
+            sendMailToProvinceAdmin(user, mailDTO);
+
+           // sendSMS(user.getMobileNo(),message);
+            //sendSMS(user.getMobileNo(),message); //todo for provincial administrator
             return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (Exception exception) {
             return generateFailureResponse(request, exception);
@@ -604,21 +594,12 @@ public class UserController extends MessageController {
             Long userID = this.userService.getUserId();
             internalUser.setUserId(userID);
             internalUser.setUserCode("USR000" + Long.toString(internalUser.getUserId()));
-            User response = userService.saveInternalUser(internalUser);
-            MailDTO mailDTO = getMailDTO(response);
-            if (response.getIsApproved().getDisplayString().equalsIgnoreCase("YES")) {
-                mailDTO.setBody1("Thank you for registering with us. Your account is approved.");
-                mailDTO.setBody2("Your password is "+response.getPassword());
-                mailDTO.setBody3("");
-                mailDTO.setBody4("");
-            } else {
-                mailDTO.setBody1("Thank you for registering with us. Your account is pending approval.");
-                mailDTO.setBody2("Your password is "+response.getPassword());
-                mailDTO.setBody3("");
-                mailDTO.setBody4("");
-            }
-            sendMailInformation(response, mailDTO);
-            return ResponseEntity.status(HttpStatus.OK).body(response);
+            User user = userService.saveInternalUser(internalUser);
+            MailDTO mailDTO = getMailDTO(user);
+            sendMailToUser(user, mailDTO);
+            sendMailToAdmin(user, mailDTO);
+            sendMailToProvinceAdmin(user, mailDTO);
+            return ResponseEntity.status(HttpStatus.OK).body(user);
         } catch (Exception exception) {
             return generateFailureResponse(request, exception);
         }
@@ -639,19 +620,7 @@ public class UserController extends MessageController {
             }
             this.userService.updateUserApproval(user);
             MailDTO mailDTO = getMailDTO(user);
-            if (user.getIsApproved().getDisplayString().equalsIgnoreCase("YES")) {
-                mailDTO.setBody1("Thank you for registering with us. Your account is approved.");
-                mailDTO.setBody2("");
-                mailDTO.setBody3("");
-                mailDTO.setBody4("");
-            } else {
-                mailDTO.setBody1("Thank you for registering with us. Your account is pending approval.");
-                mailDTO.setBody2("");
-                mailDTO.setBody3("");
-                mailDTO.setBody4("");
-            }
-            sendMailInformation(user, mailDTO);
-
+            sendMailToUser(user, mailDTO);
             //todo Send Email to User
             return ResponseEntity.status(HttpStatus.OK).body("User Approval Updated Successfully");
         } catch (Exception exception) {
@@ -730,13 +699,61 @@ public class UserController extends MessageController {
     }
 
 
-    private void sendMailInformation(@RequestBody @Valid User user, MailDTO mailDTO) {
+    private void sendMailToUser(@RequestBody @Valid User user, MailDTO mailDTO) throws IOException {
+
+        if (user.getIsApproved().getDisplayString().equalsIgnoreCase("YES")) {
+            mailDTO.setBody1("Thank you for registering with us. Your account is approved.");
+            mailDTO.setBody2("Your password is "+user.getPassword());
+            mailDTO.setBody3("");
+            mailDTO.setBody4("");
+        } else {
+            mailDTO.setBody1("Thank you for registering with us. Your account is pending approval.");
+            mailDTO.setBody2("Your password is "+user.getPassword());
+            mailDTO.setBody3("");
+            mailDTO.setBody4("");
+        }
+
         String mailResponse;
         mailDTO.setSubject("Welcome to CIS");
         mailDTO.setHeader(ExceptionConstants.header + " " + user.getFirstName() + ",");
         mailDTO.setFooter("CIS ADMIN");
         mailDTO.setToAddress(user.getEmail());//admin user for later
         mailResponse = sendMail(mailDTO);
+        System.out.println("mailResponse is "+mailResponse);
+        String message = mailDTO.getBody1() + mailDTO.getBody2() +mailDTO.getBody3() +mailDTO.getBody4();
+
+
+    }
+
+
+    private void sendMailToAdmin(@RequestBody @Valid User user, MailDTO mailDTO) {
+        String mailResponse;
+        mailDTO.setSubject("New " + user.getUserTypeName().toLowerCase() +" User Registration");
+        mailDTO.setHeader(ExceptionConstants.header + " " +"Admin Name" +",");
+        mailDTO.setFooter("CIS ADMIN");
+        mailDTO.setBody1("New user registered with email " +user.getEmail()+  " in province "+user.getExternalUserRoles().get(0).getUserProvinceName());
+        mailDTO.setBody2("New task created for approval by provincial administrator");
+        mailDTO.setBody3("");
+        mailDTO.setBody4("");
+        mailDTO.setToAddress("ps.raju@yahoo.com");//admin user for later
+        mailResponse = sendMail(mailDTO);
+        System.out.println("sendMailToAdmin is "+mailResponse);
+    }
+
+
+
+    private void sendMailToProvinceAdmin(@RequestBody @Valid User user, MailDTO mailDTO) {
+        String mailResponse;
+        mailDTO.setSubject("New "+ user.getUserTypeName().toLowerCase() +" User Registration");
+        mailDTO.setHeader(ExceptionConstants.header + " " + "Province Adminsistrator" + ",");
+        mailDTO.setFooter("CIS ADMIN");
+        mailDTO.setBody1("New user registered with email " +user.getEmail()+  " in province " +user.getExternalUserRoles().get(0).getUserProvinceName());
+        mailDTO.setBody2("New task created for approval by you");
+        mailDTO.setBody3("");
+        mailDTO.setBody4("");
+        mailDTO.setToAddress("dataworldproject@gmail.com");//province admin user for later
+        mailResponse = sendMail(mailDTO);
+        System.out.println("sendMailToProvinceAdmin is "+mailResponse);
     }
 
     private void externalUserRolesMapping(@RequestBody @Valid User user, ExternalUserRoles externalUserRoles, ExternalRole externalRole) {

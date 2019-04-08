@@ -1,20 +1,24 @@
 package com.dw.ngms.cis.uam.controller;
 
+import com.dw.ngms.cis.exception.ExceptionConstants;
+import com.dw.ngms.cis.uam.dto.MailDTO;
 import com.dw.ngms.cis.uam.dto.TaskDTO;
+import com.dw.ngms.cis.uam.entity.InternalUserRoles;
 import com.dw.ngms.cis.uam.entity.Task;
-import com.dw.ngms.cis.uam.entity.User;
 import com.dw.ngms.cis.uam.jsonresponse.UserControllerResponse;
+import com.dw.ngms.cis.uam.service.InternalUserRoleService;
 import com.dw.ngms.cis.uam.service.TaskService;
+import com.dw.ngms.cis.uam.service.UserService;
 import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -29,6 +33,12 @@ public class TaskController extends MessageController {
     @Autowired
     private TaskService taskService;
 
+    @Autowired
+    private InternalUserRoleService internalUserRoleService;
+
+    @Autowired
+    private UserService userService;
+
     @PostMapping("/createTask")
     public ResponseEntity<?> createTask(HttpServletRequest request, @RequestBody @Valid Task task) {
         try {
@@ -37,11 +47,48 @@ public class TaskController extends MessageController {
             System.out.println(taskId);
             task.setTaskCode("TASK000" + Long.toString(taskId));
             Task taskService = this.taskService.saveTask(task);
+
+            MailDTO mailDTO = getMailDTO(taskService);
+            sendMailToTaskUser(taskService, mailDTO);
             return ResponseEntity.status(HttpStatus.OK).body(taskService);
         } catch (Exception exception) {
             return generateFailureResponse(request, exception);
         }
     }//createTask
+
+
+    private MailDTO getMailDTO(@RequestBody @Valid Task task) {
+        MailDTO mailDTO = new MailDTO();
+        mailDTO.setHeader(ExceptionConstants.header);
+        mailDTO.setFooter(ExceptionConstants.footer);
+        mailDTO.setSubject(ExceptionConstants.subject);
+        return mailDTO;
+    }
+
+
+    private void sendMailToTaskUser(@RequestBody @Valid Task task, MailDTO mailDTO) throws IOException {
+        String mailResponse = null;
+        String userCode = null;
+
+        System.out.println("Province Code "+task.getTaskAllProvinceCode() +"section Code " +task.getTaskAllOCSectionCode() +"taskCode "+task.getTaskAllOCRoleCode());
+        List<InternalUserRoles> userRolesList = this.internalUserRoleService.getInternalUserName(task.getTaskAllProvinceCode(),task.getTaskAllOCSectionCode(),task.getTaskAllOCRoleCode());
+        System.out.println("user code is " +userRolesList.get(0).getUserCode());
+        System.out.println("user name is " +userRolesList.get(0).getUserName());
+        for(InternalUserRoles user: userRolesList){
+            System.out.println("user code are " +user.getUserCode());
+        }
+        String userName = this.userService.getUserName(userRolesList.get(0).getUserCode());
+        mailDTO.setHeader(ExceptionConstants.header + " " + userName + ",");
+        mailDTO.setSubject("New Task Created");
+        mailDTO.setBody1("New Task have been created for you.");
+        mailDTO.setBody2("Task type is " +task.getTaskReferenceType());
+        mailDTO.setBody3("");
+        mailDTO.setBody4("");;
+        mailDTO.setToAddress(userRolesList.get(0).getUserName());//admin user for later
+        mailResponse = sendMail(mailDTO);
+        System.out.println("mailResponse is "+mailResponse);
+    }
+
 
 
     @PostMapping("/closeTask")

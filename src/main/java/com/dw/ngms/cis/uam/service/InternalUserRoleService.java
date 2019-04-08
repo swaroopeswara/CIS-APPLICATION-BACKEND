@@ -47,5 +47,8 @@ public class InternalUserRoleService {
         return this.internalUserRoleRepository.getChildElementsInternal(userCode);
     } //getChildElementsInternal
 
+    public List<InternalUserRoles>getInternalUserName(String provinceCode,String sectionCode,String roleCode){
+        return this.internalUserRoleRepository.getInternalUserName(provinceCode,sectionCode,roleCode);
+    }
 
 }

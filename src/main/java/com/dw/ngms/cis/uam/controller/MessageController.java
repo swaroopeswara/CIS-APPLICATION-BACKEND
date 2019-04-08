@@ -63,8 +63,8 @@ public class MessageController implements ExceptionConstants {
 	public String sendMail(MailDTO mailDTO) {
 		SendBlueMailService http = new SendBlueMailService(ExceptionConstants.sendBlueMailLinkURL, ExceptionConstants.sendBlueMailPassword);
 		Map<String, String> attr = new HashMap<>();
-		attr.put("HEADER", mailDTO.getHeader());
-		attr.put("SUBJECT", mailDTO.getSubject());
+		attr.put("HEADER",mailDTO.getHeader());
+		attr.put("SUBJECT",mailDTO.getSubject());
 		attr.put("BODY1", mailDTO.getBody1());
 		attr.put("BODY2", mailDTO.getBody2());
 		attr.put("BODY3", mailDTO.getBody3());

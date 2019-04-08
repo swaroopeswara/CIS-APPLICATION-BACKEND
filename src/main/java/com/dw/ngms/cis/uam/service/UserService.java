@@ -113,6 +113,8 @@ public class UserService {
 
 
 	public User findByUserByNameAndCode(UserDTO userDTO) {
+		System.out.println("userDTO.getUsercode() "+userDTO.getUsercode());
+		System.out.println("userDTO.getUsername() "+userDTO.getUsername());
 		return this.userRepository.findByUserByNameAndCode(userDTO.getUsercode(), userDTO.getUsername());
 	}//FindUserByNameAndCode
 
