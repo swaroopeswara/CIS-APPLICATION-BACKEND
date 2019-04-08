@@ -109,6 +109,16 @@ public class UserService {
 		return this.userRepository.getpPNumber(pPNumber);
 	} //getUserCode
 
+	public String getpPNumberForAssistant(String pPNumber) {
+		return this.userRepository.getpPNumberForAssistant(pPNumber);
+	}
+
+	public String getUserCodeForAssistant(String ppNumber) {
+		return this.userRepository.getUserCodeForAssistant(ppNumber);
+	}
+
+
+
 
 
 

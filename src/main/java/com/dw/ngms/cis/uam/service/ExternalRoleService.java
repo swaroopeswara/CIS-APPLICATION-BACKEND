@@ -6,6 +6,8 @@ import com.dw.ngms.cis.uam.repository.ExternalRoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * Created by swaroop on 2019/03/30.
  */
@@ -19,6 +21,12 @@ public class ExternalRoleService {
     public ExternalRole getByRoleCodeRoleProvince(String rolesCode, String provinceCode) {
         return this.externalRoleRepository.getByRoleCodeRoleProvince(rolesCode, provinceCode);
     }
+
+    public List<ExternalRole> findByRoleCode() {
+        return this.externalRoleRepository.findByRoleCode();
+    }
+
+
 
     public ExternalRole updateAccessRight(String provinceCode, String roleCode) {
         return this.externalRoleRepository.updateAccessRight(provinceCode, roleCode);

@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import com.dw.ngms.cis.uam.entity.*;
+import com.dw.ngms.cis.uam.service.*;
 import org.apache.commons.lang.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -37,12 +38,6 @@ import com.dw.ngms.cis.uam.enums.ApprovalStatus;
 import com.dw.ngms.cis.uam.enums.Status;
 import com.dw.ngms.cis.uam.jsonresponse.UserControllerResponse;
 import com.dw.ngms.cis.uam.ldap.UserCredentials;
-import com.dw.ngms.cis.uam.service.ExternalRoleService;
-import com.dw.ngms.cis.uam.service.ExternalUserAssistantService;
-import com.dw.ngms.cis.uam.service.ExternalUserService;
-import com.dw.ngms.cis.uam.service.InternalRoleService;
-import com.dw.ngms.cis.uam.service.InternalUserRoleService;
-import com.dw.ngms.cis.uam.service.UserService;
 import com.google.gson.Gson;
 
 @RestController
@@ -71,6 +66,9 @@ public class UserController extends MessageController {
 
     @Autowired
     private InternalUserRoleService internalUserRoleService;
+
+    @Autowired
+    private TaskService taskService;
 
     @PostMapping("/checkADUserExists")
     public ResponseEntity<?> isADUserExists(HttpServletRequest request, @RequestBody @Valid UserCredentials userCredentials) {
@@ -498,9 +496,10 @@ public class UserController extends MessageController {
         }
     }
 
-    @PostMapping("/registerExternalUser")
+    @PostMapping(value = "/registerExternalUser" , produces = "application/json")
     public ResponseEntity<?> createExternalUser(HttpServletRequest request, @Valid @RequestBody User user) {
         Gson gson = new Gson();
+        Task task = new Task();
         String json = null;
         UserControllerResponse userControllerResponse = new UserControllerResponse();
         try {
@@ -548,10 +547,32 @@ public class UserController extends MessageController {
                     }
                 }
             }
-            System.out.println("test here" + user.getExternalUserRoles().get(0).getUserRoleCode());
             User response = userService.saveExternalUser(user);
+            if (user.getMainRoleCode().equalsIgnoreCase("EX011")) {
+                task.setTaskType("ASSISTANT_PENDING_APPROVAL");
+                task.setTaskReferenceCode(user.getUserCode());
+                task.setTaskReferenceType("EXTERNAL USER");
+                task.setTaskOpenDesc("External User Description");
+                System.out.println("Province code is "+user.getExternalUserRoles().get(0).getUserProvinceCode());
+                task.setTaskAllProvinceCode(user.getExternalUserRoles().get(0).getUserProvinceCode());
+                task.setTaskAllOCSectionCode("");
+                task.setTaskAllOCRoleCode(user.getMainRoleCode());
+                task.setTaskStatus("Open");
 
+                createTask(task);
+            }else{
+                task.setTaskType("EXTERNAL_USER_PENDING_APPROVAL");
+                task.setTaskReferenceCode(user.getUserCode());
+                task.setTaskReferenceType("EXTERNAL USER");
+                task.setTaskOpenDesc("External User Description");
+                System.out.println("Province code is "+user.getExternalUserRoles().get(0).getUserProvinceCode());
+                task.setTaskAllProvinceCode(user.getExternalUserRoles().get(0).getUserProvinceCode());
+                task.setTaskAllOCSectionCode("");
+                task.setTaskAllOCRoleCode(user.getMainRoleCode());
+                task.setTaskStatus("Open");
 
+                createTask(task);
+            }
             MailDTO mailDTO = getMailDTO(user);
             sendMailToUser(user, mailDTO);
             sendMailToAdmin(user, mailDTO);
@@ -849,22 +870,30 @@ public class UserController extends MessageController {
 
     private String externalUserAssistantMapping(@RequestBody @Valid User user, ExternalUserAssistant externalUserAssistant) {
         String message = "Success";
-        String ppNumber = this.userService.getpPNumber(user.getExternaluser().getPpno());
+        if(user.getMainRoleName().equalsIgnoreCase("Land Survey Assistant") && user.getMainRoleCode().equalsIgnoreCase("EX011")){
+           String pPnumber = this.userService.getpPNumberForAssistant(user.getExternaluser().getPpno());
+            System.out.println("pPnumber is "+pPnumber);
+            if(pPnumber == null || pPnumber.length() == 0){
+                message = "failed";
+                return message;
+            }
+            String userCode = this.userService.getUserCodeForAssistant(pPnumber);
+            String userName = this.userService.getUserName(userCode);
+            externalUserAssistant.setSurveyorusercode(user.getUserCode());
+            externalUserAssistant.setSurveyorusername(userName);
+            externalUserAssistant.setAssistantusercode(userCode);
+            externalUserAssistant.setAssistantusername(user.getEmail());
+            externalUserAssistant.setIsApproved("Pending");
+            externalUserAssistant.setIsActive("Y");
+            externalUserAssistant.setCreateddate(new Date());
+            externalUserAssistant.setUserId(user.getUserId());
+        }
+       /* String ppNumber = this.userService.getpPNumber(user.getExternaluser().getPpno());
         System.out.println("PP Number is "+ppNumber);
         if(ppNumber == null || ppNumber.length() == 0){
             message = "failed";
             return message;
-        }
-        String UserCode = this.userService.getUserCode(ppNumber);
-        String userName = this.userService.getUserName(UserCode);
-        externalUserAssistant.setSurveyorusercode(user.getUserCode());
-        externalUserAssistant.setSurveyorusername(userName);
-        externalUserAssistant.setAssistantusercode(UserCode);
-        externalUserAssistant.setAssistantusername(user.getEmail());
-        externalUserAssistant.setIsApproved("Pending");
-        externalUserAssistant.setIsActive("Y");
-        externalUserAssistant.setCreateddate(new Date());
-        externalUserAssistant.setUserId(user.getUserId());
+        }*/
 
         return message;
     }
@@ -879,4 +908,46 @@ public class UserController extends MessageController {
         return mailDTO;
     }
 
+
+    private void createTask(Task task) throws IOException {
+        Long taskId = this.taskService.getTaskID();
+        System.out.println("task id is" +taskId);
+        task.setTaskCode("TASK000" + Long.toString(taskId));
+        Task taskService = this.taskService.saveTask(task);
+        //MailDTO mailDTO = getMailDTO(taskService);
+        //sendMailToTaskUser(taskService, mailDTO);
+    }
+
+
+    private MailDTO getMailDTO(@RequestBody @Valid Task task) {
+        MailDTO mailDTO = new MailDTO();
+        mailDTO.setHeader(ExceptionConstants.header);
+        mailDTO.setFooter(ExceptionConstants.footer);
+        mailDTO.setSubject(ExceptionConstants.subject);
+        return mailDTO;
+    }
+
+
+    private void sendMailToTaskUser(@RequestBody @Valid Task task, MailDTO mailDTO) throws IOException {
+        String mailResponse = null;
+        String userCode = null;
+
+        System.out.println("Province Code "+task.getTaskAllProvinceCode() +"section Code " +task.getTaskAllOCSectionCode() +"taskCode "+task.getTaskAllOCRoleCode());
+        List<InternalUserRoles> userRolesList = this.internalUserRoleService.getInternalUserName(task.getTaskAllProvinceCode(),task.getTaskAllOCSectionCode(),task.getTaskAllOCRoleCode());
+        System.out.println("user code is " +userRolesList.get(0).getUserCode());
+        System.out.println("user name is " +userRolesList.get(0).getUserName());
+        for(InternalUserRoles user: userRolesList){
+            System.out.println("user code are " +user.getUserCode());
+        }
+        String userName = this.userService.getUserName(userRolesList.get(0).getUserCode());
+        mailDTO.setHeader(ExceptionConstants.header + " " + userName + ",");
+        mailDTO.setSubject("New Task Created");
+        mailDTO.setBody1("New Task have been created for you.");
+        mailDTO.setBody2("Task type is " +task.getTaskReferenceType());
+        mailDTO.setBody3("");
+        mailDTO.setBody4("");;
+        mailDTO.setToAddress(userRolesList.get(0).getUserName());//admin user for later
+        mailResponse = sendMail(mailDTO);
+        System.out.println("mailResponse is "+mailResponse);
+    }
 }

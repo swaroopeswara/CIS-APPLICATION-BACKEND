@@ -65,7 +65,7 @@ public class InternalUserRoleController extends MessageController {
 
             TaskController taskController = new TaskController();
             Task task = new Task();
-
+            InternalRole internalRole;
             System.out.println("Internal Role Code " + internalUserRoleDTO.getProvinceCode());
             InternalUserRoles internalUserRoles = new InternalUserRoles();
             internalUserRoles.setUserCode(internalUserRoleDTO.getUserCode());
@@ -77,7 +77,15 @@ public class InternalUserRoleController extends MessageController {
             internalUserRoles.setRoleCode(internalUserRoleDTO.getRoleCode());
             internalUserRoles.setRoleName(internalUserRoleDTO.getRoleName());
             internalUserRoles.setCreateddate(new Date());
-            InternalRole internalRole = this.internalUserService.createInternalRoleCode(internalUserRoles.getProvinceCode(), internalUserRoles.getSectionCode(), internalUserRoles.getRoleCode());
+            if(internalUserRoles.getSectionCode() != null) {
+                 internalRole = this.internalUserService.createInternalRoleCode(internalUserRoles.getProvinceCode(), internalUserRoles.getSectionCode(), internalUserRoles.getRoleCode());
+            }else {
+                 internalRole = this.internalUserService.createInternalRoleCodeWithNullSectionCode(internalUserRoles.getProvinceCode(), internalUserRoles.getRoleCode());
+            }
+
+            if(isEmpty(internalRole)){
+                 return ResponseEntity.status(HttpStatus.OK).body("Internal Role is empty with province code "+internalUserRoles.getProvinceCode() + " and Role code "+internalUserRoles.getRoleCode());
+            }
             internalUserRoles.setInternalRoleCode(internalRole.getInternalRoleCode());
             InternalUserRoles savedResponse = internalUserService.saveInternalUserRole(internalUserRoles);
             task.setTaskType("INTERNAL_USER_PENDING_APPROVAL");

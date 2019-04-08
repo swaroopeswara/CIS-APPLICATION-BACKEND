@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * Created by swaroop on 2019/03/30.
  */
@@ -18,6 +20,9 @@ public interface ExternalRoleRepository extends JpaRepository<ExternalRole, Long
 
     @Query("SELECT u FROM ExternalRole u WHERE u.roleCode = :roleCode and u.provinceCode = :provinceCode")
     ExternalRole getByRoleCodeRoleProvince(@Param("roleCode") String roleCode, @Param("provinceCode") String provinceCode);
+
+    @Query("SELECT u FROM ExternalRole u WHERE u.roleCode = 'EX002' ")
+    List<ExternalRole> findByRoleCode();
 
 
 
