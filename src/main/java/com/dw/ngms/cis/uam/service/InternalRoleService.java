@@ -54,8 +54,21 @@ public class InternalRoleService {
     }
 
     public List<InternalRole> getRolesBySectionsAndProvince(String sectionCode,String provinceCode) {
+        System.out.println("Section Code is "+sectionCode);
+        System.out.println("provinceCode Code is "+provinceCode);
         return this.internalRoleRepository.getRolesBySectionsAndProvince(sectionCode,provinceCode);
     }
+
+    public List<InternalRole> getRolesBySectionsAndProvinceBySectionCodeNull(String provinceCode) {
+        return this.internalRoleRepository.getRolesBySectionsAndProvinceBySectionCodeNull(provinceCode);
+    }
+
+
+
+    public List<InternalRole> getRolesBySectionsAndProvinceByProvinceCodeNull(String sectionCode) {
+        return this.internalRoleRepository.getRolesBySectionsAndProvinceByProvinceCodeNull(sectionCode);
+    }
+
 
 
 

@@ -42,7 +42,7 @@ public class TaskController extends MessageController {
     @PostMapping("/createTask")
     public ResponseEntity<?> createTask(HttpServletRequest request, @RequestBody @Valid Task task) {
         try {
-            System.out.println("Inside create task ");
+
             Long taskId = this.taskService.getTaskID();
             System.out.println(taskId);
             task.setTaskCode("TASK000" + Long.toString(taskId));

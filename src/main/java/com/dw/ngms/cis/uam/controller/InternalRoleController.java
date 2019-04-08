@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.springframework.util.StringUtils.isEmpty;
@@ -60,14 +61,25 @@ public class InternalRoleController extends MessageController {
 
     @GetMapping("/getRolesBySectionsAndProvince")
     public ResponseEntity<?> getRolesBySections(HttpServletRequest request,
-                                                @RequestParam String sectionCode,
-                                                @RequestParam String provinceCode
+                                                @RequestParam(required = false, defaultValue = "") String sectionCode,
+                                                @RequestParam(required = false, defaultValue = "") String provinceCode
 
     ) {
+        List<InternalRole> internalUserList;
         try {
-            List<InternalRole> internalUserList = this.internalRoleService.getRolesBySectionsAndProvince(sectionCode,provinceCode);
-            return (CollectionUtils.isEmpty(internalUserList)) ? ResponseEntity.status(HttpStatus.OK).body(internalUserList)
-                    : ResponseEntity.status(HttpStatus.OK).body(internalUserList);
+            if(sectionCode.equalsIgnoreCase("") ){
+               internalUserList = this.internalRoleService.getRolesBySectionsAndProvinceBySectionCodeNull(provinceCode);
+                return (CollectionUtils.isEmpty(internalUserList)) ? ResponseEntity.status(HttpStatus.OK).body(internalUserList)
+                        : ResponseEntity.status(HttpStatus.OK).body(internalUserList);
+            }else if (sectionCode.equalsIgnoreCase("")){
+              internalUserList = this.internalRoleService.getRolesBySectionsAndProvinceByProvinceCodeNull(sectionCode);
+                return (CollectionUtils.isEmpty(internalUserList)) ? ResponseEntity.status(HttpStatus.OK).body(internalUserList)
+                        : ResponseEntity.status(HttpStatus.OK).body(internalUserList);
+            }else {
+              internalUserList = this.internalRoleService.getRolesBySectionsAndProvince(sectionCode, provinceCode);
+                return (CollectionUtils.isEmpty(internalUserList)) ? ResponseEntity.status(HttpStatus.OK).body(internalUserList)
+                        : ResponseEntity.status(HttpStatus.OK).body(internalUserList);
+            }
         } catch (Exception exception) {
             return generateFailureResponse(request, exception);
         }

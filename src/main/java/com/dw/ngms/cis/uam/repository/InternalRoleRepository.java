@@ -38,8 +38,16 @@ public interface InternalRoleRepository extends JpaRepository<InternalRole, Long
     @Query("SELECT u FROM InternalRole  u WHERE u.provinceCode = :provinceCode")
     List<InternalRole> getSectionsByProvinceCode (@Param("provinceCode") String provinceCode);
 
-    @Query("SELECT u FROM InternalRole  u WHERE u.sectionCode = :sectionCode OR :sectionCode IS NULL and u.provinceCode = :provinceCode OR :provinceCode IS NULL")
+    @Query("SELECT u FROM InternalRole  u WHERE  u.sectionCode = :sectionCode and u.provinceCode = :provinceCode")
     List<InternalRole> getRolesBySectionsAndProvince (@Param("sectionCode") String sectionCode,@Param("provinceCode") String provinceCode);
+
+    @Query("SELECT u FROM InternalRole  u WHERE  u.sectionCode IS NULL and u.provinceCode = :provinceCode")
+    List<InternalRole> getRolesBySectionsAndProvinceBySectionCodeNull (@Param("provinceCode") String provinceCode);
+
+    @Query("SELECT u FROM InternalRole  u WHERE  u.sectionCode = :sectionCode and u.provinceCode IS NULL")
+    List<InternalRole> getRolesBySectionsAndProvinceByProvinceCodeNull (@Param("sectionCode") String sectionCode);
+
+
 
 
     @Query(value = "SELECT U.*  FROM INTERNALROLES  u WHERE u.sectionCode is null and  u.provinceCode is null ",
