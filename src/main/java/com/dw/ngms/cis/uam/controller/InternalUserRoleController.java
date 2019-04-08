@@ -11,6 +11,11 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import com.dw.ngms.cis.uam.dto.UserDTO;
+import com.dw.ngms.cis.uam.entity.Task;
+import com.dw.ngms.cis.uam.entity.User;
+import com.dw.ngms.cis.uam.enums.ApprovalStatus;
+import com.dw.ngms.cis.uam.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
@@ -28,6 +33,8 @@ import com.dw.ngms.cis.uam.service.InternalUserService;
 import com.dw.ngms.cis.uam.storage.StorageService;
 import com.dw.ngms.cis.uam.utilities.Constants;
 
+import static org.springframework.util.StringUtils.isEmpty;
+
 /**
  * Created by swaroop on 2019/03/28.
  */
@@ -42,28 +49,62 @@ public class InternalUserRoleController extends MessageController {
     @Autowired
     private InternalUserRoleService internalUserRoleService;
     @Autowired
-    private StorageService testService; 
-    
+    private StorageService testService;
+
+    @Autowired
+    private UserService userService;
+
     @PostMapping("/registerInternalUserRole")
-    public InternalUserRoles createInternalUserRole(@RequestBody @Valid InternalUserRoleDTO internalUserRoleDTO) {
-        System.out.println("Internal Role Code "+internalUserRoleDTO.getProvinceCode());
-        InternalUserRoles internalUserRoles = new InternalUserRoles();
-        internalUserRoles.setUserCode(internalUserRoleDTO.getUserCode());
-        internalUserRoles.setUserName(internalUserRoleDTO.getUserName());
-        internalUserRoles.setProvinceCode(internalUserRoleDTO.getProvinceCode());
-        internalUserRoles.setProvinceName(internalUserRoleDTO.getProvinceName());
-        internalUserRoles.setSectionCode(internalUserRoleDTO.getSectionCode());
-        internalUserRoles.setSectionName(internalUserRoleDTO.getSectionName());
-        internalUserRoles.setRoleCode(internalUserRoleDTO.getRoleCode());
-        internalUserRoles.setRoleName(internalUserRoleDTO.getRoleName());
-        internalUserRoles.setCreateddate(new Date());
-        InternalRole internalRole = this.internalUserService.createInternalRoleCode(internalUserRoles.getProvinceCode(),internalUserRoles.getSectionCode(),internalUserRoles.getRoleCode());
-        internalUserRoles.setInternalRoleCode(internalRole.getInternalRoleCode());
-        return internalUserService.saveInternalUserRole(internalUserRoles);
+    public ResponseEntity<?> createInternalUserRole(HttpServletRequest request, @RequestBody @Valid InternalUserRoleDTO internalUserRoleDTO) {
+        try {
+
+            TaskController taskController = new TaskController();
+            Task task = new Task();
+
+            System.out.println("Internal Role Code " + internalUserRoleDTO.getProvinceCode());
+            InternalUserRoles internalUserRoles = new InternalUserRoles();
+            internalUserRoles.setUserCode(internalUserRoleDTO.getUserCode());
+            internalUserRoles.setUserName(internalUserRoleDTO.getUserName());
+            internalUserRoles.setProvinceCode(internalUserRoleDTO.getProvinceCode());
+            internalUserRoles.setProvinceName(internalUserRoleDTO.getProvinceName());
+            internalUserRoles.setSectionCode(internalUserRoleDTO.getSectionCode());
+            internalUserRoles.setSectionName(internalUserRoleDTO.getSectionName());
+            internalUserRoles.setRoleCode(internalUserRoleDTO.getRoleCode());
+            internalUserRoles.setRoleName(internalUserRoleDTO.getRoleName());
+            internalUserRoles.setCreateddate(new Date());
+            InternalRole internalRole = this.internalUserService.createInternalRoleCode(internalUserRoles.getProvinceCode(), internalUserRoles.getSectionCode(), internalUserRoles.getRoleCode());
+            internalUserRoles.setInternalRoleCode(internalRole.getInternalRoleCode());
+            InternalUserRoles savedResponse = internalUserService.saveInternalUserRole(internalUserRoles);
+            task.setTaskType("INTERNAL_USER_PENDING_APPROVAL");
+            task.setTaskReferenceCode(internalUserRoleDTO.getUserCode());
+            task.setTaskReferenceType("INTERNAL USER");
+            task.setTaskOpenDesc("Internal User Description");
+            task.setTaskAllProvinceCode(internalUserRoleDTO.getProvinceCode());
+            task.setTaskAllOCSectionCode(internalUserRoleDTO.getSectionCode());
+            task.setTaskAllOCRoleCode(internalUserRoleDTO.getRoleCode());
+            task.setTaskStatus("Open");
+            taskController.createTask(request, task);
+
+            UserDTO userDTO = new UserDTO();
+            userDTO.setUsercode(internalUserRoleDTO.getUserCode());
+            User user = this.userService.findByUserCode(userDTO);
+
+            System.out.println("user code in Internal user roles saved "+user.getUserCode());
+
+            if (!isEmpty(user) && user != null) {
+                user.setIsApproved(ApprovalStatus.PENDING);
+                this.userService.saveInternalUser(user);
+            }
+            return ResponseEntity.status(HttpStatus.OK).body(savedResponse);
+        } catch (Exception exception) {
+            return generateFailureResponse(request, exception);
+        }
+
+
     }//createInternalUserRole
-    
+
     @PostMapping("/uploadSignedUserAccess")
-    public ResponseEntity<?> handleFileUpload(HttpServletRequest request,@RequestParam("file") MultipartFile file,
+    public ResponseEntity<?> handleFileUpload(HttpServletRequest request, @RequestParam("file") MultipartFile file,
                                               @RequestParam("userCode") String userCode,
                                               @RequestParam("userName") String userName,
                                               @RequestParam("provinceCode") String provinceCode,
@@ -79,22 +120,22 @@ public class InternalUserRoleController extends MessageController {
         String message = "";
         List<String> files = new ArrayList<String>();
         try {
-            if(file.isEmpty()){
+            if (file.isEmpty()) {
                 return generateEmptyResponse(request, "File Not Found to upload, Please upload a file");
-            }else{
-                System.out.println("test "+userCode+ " "+ userName+ " "+ provinceCode+ " "+ sectionCode + " "+roleCode + " "+internalRoleCode);
-                InternalUserRoles internalUserRoles = this.internalUserRoleService.getInternalUserRoleCode(userCode,userName,provinceCode,sectionCode,roleCode,internalRoleCode);
+            } else {
+                System.out.println("test " + userCode + " " + userName + " " + provinceCode + " " + sectionCode + " " + roleCode + " " + internalRoleCode);
+                InternalUserRoles internalUserRoles = this.internalUserRoleService.getInternalUserRoleCode(userCode, userName, provinceCode, sectionCode, roleCode, internalRoleCode);
                 System.out.println(internalUserRoles.getUserRoleId());
-                if(internalUserRoles!= null   && internalUserRoles.getUserRoleId() != null){
-                      String fileName =  testService.store(file);
-                     files.add(file.getOriginalFilename());
-                     internalUserRoles.setSignedAccessDocPath(Constants.uploadDirectoryPath + fileName);
-                      message = "You successfully uploaded " + internalUserRoles.getSignedAccessDocPath() + "!";
-                     internalUserService.saveInternalUserRole(internalUserRoles);
-                     return ResponseEntity.status(HttpStatus.OK).body(message);
-                 }else{
-                       return generateEmptyResponse(request, "No Internal User Roles  found");
-                 }
+                if (internalUserRoles != null && internalUserRoles.getUserRoleId() != null) {
+                    String fileName = testService.store(file);
+                    files.add(file.getOriginalFilename());
+                    internalUserRoles.setSignedAccessDocPath(Constants.uploadDirectoryPath + fileName);
+                    message = "You successfully uploaded " + internalUserRoles.getSignedAccessDocPath() + "!";
+                    internalUserService.saveInternalUserRole(internalUserRoles);
+                    return ResponseEntity.status(HttpStatus.OK).body(message);
+                } else {
+                    return generateEmptyResponse(request, "No Internal User Roles  found");
+                }
 
             }
 
@@ -107,46 +148,46 @@ public class InternalUserRoleController extends MessageController {
     @GetMapping("/downloadSignedUserAccess")
     public ResponseEntity<?> downloadFile(HttpServletRequest request, @RequestBody @Valid InternalUserRoleDTO internalUserRoles) throws IOException {
         // Load file from database
-        if(internalUserRoles.getUserName()!= null && internalUserRoles.getUserCode()!= null){
-            InternalUserRoles ir = this.internalUserService.findByUserByNameAndCode(internalUserRoles.getUserCode(),internalUserRoles.getUserName());
-            System.out.println("Internal User Roles one "+ir.getSignedAccessDocPath());
+        if (internalUserRoles.getUserName() != null && internalUserRoles.getUserCode() != null) {
+            InternalUserRoles ir = this.internalUserService.findByUserByNameAndCode(internalUserRoles.getUserCode(), internalUserRoles.getUserName());
+            System.out.println("Internal User Roles one " + ir.getSignedAccessDocPath());
             int index = ir.getSignedAccessDocPath().lastIndexOf("/");
             String fileName = ir.getSignedAccessDocPath().substring(index + 1);
-            System.out.println("File Name is "+fileName);
+            System.out.println("File Name is " + fileName);
             File file = new File(ir.getSignedAccessDocPath());
             InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
             String exportedContent = resource.getInputStream().toString();
             HttpHeaders headers = new HttpHeaders();
             headers.setAccessControlExposeHeaders(Collections.singletonList("Content-Disposition"));
             headers.set("Content-Disposition", "attachment; filename=" + fileName);
-            headers.set("Content-Type","application/pdf");
+            headers.set("Content-Type", "application/pdf");
             return new ResponseEntity<String>(exportedContent, headers, HttpStatus.OK);
 
-        }else{
+        } else {
             return generateEmptyResponse(request, "No Internal Roles  found");
         }
     }//downloadFile
-    
+
     @GetMapping("/getInternalUserRolesByEmail")
     public ResponseEntity<?> getInternalUserRolesByEmail(HttpServletRequest request, @RequestParam String email) {
-    	try {
-    		List<InternalUserRoles> internalUserRoles = internalUserRoleService.getInternalUserRole(email);
-        	return (CollectionUtils.isEmpty(internalUserRoles)) ? ResponseEntity.status(HttpStatus.OK).body(internalUserRoles)
-            		: ResponseEntity.status(HttpStatus.OK).body(internalUserRoles);
+        try {
+            List<InternalUserRoles> internalUserRoles = internalUserRoleService.getInternalUserRole(email);
+            return (CollectionUtils.isEmpty(internalUserRoles)) ? ResponseEntity.status(HttpStatus.OK).body(internalUserRoles)
+                    : ResponseEntity.status(HttpStatus.OK).body(internalUserRoles);
         } catch (Exception exception) {
             return generateFailureResponse(request, exception);
         }
     }//getInternalUserRolesByEmail
-    
+
     @PostMapping("/deleteInternalUserRole")
     public ResponseEntity<?> deleteInternalUserRoles(HttpServletRequest request, @RequestBody @Valid InternalUserRoleDTO internalUserRole) {
-    	try {
-    		internalUserRoleService.deleteInternalUserRole(internalUserRole.getUserCode(), 
-    				internalUserRole.getUserName(), internalUserRole.getInternalRoleCode());
-    		return ResponseEntity.status(HttpStatus.OK).body("Successful");
+        try {
+            internalUserRoleService.deleteInternalUserRole(internalUserRole.getUserCode(),
+                    internalUserRole.getUserName(), internalUserRole.getInternalRoleCode());
+            return ResponseEntity.status(HttpStatus.OK).body("Successful");
         } catch (Exception exception) {
             return generateFailureResponse(request, exception);
         }
     }//deleteInternalUserRoles
-    
+
 }
