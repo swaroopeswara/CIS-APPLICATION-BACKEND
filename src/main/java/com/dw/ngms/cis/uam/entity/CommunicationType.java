@@ -33,12 +33,6 @@ public class CommunicationType implements Serializable {
 
 	private static final long serialVersionUID = -7263662741431187675L;
 
-	/*@Column(name = "COMMUNICATIONMODETYPEID")
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
-*/
-
 	@Id
     @Column(name = "COMMUNICATIONMODETYPECODE", nullable = false, length = 50)
     private String communicationTypeCode;
