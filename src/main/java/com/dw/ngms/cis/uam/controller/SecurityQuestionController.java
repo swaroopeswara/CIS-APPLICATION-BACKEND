@@ -56,7 +56,7 @@ public class SecurityQuestionController extends MessageController {
         try {
 
 
-            User user = this.userService.findByUserCode(userDTO);
+            User user = this.userService.findByEmail(userDTO.getEmail());
             List<SecurityQuestionDTO> securityQuestionsTestList = new ArrayList<>();
             if (!isEmpty(user) && user.getUserTypeName().equalsIgnoreCase("EXTERNAL")) {
                 System.out.println("User code get "+user.getUserCode());

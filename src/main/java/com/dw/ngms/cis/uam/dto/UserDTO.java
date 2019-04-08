@@ -23,13 +23,13 @@ public class UserDTO implements Serializable {
 
 	private static final long serialVersionUID = 8918972033622516172L;
 	
-	@NotEmpty(message = "User Code must not be empty")
-    private String usercode;
 
+    private String usercode;
     private String username;
     private String isapproved;
     private String rejectionreason;
     private String isactive;
+	private String email;
     private List<SecurityQuestionDTO> question;
 	public String getUsercode() {
 		return usercode;

@@ -668,6 +668,37 @@ public class UserController extends MessageController {
     }//updatePassword*/
 
 
+    @RequestMapping(value = "/resetPassword", method = RequestMethod.POST)
+    public ResponseEntity<?> resetPassword(HttpServletRequest request, @RequestBody @Valid UserDTO userDTO) throws IOException {
+        try {
+            UserControllerResponse userControllerResponse = new UserControllerResponse();
+            Gson gson = new Gson();
+            String json = null;
+            User user = this.userService.findByUserCode(userDTO);
+            if (isEmpty(user)) {
+                return generateEmptyResponse(request, "Users not found");
+            }
+            if (!isEmpty(user)) {
+                final int SHORT_ID_LENGTH = 8;
+                user.setPassword(RandomStringUtils.randomAlphanumeric(SHORT_ID_LENGTH));
+                user.setFirstLogin("Y");
+                this.userService.updatePassword(user);
+                userControllerResponse.setMessage("User Password Reset Successfully");
+                json = gson.toJson(userControllerResponse);
+                return ResponseEntity.status(HttpStatus.OK).body(json);
+            }
+            userControllerResponse.setMessage("Reset Password is UnSuccessful");
+            json = gson.toJson(userControllerResponse);
+            return  ResponseEntity.status(HttpStatus.OK).body(json);
+
+        } catch (Exception exception) {
+            return generateFailureResponse(request, exception);
+        }
+    }//updatePassword*/
+
+
+
+
     @RequestMapping(value = "/deactivateUser", method = RequestMethod.POST)
     public ResponseEntity<?> deactivateUser(HttpServletRequest request, @RequestBody @Valid UserDTO userDTO) throws IOException {
         try {

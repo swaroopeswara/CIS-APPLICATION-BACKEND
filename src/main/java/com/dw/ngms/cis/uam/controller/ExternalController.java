@@ -75,10 +75,11 @@ public class ExternalController extends MessageController {
         userControllerResponse.setMessage("false");
         json = gson.toJson(userControllerResponse);
         try {
-            ExternalUser externalUser = this.externalUserService.findByUserCode(userDTO);
-            if (isEmpty(externalUser)) {
+            User user = this.userService.findByEmail(userDTO.getEmail());
+            if(isEmpty(user)){
                 return generateEmptyResponse(request, "Users not found");
             }
+            ExternalUser externalUser = this.userService.getChildElements(user.getUserCode());
             if (!isEmpty(externalUser)) {
                 System.out.println("externalUser.getSecurityquestion3() "+externalUser.getSecurityquestion3());
                 System.out.println("userDTO.getQuestion().get(2).getAns() "+userDTO.getQuestion().get(2).getAns());
