@@ -245,9 +245,9 @@ public class UserService {
 		if(uiUser.getExternaluser().getOrganizationtypename() != null && uiUser.getExternaluser().getOrganizationtypecode() != "") user.getExternaluser().setOrganizationtypename(uiUser.getExternaluser().getOrganizationtypename());
 
 		if(uiUser.getExternaluser().getSectorCode() != null && uiUser.getExternaluser().getSectorCode() != ""){
-			user.getExternaluser().setSectorCode(uiUser.getExternaluser().getSectorCode());
+			user.getExternaluser().setSectorcode(uiUser.getExternaluser().getSectorCode());
 		}
-		if(uiUser.getExternaluser().getSectorName() != null && uiUser.getExternaluser().getSectorName() != "") user.getExternaluser().setSectorName(uiUser.getExternaluser().getSectorName());
+		if(uiUser.getExternaluser().getSectorName() != null && uiUser.getExternaluser().getSectorName() != "") user.getExternaluser().setSectorname(uiUser.getExternaluser().getSectorName());
 		if(uiUser.getExternaluser().getPostaladdressline1() != null && uiUser.getExternaluser().getPostaladdressline1() != "") user.getExternaluser().setPostaladdressline1(uiUser.getExternaluser().getPostaladdressline1());
 		if(uiUser.getExternaluser().getPostaladdressline2() != null && uiUser.getExternaluser().getPostaladdressline2() != "") user.getExternaluser().setPostaladdressline2(uiUser.getExternaluser().getPostaladdressline2());
 		if(uiUser.getExternaluser().getPostaladdressline3() != null && uiUser.getExternaluser().getPostaladdressline3() != "") user.getExternaluser().setPostaladdressline3(uiUser.getExternaluser().getPostaladdressline3());

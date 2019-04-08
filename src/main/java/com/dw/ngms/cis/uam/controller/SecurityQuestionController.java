@@ -57,9 +57,12 @@ public class SecurityQuestionController extends MessageController {
 
 
             User user = this.userService.findByEmail(userDTO.getEmail());
+
+
             List<SecurityQuestionDTO> securityQuestionsTestList = new ArrayList<>();
             if (!isEmpty(user) && user.getUserTypeName().equalsIgnoreCase("EXTERNAL")) {
                 System.out.println("User code get "+user.getUserCode());
+
                 ExternalUser externalUser = this.userService.getChildElements(user.getUserCode());
 
                 SecurityQuestionDTO securityQuestionDTO = new SecurityQuestionDTO();
@@ -81,10 +84,13 @@ public class SecurityQuestionController extends MessageController {
                 securityQuestionDTO2.setAns(externalUser.getSecurityanswer3());
                 securityQuestionsTestList.add(securityQuestionDTO2);
 
+                userDTO.setQuestion(securityQuestionsTestList);
+                userDTO.setUsercode(user.getUserCode());
+
             }
 
-            return (CollectionUtils.isEmpty(securityQuestionsTestList)) ? generateEmptyResponse(request, "Security Questions not found")
-                    : ResponseEntity.status(HttpStatus.OK).body(securityQuestionsTestList);
+            return (isEmpty(userDTO)) ? generateEmptyResponse(request, "Security Questions not found")
+                    : ResponseEntity.status(HttpStatus.OK).body(userDTO);
         } catch (Exception exception) {
             return generateFailureResponse(request, exception);
         }

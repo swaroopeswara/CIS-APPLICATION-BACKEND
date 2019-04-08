@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * Created by swaroop on 2019/04/03.
  */
@@ -23,5 +25,20 @@ public interface InternalRoleRepository extends JpaRepository<InternalRole, Long
 
     @Query("SELECT accessRightJson FROM InternalRole u WHERE u.internalRoleCode = :internalRoleCode")
     String getAccessRightJson ( @Param("internalRoleCode") String internalRoleCode);
+
+
+    @Query("SELECT u FROM InternalRole  u WHERE u.provinceCode = :provinceCode")
+    List<InternalRole> getSectionsByProvinceCode (@Param("provinceCode") String provinceCode);
+
+    @Query("SELECT u FROM InternalRole  u WHERE u.sectionCode = :sectionCode")
+    List<InternalRole> getRolesBySections (@Param("sectionCode") String sectionCode);
+
+
+
+
+    @Query(value = "SELECT U.*  FROM INTERNALROLES  u WHERE u.sectionCode is null and  u.provinceCode is null ",
+            nativeQuery = true)
+    List<InternalRole> getNationalRoles ();
+
 
 }

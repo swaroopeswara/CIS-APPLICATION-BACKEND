@@ -125,10 +125,10 @@ public class ExternalUser implements Serializable {
     private String subscribeevents;
     
     @Column(name = "SECTORCODE",length = 50)
-    private String sectorCode;
+    private String sectorcode;
 
     @Column(name = "SECTORNAME",length = 100)
-    private String sectorName;
+    private String sectorname;
 
     @Override
 	public int hashCode() {

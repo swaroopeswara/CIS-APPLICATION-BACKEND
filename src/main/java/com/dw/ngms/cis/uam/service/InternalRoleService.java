@@ -32,6 +32,20 @@ public class InternalRoleService {
         return this.internalRoleRepository.getAccessRightJson(internalRoleCode);
     }
 
+    public List<InternalRole> getSectionsByProvinceCode(String provinceCode) {
+        return this.internalRoleRepository.getSectionsByProvinceCode(provinceCode);
+    }
+
+    public List<InternalRole> getNationalRoles() {
+        return this.internalRoleRepository.getNationalRoles();
+    }
+
+    public List<InternalRole> getRolesBySections(String sectionCode) {
+        return this.internalRoleRepository.getRolesBySections(sectionCode);
+    }
+
+
+
 
 
 }
