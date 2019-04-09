@@ -43,6 +43,11 @@ public class InternalUserRoleService {
         return this.internalUserRoleRepository.getInternalRoleCode(userCode,userName,provinceCode,sectionCode,roleCode,internalRoleCode);
     }//get Internal Role Code
 
+    public InternalUserRoles getInternalUserRoleCodeWithEmptySectionCode(String userCode, String userName,String provinceCode, String roleCode, String internalRoleCode) {
+        return this.internalUserRoleRepository.getInternalUserRoleCodeWithEmptySectionCode(userCode,userName,provinceCode,roleCode,internalRoleCode);
+    }//get Internal Role Code
+
+
     public ArrayList<InternalUserRoles> getChildElementsInternal(String userCode) {
         return this.internalUserRoleRepository.getChildElementsInternal(userCode);
     } //getChildElementsInternal

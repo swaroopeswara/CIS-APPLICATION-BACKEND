@@ -141,9 +141,12 @@ public class InternalUserRoleController extends MessageController {
             if (file.isEmpty()) {
                 return generateEmptyResponse(request, "File Not Found to upload, Please upload a file");
             } else {
-                System.out.println("test " + userCode + " " + userName + " " + provinceCode + " " + sectionCode + " " + roleCode + " " + internalRoleCode);
-                InternalUserRoles internalUserRoles = this.internalUserRoleService.getInternalUserRoleCode(userCode, userName, provinceCode, sectionCode, roleCode, internalRoleCode);
-                System.out.println(internalUserRoles.getUserRoleId());
+                InternalUserRoles internalUserRoles;
+                if(sectionCode!= null && !isEmpty(sectionCode) ) {
+                     internalUserRoles = this.internalUserRoleService.getInternalUserRoleCode(userCode, userName, provinceCode, sectionCode, roleCode, internalRoleCode);
+                }else{
+                    internalUserRoles = this.internalUserRoleService.getInternalUserRoleCodeWithEmptySectionCode(userCode, userName, provinceCode, roleCode, internalRoleCode);
+                }
                 if (internalUserRoles != null && internalUserRoles.getUserRoleId() != null) {
                     String fileName = testService.store(file);
                     files.add(file.getOriginalFilename());
