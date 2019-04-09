@@ -97,7 +97,7 @@ public class InternalUserRoleController extends MessageController {
             task.setTaskAllOCRoleCode(internalUserRoleDTO.getRoleCode());
             task.setTaskStatus("Open");
 
-            createTask(task);
+            //createTask(task);
             //taskController.createTask(request, task);
 
             UserDTO userDTO = new UserDTO();
@@ -213,7 +213,7 @@ public class InternalUserRoleController extends MessageController {
 
 
 
-    private void createTask(Task task) throws IOException {
+    /*private void createTask(Task task) throws IOException {
         Long taskId = this.taskService.getTaskID();
         System.out.println("task id is" +taskId);
         task.setTaskCode("TASK000" + Long.toString(taskId));
@@ -221,7 +221,7 @@ public class InternalUserRoleController extends MessageController {
         //MailDTO mailDTO = getMailDTO(taskService);
         //sendMailToTaskUser(taskService, mailDTO);
     }
-
+*/
 
     private MailDTO getMailDTO(@RequestBody @Valid Task task) {
         MailDTO mailDTO = new MailDTO();

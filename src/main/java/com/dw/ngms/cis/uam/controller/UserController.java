@@ -172,6 +172,24 @@ public class UserController extends MessageController {
     }//getAllInternalUsers
 
 
+   /* @GetMapping("/getUserRegisteredCounts")
+    public ResponseEntity<?> getUserRegisteredCounts(HttpServletRequest request, @RequestParam String provincecode) {
+        try {
+            if(StringUtils.isEmpty(provincecode) || "all".equalsIgnoreCase(provincecode.trim())){
+
+            }
+
+            List<User> userList = (StringUtils.isEmpty(provincecode) || "all".equalsIgnoreCase(provincecode.trim())) ?
+                    userService.getAllUsersByUserTypeName(EXTERNAL_USER_TYPE_NAME) :
+                    userService.getAllExternalUsersByProvinceCode(provincecode);
+            return (CollectionUtils.isEmpty(userList)) ? ResponseEntity.status(HttpStatus.OK).body(userList)
+                    : ResponseEntity.status(HttpStatus.OK).body(userList);
+        } catch (Exception exception) {
+            return generateFailureResponse(request, exception);
+        }
+    }//getUserRegisteredCounts
+*/
+
     /*@GetMapping("/getUserRegisteredCounts")
     public ResponseEntity<?> getCountOfRegisteredUsers(HttpServletRequest request, @RequestParam String provincecode,  @RequestParam String type) {
         try {
@@ -563,7 +581,7 @@ public class UserController extends MessageController {
                 task.setTaskAllOCRoleCode(user.getMainRoleCode());
                 task.setTaskStatus("Open");
 
-                createTask(task);
+                //createTask(task);
             }else{
                 task.setTaskType("EXTERNAL_USER_PENDING_APPROVAL");
                 task.setTaskReferenceCode(user.getUserCode());
@@ -575,7 +593,7 @@ public class UserController extends MessageController {
                 task.setTaskAllOCRoleCode(user.getMainRoleCode());
                 task.setTaskStatus("Open");
 
-                createTask(task);
+                //createTask(task);
             }
             MailDTO mailDTO = getMailDTO(user);
             sendMailToUser(user, mailDTO);
