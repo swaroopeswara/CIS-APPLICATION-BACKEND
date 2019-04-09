@@ -78,6 +78,7 @@ public class UserService {
 	}//getAllAssistantsForPendingApprovalBySurveyorUserCode
 	
 	public List<User> getAllAssistantsBySurveyorUserCode(String surveyorusercode) {
+		System.out.println("surveyorusercode "+surveyorusercode);
 		return userRepository.findAssistantsSurveyorUserCode(surveyorusercode);
 	}//getAllAssistantsBySurveyorUserCode
 	

@@ -77,7 +77,7 @@ public class InternalUserRoleController extends MessageController {
             internalUserRoles.setRoleCode(internalUserRoleDTO.getRoleCode());
             internalUserRoles.setRoleName(internalUserRoleDTO.getRoleName());
             internalUserRoles.setCreateddate(new Date());
-            if(internalUserRoles.getSectionCode() != null) {
+            if(internalUserRoles.getSectionCode() != null && internalUserRoles.getSectionCode() != "") {
                  internalRole = this.internalUserService.createInternalRoleCode(internalUserRoles.getProvinceCode(), internalUserRoles.getSectionCode(), internalUserRoles.getRoleCode());
             }else {
                  internalRole = this.internalUserService.createInternalRoleCodeWithNullSectionCode(internalUserRoles.getProvinceCode(), internalUserRoles.getRoleCode());
@@ -215,8 +215,8 @@ public class InternalUserRoleController extends MessageController {
         System.out.println("task id is" +taskId);
         task.setTaskCode("TASK000" + Long.toString(taskId));
         Task taskService = this.taskService.saveTask(task);
-        MailDTO mailDTO = getMailDTO(taskService);
-        sendMailToTaskUser(taskService, mailDTO);
+        //MailDTO mailDTO = getMailDTO(taskService);
+        //sendMailToTaskUser(taskService, mailDTO);
     }
 
 

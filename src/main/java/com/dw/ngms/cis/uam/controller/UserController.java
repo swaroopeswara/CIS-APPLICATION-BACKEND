@@ -879,9 +879,9 @@ public class UserController extends MessageController {
             }
             String userCode = this.userService.getUserCodeForAssistant(pPnumber);
             String userName = this.userService.getUserName(userCode);
-            externalUserAssistant.setSurveyorusercode(user.getUserCode());
+            externalUserAssistant.setSurveyorusercode(userCode);
             externalUserAssistant.setSurveyorusername(userName);
-            externalUserAssistant.setAssistantusercode(userCode);
+            externalUserAssistant.setAssistantusercode(user.getUserCode());
             externalUserAssistant.setAssistantusername(user.getEmail());
             externalUserAssistant.setIsApproved("Pending");
             externalUserAssistant.setIsActive("Y");

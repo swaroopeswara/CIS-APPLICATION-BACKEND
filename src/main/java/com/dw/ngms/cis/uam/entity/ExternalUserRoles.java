@@ -29,7 +29,7 @@ public class ExternalUserRoles implements Serializable {
 
 	private static final long serialVersionUID = 1098484893268694655L;
 
-    @Column(name = "USERID", nullable = true, length = 50, insertable = false, updatable = false)
+    @Column(name = "USERID", nullable = false, length = 50, insertable = false, updatable = false)
     private Long userId;
 
 
@@ -41,12 +41,10 @@ public class ExternalUserRoles implements Serializable {
 
 
     @Column(name = "USERROLECODE", nullable = true, length = 50)
-    @NotEmpty(message = "USER ROLE CODE must not be empty")
     private String userRoleCode;
 
 
     @Column(name = "USERROLENAME", nullable = true, length = 50)
-    @NotEmpty(message = "USER ROLE NAME must not be empty")
     private String userRoleName;
 
     @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
@@ -56,34 +54,23 @@ public class ExternalUserRoles implements Serializable {
 
 
     @Column(name = "USERCODE", nullable = true, length = 50)
-    @NotEmpty(message = "USER CODE must not be empty")
     private String userCode;
     
     @Column(name = "USERNAME", nullable = true, length = 255)
-    @NotEmpty(message = "USER NAMEmust not be empty")
     private String userName;
     
     @Column(name = "USERPROVINCECODE", nullable = true, length = 100)
-    @NotEmpty(message = "USER PROVINCE CODE must not be empty")
     private String userProvinceCode;
 
     @Column(name = "USERPROVINCENAME", nullable = true, length = 50)
-    @NotEmpty(message = "USER PROVINCE NAME must not be empty")
     private String userProvinceName;
 
     @Column(name = "ISACTIVE", nullable = true, length = 10)
-    @NotEmpty(message = "Active status must not be empty")
     private String isActive = "Y";
 
     @Temporal(TemporalType.DATE)
     @Column(name = "CREATEDDATE", nullable = true)
     Date createdDate = new Date();
-
-//    @Column(name = "SIGNEDACCESSFILEPATH")
-//    private String signedaccessfilepath;
-
-//    @Column(name = "USERID", nullable = true)
-//    private Long userid;
 
     @Column(name = "EXTERNALROLECODE",length = 50)
     private String externalRoleCode;

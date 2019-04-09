@@ -41,6 +41,7 @@ public class User implements Serializable {
     @OneToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER, mappedBy="user")
     private ExternalUser externaluser;
 
+
     @OneToMany(mappedBy="externalUserRole",fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JsonManagedReference
     private List<ExternalUserRoles> externalUserRoles;
