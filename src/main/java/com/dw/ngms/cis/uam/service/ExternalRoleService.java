@@ -39,8 +39,8 @@ public class ExternalRoleService {
 
 
 
-    public ExternalRole updateAccessRight(String provinceCode, String roleCode) {
-        return this.externalRoleRepository.updateAccessRight(provinceCode, roleCode);
+    public List<ExternalRole> updateAccessRight(String roleCode) {
+        return this.externalRoleRepository.updateAccessRight(roleCode);
     }
 
 

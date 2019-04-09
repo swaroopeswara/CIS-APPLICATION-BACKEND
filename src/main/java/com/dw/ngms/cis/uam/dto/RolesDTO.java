@@ -15,8 +15,6 @@ import java.io.Serializable;
 @Setter
 public class RolesDTO implements Serializable {
 
-    private String provincecode;
-    private String sectioncode;
     private String rolecode;
 
 }

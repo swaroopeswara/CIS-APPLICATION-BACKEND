@@ -20,12 +20,12 @@ public class InternalRoleService {
     InternalRoleRepository internalRoleRepository;
 
 
-    public InternalRole updateAccessRight(String provinceCode, String roleCode,String sectionCode) {
-        return this.internalRoleRepository.updateAccessRight(provinceCode,roleCode,sectionCode);
+    public List<InternalRole> updateAccessRight(String roleCode) {
+        return this.internalRoleRepository.updateAccessRight(roleCode);
     }
 
-    public InternalRole updateDashBoardAccessRight(String provinceCode, String roleCode,String sectionCode) {
-        return this.internalRoleRepository.updateDashBoardAccessRight(provinceCode,roleCode,sectionCode);
+    public List<InternalRole>  updateDashBoardAccessRight(String roleCode) {
+        return this.internalRoleRepository.updateDashBoardAccessRight(roleCode);
     }
 
 

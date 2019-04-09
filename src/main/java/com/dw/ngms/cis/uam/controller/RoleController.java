@@ -33,9 +33,9 @@ public class RoleController extends MessageController {
     @GetMapping("/getMenuOfUser")
     public ResponseEntity<?> getMenuOfUser(HttpServletRequest request, @RequestParam String roleCode) {
         try {
-        	Roles role = this.roleService.getRoleByRoleCode(roleCode);
-            return (role == null) ? generateEmptyResponse(request, "Menu for role not found")
-                    : ResponseEntity.status(HttpStatus.OK).body(role);
+        	String menu = this.roleService.getMenuByRoleCode(roleCode);
+            return (menu == null) ? generateEmptyResponse(request, "Menu for role not found")
+                    : ResponseEntity.status(HttpStatus.OK).body(menu);
         } catch (Exception exception) {
             return generateFailureResponse(request, exception);
         }

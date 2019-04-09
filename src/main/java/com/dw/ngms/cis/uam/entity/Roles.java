@@ -40,4 +40,7 @@ public class Roles implements Serializable {
     @Id
     @Column(name = "ROLECODE")
     private String rolecode;
+
+    @Column(name = "MENUJSON", length = 2000)
+    private String menuJson;
 }

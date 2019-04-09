@@ -24,4 +24,10 @@ public class RoleService {
     public Roles getRoleByRoleCode(String roleCode) {
     	return roleRepository.findByRoleCode(roleCode);
     }
+
+    public String getMenuByRoleCode(String roleCode) {
+        return roleRepository.getMenuByRoleCode(roleCode);
+    }
+
+
 }

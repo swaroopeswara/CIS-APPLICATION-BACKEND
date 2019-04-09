@@ -37,15 +37,15 @@ public interface UserRepository extends JpaRepository<User, Long> {
 	   		+ "WHERE U.USERTYPENAME = 'EXTERNAL' AND U.ISAPPROVED = ?1 AND EUA.ISAPPROVED = ?2 AND EUA.SURVEYORUSERCODE = ?3", nativeQuery = true)
    List<User> findAssistantsForPendingApprovalStatusAndProvinceCode(String userApprovalStatus, String assistantApprovalStatus, String surveyorusercode);
 
-   @Query(value = "SELECT U.* FROM USERS U INNER JOIN EXTERNALUSERASSISTANTS EUA ON (EUA.SURVEYORUSERCODE = U.USERCODE) "
-	   		+ "WHERE EUA.SURVEYORUSERCODE = ?1", nativeQuery = true)
+   @Query(value = "select U.* from USERS U where U.USERCODE in (select ea.assistantusercode from EXTERNALUSERASSISTANTS ea where ea.SURVEYORUSERCODE = ?1)", nativeQuery = true)
    List<User> findAssistantsSurveyorUserCode(String surveyorusercode);
 
 
-
-   @Query(value = "SELECT U.* FROM USERS U INNER JOIN EXTERNALUSERASSISTANTS EUA ON (EUA.SURVEYORUSERCODE = U.USERCODE) "
-	   		+ "WHERE EUA.ASSISTANTUSERCODE = ?1", nativeQuery = true)
+   @Query(value = "select U.* from USERS U where U.USERCODE in (select ea.SURVEYORUSERCODE from EXTERNALUSERASSISTANTS ea where ea.ASSISTANTUSERCODE = ?1)", nativeQuery = true)
    List<User> findSurveyorsByAssistantsUserCode(String assistantusercode);
+
+
+
    
    @Query(value = "SELECT U.* FROM USERS U INNER JOIN INTERNALUSERROLES IUR ON (IUR.USERCODE = u.USERCODE) "
    		+ "WHERE U.USERTYPENAME = 'INTERNAL' AND IUR.USERPROVINCECODE = ?1", nativeQuery = true)

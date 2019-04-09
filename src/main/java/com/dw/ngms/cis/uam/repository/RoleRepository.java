@@ -17,4 +17,8 @@ public interface RoleRepository extends JpaRepository<Roles, Integer> {
     @Query("SELECT u FROM Roles u WHERE u.rolecode=?1")
 	Roles findByRoleCode(String roleCode);
 
+    @Query("SELECT menuJson FROM Roles u WHERE u.rolecode=?1")
+    String getMenuByRoleCode(String roleCode);
+
+
 }

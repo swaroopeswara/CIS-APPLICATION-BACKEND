@@ -308,13 +308,15 @@ public class UserController extends MessageController {
             if (updateAccessRightsDTO.getUsertype().equalsIgnoreCase("Internal")) {
                 for (RolesDTO roles : updateAccessRightsDTO.getRoles()) {
                     if (!isEmpty(roles)) {
-                        InternalRole internalRole = this.internalRoleService.updateAccessRight(roles.getProvincecode(), roles.getRolecode(), roles.getSectioncode());
-                        if (!isEmpty(internalRole)) {
-                            internalRole.setAccessRightJson(updateAccessRightsDTO.getAccessrightjson());
-                            this.internalRoleService.updateInternalRole(internalRole);
+                        List<InternalRole> internalRoleList = this.internalRoleService.updateAccessRight(roles.getRolecode());
+                        if (!isEmpty(internalRoleList)) {
+                            for(InternalRole internalRole:internalRoleList) {
+                                internalRole.setAccessRightJson(updateAccessRightsDTO.getAccessrightjson());
+                                this.internalRoleService.updateInternalRole(internalRole);
+                            }
                             userControllerResponse.setMessage("updated Rights access successfully");
                             json = gson.toJson(userControllerResponse);
-                            return ResponseEntity.status(HttpStatus.OK).body(userControllerResponse);
+                            return ResponseEntity.status(HttpStatus.OK).body(json);
                         } else {
                             return generateEmptyResponse(request, "No roles found");
                         }
@@ -326,13 +328,15 @@ public class UserController extends MessageController {
             } else {
                 for (RolesDTO roles : updateAccessRightsDTO.getRoles()) {
                     if (!isEmpty(roles)) {
-                        ExternalRole externalRole = this.externalRoleService.updateAccessRight(roles.getProvincecode(), roles.getRolecode());
-                        if (!isEmpty(externalRole)) {
-                            externalRole.setAccessRightJson(updateAccessRightsDTO.getAccessrightjson());
-                            this.externalRoleService.updateExternalRole(externalRole);
+                        List<ExternalRole> externalRoleList = this.externalRoleService.updateAccessRight(roles.getRolecode());
+                        if (!isEmpty(externalRoleList)) {
+                            for(ExternalRole externalRole:externalRoleList){
+                                externalRole.setAccessRightJson(updateAccessRightsDTO.getAccessrightjson());
+                                this.externalRoleService.updateExternalRole(externalRole);
+                            }
                             userControllerResponse.setMessage("updated Rights access successfully");
                             json = gson.toJson(userControllerResponse);
-                            return ResponseEntity.status(HttpStatus.OK).body(userControllerResponse);
+                            return ResponseEntity.status(HttpStatus.OK).body(json);
                         } else {
                             return generateEmptyResponse(request, "No roles found");
                         }

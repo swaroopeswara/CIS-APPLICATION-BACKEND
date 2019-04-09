@@ -121,13 +121,15 @@ public class InternalRoleController extends MessageController {
             if (updateAccessRightsDTO.getUsertype().equalsIgnoreCase("Internal")) {
                 for (RolesDTO roles : updateAccessRightsDTO.getRoles()) {
                     if (!isEmpty(roles)) {
-                        InternalRole internalRole = this.internalRoleService.updateDashBoardAccessRight(roles.getProvincecode(), roles.getRolecode(), roles.getSectioncode());
-                        if (!isEmpty(internalRole)) {
-                            internalRole.setDashBoardRightJson(updateAccessRightsDTO.getDashboardrightjson());
-                            this.internalRoleService.updateInternalRole(internalRole);
-                            userControllerResponse.setMessage("Dash Board right added successfully");
-                            json = gson.toJson(userControllerResponse);
-                            return ResponseEntity.status(HttpStatus.OK).body(userControllerResponse);
+                        List<InternalRole> internalRoleList = this.internalRoleService.updateDashBoardAccessRight(roles.getRolecode());
+                        if (!isEmpty(internalRoleList)) {
+                            for(InternalRole internalRole:internalRoleList) {
+                                internalRole.setDashBoardRightJson(updateAccessRightsDTO.getDashboardrightjson());
+                                this.internalRoleService.updateInternalRole(internalRole);
+                            }
+                                userControllerResponse.setMessage("Dash Board right added successfully");
+                                json = gson.toJson(userControllerResponse);
+                                return ResponseEntity.status(HttpStatus.OK).body(json);
                         } else {
                             return generateEmptyResponse(request, "No roles found");
                         }
