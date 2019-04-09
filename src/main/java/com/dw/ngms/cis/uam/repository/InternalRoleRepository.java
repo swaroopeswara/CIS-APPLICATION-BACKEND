@@ -26,6 +26,14 @@ public interface InternalRoleRepository extends JpaRepository<InternalRole, Long
     InternalRole updateDashBoardAccessRight(
             @Param("provinceCode") String provinceCode, @Param("roleCode") String roleCode, @Param("sectionCode") String sectionCode);
 
+    @Query(value = "DELETE  FROM INTERNALROLES  u WHERE u.INTERNALROLECODE = ?1 ", nativeQuery = true)
+    void deleteByInternalRoleCode(
+            @Param("internalRoleCode") String internalRoleCode);
+
+    @Query("SELECT u FROM InternalRole u WHERE u.internalRoleCode = :internalRoleCode")
+    InternalRole findByInternalRoleCode(
+            @Param("internalRoleCode") String internalRoleCode);
+
 
 
     @Query("SELECT accessRightJson FROM InternalRole u WHERE u.internalRoleCode = :internalRoleCode")

@@ -2,8 +2,11 @@ package com.dw.ngms.cis.uam.controller;
 
 import com.dw.ngms.cis.uam.dto.RolesDTO;
 import com.dw.ngms.cis.uam.dto.UpdateAccessRightsDTO;
+import com.dw.ngms.cis.uam.dto.UserDTO;
 import com.dw.ngms.cis.uam.entity.ExternalRole;
+import com.dw.ngms.cis.uam.entity.ExternalUser;
 import com.dw.ngms.cis.uam.entity.InternalRole;
+import com.dw.ngms.cis.uam.entity.User;
 import com.dw.ngms.cis.uam.jsonresponse.UserControllerResponse;
 import com.dw.ngms.cis.uam.service.InternalRoleService;
 import com.google.gson.Gson;
@@ -15,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -140,6 +144,25 @@ public class InternalRoleController extends MessageController {
     }//setDashboardRights
 
 
+
+
+    @GetMapping(value = "/deleteInternalRole")
+    public ResponseEntity<?> deleteInternalRole(HttpServletRequest request, @RequestParam String internalRoleCode) throws IOException {
+        try {
+            if(internalRoleCode!= null && !isEmpty(internalRoleCode)) {
+                InternalRole internalRole = this.internalRoleService.findByInternalRoleCode(internalRoleCode);
+                System.out.println("Intenal user code is " +internalRole.getInternalRoleCode());
+                if(!isEmpty(internalRole)){
+                    this.internalRoleService.deleteByInternalRoleCode(internalRole);
+                    return ResponseEntity.status(HttpStatus.OK).body("Internal Role deleted successfully");
+                }
+            }
+                return ResponseEntity.status(HttpStatus.OK).body("No Internal Role found for given Internal code");
+
+        } catch (Exception exception) {
+            return generateFailureResponse(request, exception);
+        }
+    }
 
 
 

@@ -29,6 +29,18 @@ public class InternalRoleService {
     }
 
 
+    public void deleteByInternalRoleCode(InternalRole internalRole){
+        this.internalRoleRepository.delete(internalRole);
+
+    }
+
+    public InternalRole findByInternalRoleCode(String internalRoleCode) {
+        return this.internalRoleRepository.findByInternalRoleCode(internalRoleCode);
+    }
+
+
+
+
 
 
     public InternalRole updateInternalRole(InternalRole internalRole) {

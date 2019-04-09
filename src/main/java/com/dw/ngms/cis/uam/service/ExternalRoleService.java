@@ -22,9 +22,20 @@ public class ExternalRoleService {
         return this.externalRoleRepository.getByRoleCodeRoleProvince(rolesCode, provinceCode);
     }
 
-    public List<ExternalRole> findByRoleCode() {
-        return this.externalRoleRepository.findByRoleCode();
+    public List<ExternalRole> findByRoleCode(String roleCode) {
+        return this.externalRoleRepository.findByRoleCode(roleCode);
     }
+
+    public ExternalRole findByExternalRoleCode(String externalRoleCode) {
+        return this.externalRoleRepository.findByExternalRoleCode(externalRoleCode);
+    }
+
+    public void deleteByInternalRoleCode(ExternalRole externalRole) {
+          this.externalRoleRepository.delete(externalRole);
+    }
+
+
+
 
 
 
