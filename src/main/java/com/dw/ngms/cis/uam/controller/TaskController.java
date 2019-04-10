@@ -48,8 +48,8 @@ public class TaskController extends MessageController {
             task.setTaskCode("TASK000" + Long.toString(taskId));
             Task taskService = this.taskService.saveTask(task);
 
-            MailDTO mailDTO = getMailDTO(taskService);
-            sendMailToTaskUser(taskService, mailDTO);
+           // MailDTO mailDTO = getMailDTO(taskService);
+            //sendMailToTaskUser(taskService, mailDTO);
             return ResponseEntity.status(HttpStatus.OK).body(taskService);
         } catch (Exception exception) {
             return generateFailureResponse(request, exception);
