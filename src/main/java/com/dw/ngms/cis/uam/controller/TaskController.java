@@ -70,7 +70,6 @@ public class TaskController extends MessageController {
         String mailResponse = null;
         String userCode = null;
 
-        System.out.println("Province Code "+task.getTaskAllProvinceCode() +"section Code " +task.getTaskAllOCSectionCode() +"taskCode "+task.getTaskAllOCRoleCode());
         List<InternalUserRoles> userRolesList = this.internalUserRoleService.getInternalUserName(task.getTaskAllProvinceCode(),task.getTaskAllOCSectionCode(),task.getTaskAllOCRoleCode());
         System.out.println("user code is " +userRolesList.get(0).getUserCode());
         System.out.println("user name is " +userRolesList.get(0).getUserName());
@@ -109,9 +108,7 @@ public class TaskController extends MessageController {
                 this.taskService.saveTask(task);
                 return ResponseEntity.status(HttpStatus.OK).body(task);
             }
-            userControllerResponse.setMessage("No Task for the given task code and task reference code and reference type");
-            json = gson.toJson(userControllerResponse);
-            return ResponseEntity.status(HttpStatus.OK).body(json);
+            return generateEmptyWithOKResponse(request, "No Task for the given task code and task reference code and reference type");
         } catch (Exception exception) {
             return generateFailureResponse(request, exception);
         }

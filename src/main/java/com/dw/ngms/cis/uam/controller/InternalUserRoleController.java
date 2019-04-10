@@ -79,7 +79,10 @@ public class InternalUserRoleController extends MessageController {
             internalUserRoles.setCreateddate(new Date());
             if(internalUserRoles.getSectionCode() != null && internalUserRoles.getSectionCode() != "") {
                  internalRole = this.internalUserService.createInternalRoleCode(internalUserRoles.getProvinceCode(), internalUserRoles.getSectionCode(), internalUserRoles.getRoleCode());
-            }else {
+            }else if(internalUserRoles.getSectionCode() != null && internalUserRoles.getSectionCode() != "" &&  internalUserRoles.getProvinceCode() != null && internalUserRoles.getProvinceCode() != ""){
+                internalRole = this.internalUserService.createInternalRoleCodeWithNullSectionCodeProvinceCode( internalUserRoles.getRoleCode());
+            }
+            else {
                  internalRole = this.internalUserService.createInternalRoleCodeWithNullSectionCode(internalUserRoles.getProvinceCode(), internalUserRoles.getRoleCode());
             }
 

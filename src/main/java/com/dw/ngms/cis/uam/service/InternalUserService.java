@@ -36,6 +36,10 @@ public class InternalUserService {
         return this.internalUserRepository.createInternalRoleCodeWithNullSectionCode(provinceCode,roleCode);
     }//get Internal Role Code
 
+    public InternalRole createInternalRoleCodeWithNullSectionCodeProvinceCode(String roleCode) {
+        return this.internalUserRepository.createInternalRoleCodeWithNullSectionCodeProvinceCode(roleCode);
+    }//get Internal Role Code
+
 
 
     public InternalUserRoles findByUserByNameAndCode(String userCode, String userName) {

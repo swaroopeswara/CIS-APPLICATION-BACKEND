@@ -23,6 +23,10 @@ public interface InternalUserRepository extends JpaRepository<InternalUserRoles,
     @Query("SELECT u FROM InternalRole u WHERE u.provinceCode = :provinceCode and u.sectionCode IS NULL and u.roleCode = :roleCode")
     InternalRole createInternalRoleCodeWithNullSectionCode(@Param("provinceCode") String provinceCode, @Param("roleCode") String roleCode);
 
+    @Query("SELECT u FROM InternalRole u WHERE u.provinceCode IS NULL and u.sectionCode IS NULL and u.roleCode = :roleCode")
+    InternalRole createInternalRoleCodeWithNullSectionCodeProvinceCode(@Param("roleCode") String roleCode);
+
+
     @Query("SELECT u FROM InternalUserRoles u WHERE u.userCode = :userCode and u.userName = :userName")
     InternalUserRoles findByUserByNameAndCode(
             @Param("userCode") String userCode, @Param("userName") String userName);
