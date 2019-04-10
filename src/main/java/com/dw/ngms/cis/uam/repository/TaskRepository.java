@@ -2,7 +2,9 @@ package com.dw.ngms.cis.uam.repository;
 
 import com.dw.ngms.cis.uam.entity.Task;
 import com.dw.ngms.cis.uam.entity.User;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -14,7 +16,7 @@ import java.util.List;
  */
 
 @Repository
-public interface TaskRepository extends JpaRepository<Task, Long> {
+public interface TaskRepository extends JpaRepository<Task, Long>,JpaSpecificationExecutor<Task> {
 
 
     @Query("SELECT u FROM Task u WHERE u.taskStatus = :taskStatus OR :taskStatus IS NULL and u.taskType = :taskType OR :taskType IS NULL and u.taskAllProvinceCode = :taskAllProvinceCode OR :taskAllProvinceCode IS NULL and u.taskAllOCSectionCode = :taskAllOCSectionCode OR :taskAllOCSectionCode IS NULL  and u.taskAllOCRoleCode = :taskAllOCRoleCode OR :taskAllOCRoleCode IS NULL ")
@@ -24,7 +26,10 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
                               @Param("taskAllOCSectionCode") String taskAllOCSectionCode,
                               @Param("taskAllOCRoleCode") String taskAllOCRoleCode);
 
-
+    @Query("SELECT u FROM Task u WHERE u.taskStatus = :taskStatus and u.taskType = :taskType")
+    List<Task> getAllTasksTest(@Param("taskStatus") String taskStatus,
+                               @Param("taskType") String taskType
+                           );
 
     @Query(value = "SELECT task_seq.nextval FROM dual", nativeQuery =
             true)
@@ -36,6 +41,5 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
                              @Param("taskReferenceType") String taskReferenceType);
 
 
-
-
+    List<Task> findAll(Specification<Task> specification);
 }
