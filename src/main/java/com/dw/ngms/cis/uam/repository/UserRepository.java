@@ -3,6 +3,7 @@ package com.dw.ngms.cis.uam.repository;
 import java.util.List;
 
 import com.dw.ngms.cis.uam.entity.ExternalUser;
+import com.dw.ngms.cis.uam.entity.ExternalUserRoles;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -78,6 +79,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
    @Query("SELECT u FROM ExternalUser u WHERE u.usercode = :usercode")
     ExternalUser getChildElements(@Param("usercode") String usercode);
+
+   @Query("SELECT u FROM ExternalUserRoles u WHERE u.userCode = :userCode")
+   List<ExternalUserRoles> getExternalUserRolesChildElements(@Param("userCode") String userCode);
 
 
    @Query(value = "SELECT U.* FROM USERS U INNER JOIN INTERNALUSERROLES IUR ON (IUR.USERCODE = u.USERCODE) "

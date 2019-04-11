@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.dw.ngms.cis.uam.dto.ExternalUserDTO;
 import com.dw.ngms.cis.uam.dto.UserUpdateDTO;
+import com.dw.ngms.cis.uam.entity.ExternalUserRoles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -96,6 +97,11 @@ public class UserService {
 
 	public ExternalUser getChildElements(String userCode) {
 		return this.userRepository.getChildElements(userCode);
+	} //FindUserByEmail
+
+
+	public List<ExternalUserRoles> getExternalUserRolesChildElements(String userCode) {
+		return this.userRepository.getExternalUserRolesChildElements(userCode);
 	} //FindUserByEmail
 
 	public String getUserCode(String pPNumber) {

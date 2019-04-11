@@ -10,6 +10,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import com.dw.ngms.cis.uam.dto.*;
 import com.dw.ngms.cis.uam.entity.*;
 import com.dw.ngms.cis.uam.service.*;
 import org.apache.commons.lang.RandomStringUtils;
@@ -28,12 +29,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dw.ngms.cis.exception.ExceptionConstants;
-import com.dw.ngms.cis.uam.dto.MailDTO;
-import com.dw.ngms.cis.uam.dto.RolesDTO;
-import com.dw.ngms.cis.uam.dto.UpdateAccessRightsDTO;
-import com.dw.ngms.cis.uam.dto.UpdatePasswordDTO;
-import com.dw.ngms.cis.uam.dto.UserDTO;
-import com.dw.ngms.cis.uam.dto.UserUpdateDTO;
 import com.dw.ngms.cis.uam.enums.ApprovalStatus;
 import com.dw.ngms.cis.uam.enums.Status;
 import com.dw.ngms.cis.uam.jsonresponse.UserControllerResponse;
@@ -172,23 +167,32 @@ public class UserController extends MessageController {
     }//getAllInternalUsers
 
 
-   /* @GetMapping("/getUserRegisteredCounts")
+ @GetMapping("/getUserRegisteredCounts")
     public ResponseEntity<?> getUserRegisteredCounts(HttpServletRequest request, @RequestParam String provincecode) {
         try {
-            if(StringUtils.isEmpty(provincecode) || "all".equalsIgnoreCase(provincecode.trim())){
-
-            }
-
+            RegisteredCountDTO registeredCountDTO = new RegisteredCountDTO();
+            UserDTO userDTO = new UserDTO();
+            List<RegisteredCountDTO> registeredCountDTOs = new ArrayList<>();
             List<User> userList = (StringUtils.isEmpty(provincecode) || "all".equalsIgnoreCase(provincecode.trim())) ?
                     userService.getAllUsersByUserTypeName(EXTERNAL_USER_TYPE_NAME) :
                     userService.getAllExternalUsersByProvinceCode(provincecode);
-            return (CollectionUtils.isEmpty(userList)) ? ResponseEntity.status(HttpStatus.OK).body(userList)
-                    : ResponseEntity.status(HttpStatus.OK).body(userList);
+            for(User userItems : userList){
+                userDTO.setUsercode(userItems.getUserCode());
+                for(ExternalUserRoles externalUserRolesItems : userItems.getExternalUserRoles()){
+                    registeredCountDTO.setUserProvinceCode(externalUserRolesItems.getUserProvinceCode()) ;
+                    registeredCountDTO.setUserProvinceName(externalUserRolesItems.getUserProvinceName());
+                    registeredCountDTOs.add(registeredCountDTO);
+                }
+            }
+
+            userDTO.setRegisteredCountDTOs(registeredCountDTOs);
+            return (!isEmpty(userDTO) && userDTO!= null) ? ResponseEntity.status(HttpStatus.OK).body(userDTO)
+                    : ResponseEntity.status(HttpStatus.OK).body(userDTO);
         } catch (Exception exception) {
             return generateFailureResponse(request, exception);
         }
     }//getUserRegisteredCounts
-*/
+
 
     /*@GetMapping("/getUserRegisteredCounts")
     public ResponseEntity<?> getCountOfRegisteredUsers(HttpServletRequest request, @RequestParam String provincecode,  @RequestParam String type) {
@@ -466,7 +470,9 @@ public class UserController extends MessageController {
             User userInfo = this.userService.findByEmail(email);
             if (!isEmpty(userInfo) && userInfo != null && userInfo.getUserTypeName().equalsIgnoreCase("EXTERNAL")) {
                 ExternalUser externalUser = this.userService.getChildElements(userInfo.getUserCode());
+                List<ExternalUserRoles> externalUserRolesList = this.userService.getExternalUserRolesChildElements(userInfo.getUserCode());
                 userInfo.setExternaluser(externalUser);
+                userInfo.setExternalUserRoles(externalUserRolesList);
             } else if (!isEmpty(userInfo) && userInfo != null && userInfo.getUserTypeName().equalsIgnoreCase("INTERNAL")) {
                 System.out.println("User code is: " + userInfo.getUserCode());
                 List<InternalUserRoles> interUserRolesList = new ArrayList<>();
@@ -485,6 +491,7 @@ public class UserController extends MessageController {
                         internalUserRoles1.setUserRoleId(in.getUserRoleId());
                         internalUserRoles1.setIsActive(in.getIsActive());
                         internalUserRoles1.setUserName(in.getUserName());
+                        internalUserRoles1.setSignedAccessDocPath(in.getSignedAccessDocPath());
                         internalUserRoles1.setCreateddate(in.getCreateddate());
                         interUserRolesList.add(internalUserRoles1);
                         userInfo.setInternalUserRoles(interUserRolesList);
