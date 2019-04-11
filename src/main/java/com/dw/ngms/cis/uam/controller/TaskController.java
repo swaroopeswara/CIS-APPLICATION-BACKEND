@@ -13,7 +13,6 @@ import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -117,17 +116,12 @@ public class TaskController extends MessageController {
 
 
     @GetMapping("/getAllTasks")
-    public ResponseEntity<?> getAllExternalUsers(HttpServletRequest request, @RequestParam(required = false, defaultValue = "") String taskStatus,
-                                                 @RequestParam(required = false, defaultValue = "") String taskType,
-                                                 @RequestParam(required = false, defaultValue = "") String taskAllProvinceCode,
-                                                 @RequestParam(required = false, defaultValue = "") String taskAllOCSectionCode,
-                                                 @RequestParam(required = false, defaultValue = "") String taskAllOCRoleCode) {
-        try {
-            List<Task> taskList = taskService.getAllTasks(taskStatus,taskType,taskAllProvinceCode,taskAllOCSectionCode,taskAllOCRoleCode);
-            return (CollectionUtils.isEmpty(taskList)) ? generateEmptyResponse(request, "Tasks not found")
-                    : ResponseEntity.status(HttpStatus.OK).body(taskList);
-        } catch (Exception exception) {
-            return generateFailureResponse(request, exception);
-        }
-    }//getAllExternalUsers
+    public List<Task> findByCriteria(  @RequestParam(required = false) String taskStatus,
+                                       @RequestParam(required = false) String taskType,
+                                       @RequestParam(required = false) String taskAllProvinceCode,
+                                       @RequestParam(required = false) String taskAllOCSectionCode,
+                                       @RequestParam(required = false) String taskAllOCRoleCode) {
+
+        return  this.taskService.findByCriteria(taskStatus,taskType,taskAllProvinceCode,taskAllOCSectionCode,taskAllOCRoleCode);
+    }
 }
