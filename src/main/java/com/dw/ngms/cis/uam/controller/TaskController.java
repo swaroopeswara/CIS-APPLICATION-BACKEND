@@ -10,21 +10,15 @@ import com.dw.ngms.cis.uam.service.InternalUserRoleService;
 import com.dw.ngms.cis.uam.service.TaskService;
 import com.dw.ngms.cis.uam.service.UserService;
 import com.google.gson.Gson;
-import com.mysema.query.jpa.impl.JPAQuery;
-import com.mysema.query.jpa.impl.JPAQueryFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
-
-
-import javax.persistence.criteria.Root;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -76,23 +70,22 @@ public class TaskController extends MessageController {
         String mailResponse = null;
         String userCode = null;
 
-        List<InternalUserRoles> userRolesList = this.internalUserRoleService.getInternalUserName(task.getTaskAllProvinceCode(), task.getTaskAllOCSectionCode(), task.getTaskAllOCRoleCode());
-        System.out.println("user code is " + userRolesList.get(0).getUserCode());
-        System.out.println("user name is " + userRolesList.get(0).getUserName());
-        for (InternalUserRoles user : userRolesList) {
-            System.out.println("user code are " + user.getUserCode());
+        List<InternalUserRoles> userRolesList = this.internalUserRoleService.getInternalUserName(task.getTaskAllProvinceCode(),task.getTaskAllOCSectionCode(),task.getTaskAllOCRoleCode());
+        System.out.println("user code is " +userRolesList.get(0).getUserCode());
+        System.out.println("user name is " +userRolesList.get(0).getUserName());
+        for(InternalUserRoles user: userRolesList){
+            System.out.println("user code are " +user.getUserCode());
         }
         String userName = this.userService.getUserName(userRolesList.get(0).getUserCode());
         mailDTO.setHeader(ExceptionConstants.header + " " + userName + ",");
         mailDTO.setSubject("New Task Created");
         mailDTO.setBody1("New Task have been created for you.");
-        mailDTO.setBody2("Task type is " + task.getTaskReferenceType());
+        mailDTO.setBody2("Task type is " +task.getTaskReferenceType());
         mailDTO.setBody3("");
-        mailDTO.setBody4("");
-        ;
+        mailDTO.setBody4("");;
         mailDTO.setToAddress(userRolesList.get(0).getUserName());//admin user for later
         mailResponse = sendMail(mailDTO);
-        System.out.println("mailResponse is " + mailResponse);
+        System.out.println("mailResponse is "+mailResponse);
     }
 
 
@@ -122,29 +115,19 @@ public class TaskController extends MessageController {
     }//createTask
 
 
-    /*@GetMapping("/getAllTasks")
-    public ResponseEntity<?> getAllExternalUsers(HttpServletRequest request, @RequestParam(required = false) String taskStatus,
-                                                 @RequestParam(required = false) String taskType,
-                                                 @RequestParam(required = false) String taskAllProvinceCode,
-                                                 @RequestParam(required = false) String taskAllOCSectionCode,
-                                                 @RequestParam(required = false) String taskAllOCRoleCode) {
+
+    @GetMapping("/getAllTasks")
+    public ResponseEntity<?> getAllExternalUsers(HttpServletRequest request, @RequestParam(required = false, defaultValue = "") String taskStatus,
+                                                 @RequestParam(required = false, defaultValue = "") String taskType,
+                                                 @RequestParam(required = false, defaultValue = "") String taskAllProvinceCode,
+                                                 @RequestParam(required = false, defaultValue = "") String taskAllOCSectionCode,
+                                                 @RequestParam(required = false, defaultValue = "") String taskAllOCRoleCode) {
         try {
-            System.out.println("taskStatus " + taskStatus + "TASK TYPE " + taskType);
-            List<Task> taskList = taskService.getAllTasks(taskStatus, taskType, taskAllProvinceCode, taskAllOCSectionCode, taskAllOCRoleCode);
+            List<Task> taskList = taskService.getAllTasks(taskStatus,taskType,taskAllProvinceCode,taskAllOCSectionCode,taskAllOCRoleCode);
             return (CollectionUtils.isEmpty(taskList)) ? generateEmptyResponse(request, "Tasks not found")
                     : ResponseEntity.status(HttpStatus.OK).body(taskList);
         } catch (Exception exception) {
             return generateFailureResponse(request, exception);
         }
     }//getAllExternalUsers
-*/
-    @GetMapping("/getAllTasks")
-    public List<Task> findByCriteria(  @RequestParam(required = false) String taskStatus,
-                                       @RequestParam(required = false) String taskType,
-                                       @RequestParam(required = false) String taskAllProvinceCode,
-                                       @RequestParam(required = false) String taskAllOCSectionCode,
-                                       @RequestParam(required = false) String taskAllOCRoleCode) {
-
-        return  this.taskService.findByCriteria(taskStatus,taskType,taskAllProvinceCode,taskAllOCSectionCode,taskAllOCRoleCode);
-    }
 }
