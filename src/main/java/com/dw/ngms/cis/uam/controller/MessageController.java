@@ -1,25 +1,36 @@
 package com.dw.ngms.cis.uam.controller;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLConnection;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 
-import com.dw.ngms.cis.uam.config.SendBlueMailService;
-import com.dw.ngms.cis.uam.dto.MailDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 import com.dw.ngms.cis.exception.ExceptionConstants;
 import com.dw.ngms.cis.exception.ResponseBuilderAgent;
 import com.dw.ngms.cis.exception.RestResponse;
-import org.springframework.web.bind.annotation.CrossOrigin;
-
-import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.Map;
+import com.dw.ngms.cis.uam.config.SendBlueMailService;
+import com.dw.ngms.cis.uam.dto.MailDTO;
 
 
 @CrossOrigin(origins = "*")
@@ -58,9 +69,32 @@ public class MessageController implements ExceptionConstants {
 		return ResponseEntity.status(HttpStatus.OK).body(emptyResponse);
 	}//generateEmptyResponse
 
+	protected ResponseEntity<?> getResponseEntityStream(File reportFile, String reportName) throws Exception {		
+		HttpHeaders header = new HttpHeaders();
+        header.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename="+reportName);
+        header.add("Cache-Control", "no-cache, no-store, must-revalidate");
+        header.add("Pragma", "no-cache");
+        header.add("Expires", "0");
 
+        Path path = Paths.get(reportFile.getAbsolutePath());
+        ByteArrayResource resource = new ByteArrayResource(Files.readAllBytes(path));
+        String mimeType = URLConnection.guessContentTypeFromName(reportFile.getName());
+        if(mimeType == null)
+        	mimeType = "application/octet-stream";
+        	
+        return ResponseEntity.ok()
+                .headers(header)
+                .contentLength(reportFile.length())
+                .contentType(MediaType.parseMediaType(mimeType))
+                .body(resource);		
+	}//getResponseEntityStream
+	
+	protected Object getImagePath() {
+		URL url = this.getClass().getResource("Logo_App.jpg");
+		return (url != null) ? url.getPath().replace("/images/Logo_App.jpg", "") : null;
+	}//getImagePath
 
-	public String sendMail(MailDTO mailDTO) {
+	protected String sendMail(MailDTO mailDTO) {
 		SendBlueMailService http = new SendBlueMailService(ExceptionConstants.sendBlueMailLinkURL, ExceptionConstants.sendBlueMailPassword);
 		Map<String, String> attr = new HashMap<>();
 		attr.put("HEADER",mailDTO.getHeader());
@@ -81,10 +115,10 @@ public class MessageController implements ExceptionConstants {
 		String mailResponse = http.send_transactional_template(data);
 
 		return mailResponse;
-	}
+	}//sendMail
 
 
-	public String sendSMS(String cellNumber, String message) throws IOException {
+	protected String sendSMS(String cellNumber, String message) throws IOException {
 
 
 		String myURI = "https://api.bulksms.com/v1/messages";
@@ -153,8 +187,7 @@ public class MessageController implements ExceptionConstants {
 		request.disconnect();
 		
 		return  replyText;
-	}
+	}//sendSMS
 	
-	
-	}
+}
 
