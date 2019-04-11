@@ -122,6 +122,7 @@ public class UserController extends MessageController {
                             internalUserRoles1.setIsActive(in.getIsActive());
                             internalUserRoles1.setUserName(in.getUserName());
                             internalUserRoles1.setCreateddate(in.getCreateddate());
+                            internalUserRoles1.setSignedAccessDocPath(in.getSignedAccessDocPath());
                             interUserRolesList.add(internalUserRoles1);
                             userInfo.setInternalUserRoles(interUserRolesList);
                         }
@@ -150,6 +151,7 @@ public class UserController extends MessageController {
                             internalUserRoles1.setIsActive(in.getIsActive());
                             internalUserRoles1.setUserName(in.getUserName());
                             internalUserRoles1.setCreateddate(in.getCreateddate());
+                            internalUserRoles1.setSignedAccessDocPath(in.getSignedAccessDocPath());
                             interUserRolesList.add(internalUserRoles1);
                             userInfo.setInternalUserRoles(interUserRolesList);
                         }
@@ -170,24 +172,30 @@ public class UserController extends MessageController {
  @GetMapping("/getUserRegisteredCounts")
     public ResponseEntity<?> getUserRegisteredCounts(HttpServletRequest request, @RequestParam String provincecode) {
         try {
-            RegisteredCountDTO registeredCountDTO = new RegisteredCountDTO();
-            UserDTO userDTO = new UserDTO();
             List<RegisteredCountDTO> registeredCountDTOs = new ArrayList<>();
+            List<RegisterUserDTO> registerUserDTOs = new ArrayList<>();
+            RegisterUserDTO registerUserDTO = new RegisterUserDTO();
             List<User> userList = (StringUtils.isEmpty(provincecode) || "all".equalsIgnoreCase(provincecode.trim())) ?
                     userService.getAllUsersByUserTypeName(EXTERNAL_USER_TYPE_NAME) :
                     userService.getAllExternalUsersByProvinceCode(provincecode);
             for(User userItems : userList){
-                userDTO.setUsercode(userItems.getUserCode());
-                for(ExternalUserRoles externalUserRolesItems : userItems.getExternalUserRoles()){
+                System.out.println("user code is" +userItems.getUserCode());
+                registerUserDTOs = new ArrayList<>();
+                registerUserDTO.setUserCode(userItems.getUserCode());
+                registerUserDTOs.add(registerUserDTO);
+                System.out.println("registerUserDTO user code is" +registerUserDTO.getUserCode());
+               /* for(ExternalUserRoles externalUserRolesItems : userItems.getExternalUserRoles()){
+                    System.out.println("externalUserRolesItems.getUserProvinceCode() " +externalUserRolesItems.getUserProvinceCode());
                     registeredCountDTO.setUserProvinceCode(externalUserRolesItems.getUserProvinceCode()) ;
                     registeredCountDTO.setUserProvinceName(externalUserRolesItems.getUserProvinceName());
                     registeredCountDTOs.add(registeredCountDTO);
                 }
+                userDTO.setRegisteredCountDTOs(registeredCountDTOs);*/
             }
 
-            userDTO.setRegisteredCountDTOs(registeredCountDTOs);
-            return (!isEmpty(userDTO) && userDTO!= null) ? ResponseEntity.status(HttpStatus.OK).body(userDTO)
-                    : ResponseEntity.status(HttpStatus.OK).body(userDTO);
+
+            return (!isEmpty(registerUserDTOs) && registerUserDTOs!= null) ? ResponseEntity.status(HttpStatus.OK).body(registerUserDTOs)
+                    : ResponseEntity.status(HttpStatus.OK).body(registerUserDTOs);
         } catch (Exception exception) {
             return generateFailureResponse(request, exception);
         }

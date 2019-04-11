@@ -169,7 +169,7 @@ public class InternalUserRoleController extends MessageController {
         }
     }//handleFileUpload
 
-    @GetMapping("/downloadSignedUserAccess")
+    @PostMapping("/downloadSignedUserAccess")
     public ResponseEntity<?> downloadFile(HttpServletRequest request, @RequestBody @Valid InternalUserRoleDTO internalUserRoles) throws IOException {
         // Load file from database
         if (internalUserRoles.getUserName() != null && internalUserRoles.getUserCode() != null) {
