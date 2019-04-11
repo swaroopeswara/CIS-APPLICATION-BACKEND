@@ -1,8 +1,6 @@
 package com.dw.ngms.cis.uam.repository;
 
 import com.dw.ngms.cis.uam.entity.Task;
-import com.dw.ngms.cis.uam.entity.User;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -26,10 +24,6 @@ public interface TaskRepository extends JpaRepository<Task, Long>,JpaSpecificati
                               @Param("taskAllOCSectionCode") String taskAllOCSectionCode,
                               @Param("taskAllOCRoleCode") String taskAllOCRoleCode);
 
-    @Query("SELECT u FROM Task u WHERE u.taskStatus = :taskStatus and u.taskType = :taskType")
-    List<Task> getAllTasksTest(@Param("taskStatus") String taskStatus,
-                               @Param("taskType") String taskType
-                           );
 
     @Query(value = "SELECT task_seq.nextval FROM dual", nativeQuery =
             true)
@@ -40,6 +34,4 @@ public interface TaskRepository extends JpaRepository<Task, Long>,JpaSpecificati
                              @Param("taskReferenceCode") String taskReferenceCode,
                              @Param("taskReferenceType") String taskReferenceType);
 
-
-    List<Task> findAll(Specification<Task> specification);
 }
