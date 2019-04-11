@@ -173,7 +173,7 @@ public class InternalUserRoleController extends MessageController {
     public ResponseEntity<?> downloadFile(HttpServletRequest request, @RequestBody @Valid InternalUserRoleDTO internalUserRoles) throws IOException {
         // Load file from database
         if (internalUserRoles.getUserName() != null && internalUserRoles.getUserCode() != null) {
-            InternalUserRoles ir = this.internalUserService.findByUserByNameAndCode(internalUserRoles.getUserCode(), internalUserRoles.getUserName());
+            InternalUserRoles ir = this.internalUserService.findByUserByNameAndCode(internalUserRoles.getUserCode(), internalUserRoles.getUserName(),internalUserRoles.getInternalRoleCode());
             System.out.println("Internal User Roles one " + ir.getSignedAccessDocPath());
             int index = ir.getSignedAccessDocPath().lastIndexOf("/");
             String fileName = ir.getSignedAccessDocPath().substring(index + 1);

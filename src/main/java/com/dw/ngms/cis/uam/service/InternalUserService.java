@@ -42,8 +42,8 @@ public class InternalUserService {
 
 
 
-    public InternalUserRoles findByUserByNameAndCode(String userCode, String userName) {
-        return this.internalUserRepository.findByUserByNameAndCode(userCode,userName);
+    public InternalUserRoles findByUserByNameAndCode(String userCode, String userName,String internalRoleCode) {
+        return this.internalUserRepository.findByUserByNameAndCode(userCode,userName,internalRoleCode);
     }//get Internal Role Code
 
 
