@@ -1,9 +1,12 @@
 package com.dw.ngms.cis.uam.report;
 
 import java.io.File;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
@@ -29,22 +32,33 @@ public class ReportController extends MessageController {
 	@Autowired
 	private ReportGenerator reportGenerator;
 	
+	private String reportJrxml;
+	private String reportName;
+	
+	@PostConstruct
+	public void init() {
+		log.info("Post construct initiated");
+	}//init
+	
 	@PostMapping("/userSummaryReport")
 	public ResponseEntity<?> generateUserSummaryReport(HttpServletRequest request, @RequestBody @Valid UserSummaryReportDto userSummaryReportDto) {
-		String reportJrxml = "userSummary.jrxml";
-		String reportName = "UserSummaryReport.pdf";
+		reportJrxml = "userSummary.jrxml";
+		reportName = "UserSummaryReport.pdf";
 		
 		Map<String, Object> parameters = new HashMap<>();
 		parameters.put("fromDate", userSummaryReportDto.getFromDate());
-		parameters.put("toDate", userSummaryReportDto.getToDate());
+		parameters.put("toDate", (userSummaryReportDto.getToDate() == null) ? new Date() : 
+			userSummaryReportDto.getToDate());
 		parameters.put("organisation", userSummaryReportDto.getOrganisation());
 		parameters.put("section", userSummaryReportDto.getSection());
 		parameters.put("sector", userSummaryReportDto.getSector());
 		parameters.put("userType", userSummaryReportDto.getUserType());
 		parameters.put("province", userSummaryReportDto.getProvince());
-		parameters.put("resourcePath", getImagePath());
+		
 		try {
-			boolean isReportGenerated = reportGenerator.generateAndExportReport(reportJrxml, parameters);
+			parameters.put("resourcePath", getImagePath());
+			
+			boolean isReportGenerated = reportGenerator.generateAndExportReport(reportJrxml, reportName, parameters);
 			if(!isReportGenerated)
 				return generateEmptyResponse(request, "User summary report generation failed");
 			
@@ -57,4 +71,22 @@ public class ReportController extends MessageController {
 		}
 	}//generateUserSummaryReport
 
+	@PreDestroy
+	public void cleanup() {
+		try {
+			log.info("cleanup of file: {}", reportJrxml);
+			deleteFile(reportJrxml);
+			log.info("cleanup of file: {}", reportName);
+			deleteFile(reportName);
+		}catch(Exception e) {
+			log.error("Cleanup filed {}", e.getMessage());
+		}
+	}//cleanup
+	
+	private void deleteFile(String fileName) {
+		File reportFile = new File(fileName);
+		if (reportFile.exists()) 
+			reportFile.deleteOnExit();
+	}//deleteFile
+	
 }

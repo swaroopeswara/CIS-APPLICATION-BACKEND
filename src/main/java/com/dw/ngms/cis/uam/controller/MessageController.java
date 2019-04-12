@@ -71,7 +71,7 @@ public class MessageController implements ExceptionConstants {
 
 	protected ResponseEntity<?> getResponseEntityStream(File reportFile, String reportName) throws Exception {		
 		HttpHeaders header = new HttpHeaders();
-        header.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename="+reportName);
+        header.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename="+reportName);//TODO to open in a new tab
         header.add("Cache-Control", "no-cache, no-store, must-revalidate");
         header.add("Pragma", "no-cache");
         header.add("Expires", "0");
@@ -89,9 +89,10 @@ public class MessageController implements ExceptionConstants {
                 .body(resource);		
 	}//getResponseEntityStream
 	
-	protected Object getImagePath() {
-		URL url = this.getClass().getResource("Logo_App.jpg");
-		return (url != null) ? url.getPath().replace("/images/Logo_App.jpg", "") : null;
+	protected Object getImagePath() throws IOException {
+		URL url = this.getClass().getResource("/images/Logo_App.jpg");
+		return (url != null && url.getPath() != null) ? 
+				url.getPath().replace("/images/Logo_App.jpg", "") : null;
 	}//getImagePath
 
 	protected String sendMail(MailDTO mailDTO) {

@@ -25,8 +25,8 @@ public class ReportGenerator {
 	@Autowired
 	private ReportExporter reportExporter;
 	
-	public boolean generateAndExportReport(String reportName, Map<String, Object> parameters) {
-		JasperReport jasperReport = preparReport(reportName);
+	public boolean generateAndExportReport(String reportJrxml, String reportName, Map<String, Object> parameters) {
+		JasperReport jasperReport = preparReport(reportJrxml);
 		if(jasperReport == null) return false;
 		JasperPrint jasperPrint = fillReport(jasperReport, parameters);
 		if(jasperPrint == null) return false;
@@ -34,12 +34,12 @@ public class ReportGenerator {
 		return true;
 	}//generateReport
 	
-	private JasperReport preparReport(String reportFileName) {
-		if(reportFileName == null) return null;
+	private JasperReport preparReport(String reportJrxml) {
+		if(reportJrxml == null) return null;
 		try {
-            InputStream reportStream = this.getClass().getResourceAsStream("/rptfiles/".concat(reportFileName));
+            InputStream reportStream = this.getClass().getResourceAsStream("/rptfiles/".concat(reportJrxml));
             JasperReport jasperReport = JasperCompileManager.compileReport(reportStream);
-			JRSaver.saveObject(jasperReport, reportFileName.replace(".jrxml", ".jasper"));
+			JRSaver.saveObject(jasperReport, reportJrxml.replace(".jrxml", ".jasper"));
 			return jasperReport;
 		} catch (Exception ex) {
 			log.error("Error while preparing the report {}", ex.getMessage());
