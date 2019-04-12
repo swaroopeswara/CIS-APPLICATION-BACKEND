@@ -27,7 +27,7 @@ public class IssueLog implements Serializable {
     @Column(name = "ISSUELOGID")
     @SequenceGenerator(name = "generator", sequenceName = "isuuelog_seq", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "generator")
-    private Long taskId;
+    private Long issueId;
 
 
     @Column(name = "FULLNAME",length = 500)
