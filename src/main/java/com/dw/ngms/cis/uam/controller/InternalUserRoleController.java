@@ -3,6 +3,9 @@ package com.dw.ngms.cis.uam.controller;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -23,10 +26,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.core.io.ByteArrayResource;
 
 import com.dw.ngms.cis.uam.dto.InternalUserRoleDTO;
 import com.dw.ngms.cis.uam.entity.InternalRole;
@@ -169,28 +174,66 @@ public class InternalUserRoleController extends MessageController {
         }
     }//handleFileUpload
 
-    @PostMapping("/downloadSignedUserAccess")
-    public ResponseEntity<?> downloadFile(HttpServletRequest request, @RequestBody @Valid InternalUserRoleDTO internalUserRoles) throws IOException {
+   /* @PostMapping("/downloadSignedUserAccess")
+    public ResponseEntity<InputStreamResource> downloadFile(HttpServletRequest request, @RequestBody @Valid InternalUserRoleDTO internalUserRoles) throws IOException {
         // Load file from database
-        if (internalUserRoles.getUserName() != null && internalUserRoles.getUserCode() != null) {
+       // if (internalUserRoles.getUserName() != null && internalUserRoles.getUserCode() != null) {
             InternalUserRoles ir = this.internalUserService.findByUserByNameAndCode(internalUserRoles.getUserCode(), internalUserRoles.getUserName(),internalUserRoles.getInternalRoleCode());
             System.out.println("Internal User Roles one " + ir.getSignedAccessDocPath());
             int index = ir.getSignedAccessDocPath().lastIndexOf("/");
             String fileName = ir.getSignedAccessDocPath().substring(index + 1);
             System.out.println("File Name is " + fileName);
             File file = new File(ir.getSignedAccessDocPath());
+
             InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
             String exportedContent = resource.getInputStream().toString();
             HttpHeaders headers = new HttpHeaders();
             headers.setAccessControlExposeHeaders(Collections.singletonList("Content-Disposition"));
             headers.set("Content-Disposition", "attachment; filename=" + fileName);
             headers.set("Content-Type", "application/pdf");
-            return new ResponseEntity<String>(exportedContent, headers, HttpStatus.OK);
 
-        } else {
-            return generateEmptyResponse(request, "No Internal Roles  found");
-        }
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION,
+                            "attachment;filename=" + file.getName())
+                    .contentType(MediaType.APPLICATION_PDF).contentLength(file.length())
+                    .body(resource);
+            //return new ResponseEntity<String>(exportedContent, headers, HttpStatus.OK);
+
+       // }
+
+
     }//downloadFile
+
+*/
+
+
+
+
+    @RequestMapping(value = "/downloadSignedUserAccess", method = RequestMethod.POST)
+    public ResponseEntity<ByteArrayResource> downloadFile1(HttpServletRequest request, @RequestBody @Valid InternalUserRoleDTO internalUserRoles) throws IOException {
+
+        InternalUserRoles ir = this.internalUserService.findByUserByNameAndCode(internalUserRoles.getUserCode(), internalUserRoles.getUserName(),internalUserRoles.getInternalRoleCode());
+        System.out.println("Internal User Roles one " + ir.getSignedAccessDocPath());
+        int index = ir.getSignedAccessDocPath().lastIndexOf("/");
+        String fileName = ir.getSignedAccessDocPath().substring(index + 1);
+        System.out.println("File Name is " + fileName);
+        File file = new File(ir.getSignedAccessDocPath());
+
+        HttpHeaders header = new HttpHeaders();
+        header.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + file.getName());
+        header.add("Cache-Control", "no-cache, no-store, must-revalidate");
+        header.add("Pragma", "no-cache");
+        header.add("Expires", "0");
+
+        Path path = Paths.get(file.getAbsolutePath());
+        ByteArrayResource resource = new ByteArrayResource(Files.readAllBytes(path));
+
+        return ResponseEntity.ok()
+                .headers(header)
+                .contentLength(file.length())
+                .contentType(MediaType.parseMediaType("application/octet-stream"))
+                .body(resource);
+    }
 
     @GetMapping("/getInternalUserRolesByEmail")
     public ResponseEntity<?> getInternalUserRolesByEmail(HttpServletRequest request, @RequestParam String email) {

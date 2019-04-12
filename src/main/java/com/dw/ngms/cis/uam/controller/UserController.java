@@ -481,6 +481,10 @@ public class UserController extends MessageController {
                 List<ExternalUserRoles> externalUserRolesList = this.userService.getExternalUserRolesChildElements(userInfo.getUserCode());
                 userInfo.setExternaluser(externalUser);
                 userInfo.setExternalUserRoles(externalUserRolesList);
+                if(!CollectionUtils.isEmpty(externalUserRolesList) &&  externalUserRolesList!= null) {
+                    userInfo.setMainRoleCode(externalUserRolesList.get(0).getUserRoleCode());
+                    userInfo.setMainRoleName(externalUserRolesList.get(0).getUserRoleName());
+                }
             } else if (!isEmpty(userInfo) && userInfo != null && userInfo.getUserTypeName().equalsIgnoreCase("INTERNAL")) {
                 System.out.println("User code is: " + userInfo.getUserCode());
                 List<InternalUserRoles> interUserRolesList = new ArrayList<>();
