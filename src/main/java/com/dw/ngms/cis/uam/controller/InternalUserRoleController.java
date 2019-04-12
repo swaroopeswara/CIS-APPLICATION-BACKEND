@@ -92,7 +92,7 @@ public class InternalUserRoleController extends MessageController {
             }
 
             if(isEmpty(internalRole)){
-                 return ResponseEntity.status(HttpStatus.OK).body("Internal Role is empty with province code "+internalUserRoles.getProvinceCode() + " and Role code "+internalUserRoles.getRoleCode());
+                  return generateEmptyResponse(request, "Internal Role is empty with province code "+internalUserRoles.getProvinceCode() + "and Role code "+internalUserRoles.getRoleCode());
             }
             internalUserRoles.setInternalRoleCode(internalRole.getInternalRoleCode());
             InternalUserRoles savedResponse = internalUserService.saveInternalUserRole(internalUserRoles);
