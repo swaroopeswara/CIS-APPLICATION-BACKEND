@@ -29,6 +29,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.core.io.ByteArrayResource;
@@ -70,7 +71,7 @@ public class InternalUserRoleController extends MessageController {
 
             TaskController taskController = new TaskController();
             Task task = new Task();
-            InternalRole internalRole;
+            InternalRole internalRole = null;
             System.out.println("Internal Role Code " + internalUserRoleDTO.getProvinceCode());
             InternalUserRoles internalUserRoles = new InternalUserRoles();
             internalUserRoles.setUserCode(internalUserRoleDTO.getUserCode());
@@ -82,12 +83,13 @@ public class InternalUserRoleController extends MessageController {
             internalUserRoles.setRoleCode(internalUserRoleDTO.getRoleCode());
             internalUserRoles.setRoleName(internalUserRoleDTO.getRoleName());
             internalUserRoles.setCreateddate(new Date());
-            if(internalUserRoles.getSectionCode() != null && internalUserRoles.getSectionCode() != "") {
+            if(!StringUtils.isEmpty(internalUserRoles.getProvinceCode()) && !StringUtils.isEmpty(internalUserRoles.getSectionCode())) {
                  internalRole = this.internalUserService.createInternalRoleCode(internalUserRoles.getProvinceCode(), internalUserRoles.getSectionCode(), internalUserRoles.getRoleCode());
-            }else if(internalUserRoles.getSectionCode() != null && internalUserRoles.getSectionCode() != "" &&  internalUserRoles.getProvinceCode() != null && internalUserRoles.getProvinceCode() != ""){
+            }
+            if(StringUtils.isEmpty(internalUserRoles.getProvinceCode()) && StringUtils.isEmpty(internalUserRoles.getSectionCode())){
                 internalRole = this.internalUserService.createInternalRoleCodeWithNullSectionCodeProvinceCode( internalUserRoles.getRoleCode());
             }
-            else {
+            if(StringUtils.isEmpty(internalUserRoles.getSectionCode()) && !StringUtils.isEmpty(internalUserRoles.getProvinceCode())){
                  internalRole = this.internalUserService.createInternalRoleCodeWithNullSectionCode(internalUserRoles.getProvinceCode(), internalUserRoles.getRoleCode());
             }
 

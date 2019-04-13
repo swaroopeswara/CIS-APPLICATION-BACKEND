@@ -56,11 +56,9 @@ public class InternalUserRoles implements Serializable {
     private String userName;
     
     @Column(name = "USERPROVINCECODE", nullable = true, length = 100)
-    @NotEmpty(message = "USER PROVINCE CODE must not be empty")
     private String provinceCode;
 
     @Column(name = "USERPROVINCENAME", nullable = true, length = 50)
-    @NotEmpty(message = "USER PROVINCE NAME must not be empty")
     private String provinceName;
 
     @Column(name = "USERSECTIONCODE", nullable = false, length = 100)

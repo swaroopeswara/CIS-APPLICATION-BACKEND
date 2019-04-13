@@ -41,7 +41,7 @@ public class RequestResponseLoggingFilter implements Filter {
             chain.doFilter(requestWrapper, responseWrapper);
         } finally {
         	auditEntry = logResponseAuditEntry(responseWrapper, auditEntry);
-        	log.info("Logging response :{}", auditEntry.toString());
+        	log.info("Logging response :{}", auditEntry.getRequestUrl());
             responseWrapper.copyBodyToResponse();
         }
 	}//doFilter	
