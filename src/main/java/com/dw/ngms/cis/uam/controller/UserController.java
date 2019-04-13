@@ -169,7 +169,7 @@ public class UserController extends MessageController {
     }//getAllInternalUsers
 
 
- @GetMapping("/getUserRegisteredCounts")
+ /*@GetMapping("/getUserRegisteredCounts")
     public ResponseEntity<?> getUserRegisteredCounts(HttpServletRequest request, @RequestParam String provincecode) {
         try {
             List<RegisteredCountDTO> registeredCountDTOs = new ArrayList<>();
@@ -184,13 +184,13 @@ public class UserController extends MessageController {
                 registerUserDTO.setUserCode(userItems.getUserCode());
                 registerUserDTOs.add(registerUserDTO);
                 System.out.println("registerUserDTO user code is" +registerUserDTO.getUserCode());
-               /* for(ExternalUserRoles externalUserRolesItems : userItems.getExternalUserRoles()){
+               *//* for(ExternalUserRoles externalUserRolesItems : userItems.getExternalUserRoles()){
                     System.out.println("externalUserRolesItems.getUserProvinceCode() " +externalUserRolesItems.getUserProvinceCode());
                     registeredCountDTO.setUserProvinceCode(externalUserRolesItems.getUserProvinceCode()) ;
                     registeredCountDTO.setUserProvinceName(externalUserRolesItems.getUserProvinceName());
                     registeredCountDTOs.add(registeredCountDTO);
                 }
-                userDTO.setRegisteredCountDTOs(registeredCountDTOs);*/
+                userDTO.setRegisteredCountDTOs(registeredCountDTOs);*//*
             }
 
 
@@ -200,7 +200,7 @@ public class UserController extends MessageController {
             return generateFailureResponse(request, exception);
         }
     }//getUserRegisteredCounts
-
+*/
 
     /*@GetMapping("/getUserRegisteredCounts")
     public ResponseEntity<?> getCountOfRegisteredUsers(HttpServletRequest request, @RequestParam String provincecode,  @RequestParam String type) {
