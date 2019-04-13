@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.dw.ngms.cis.uam.controller.MessageController;
 import com.dw.ngms.cis.uam.dto.UserLogReportDto;
 import com.dw.ngms.cis.uam.dto.UserSummaryReportDto;
+import com.dw.ngms.cis.uam.utilities.Constants;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -40,7 +41,7 @@ public class ReportController extends MessageController {
 		try {
 			cleanupUserSummary(reportJrxml, reportName);
 			
-			String resourcePath = getResourcePath();
+			String resourcePath = Constants.REPORT_RESOURCE_PATH;
 			Map<String, Object> parameters = new HashMap<>();
 			parameters.put("fromDate", userSummaryReportDto.getFromDate());
 			parameters.put("toDate", (userSummaryReportDto.getToDate() == null) ? new Date() : 
@@ -72,7 +73,7 @@ public class ReportController extends MessageController {
 		try {
 			cleanupUserSummary(reportJrxml, reportName);
 			
-			String resourcePath = getResourcePath();
+			String resourcePath = Constants.REPORT_RESOURCE_PATH;
 			Map<String, Object> parameters = new HashMap<>();
 			parameters.put("fromDate", userLogReportDto.getFromDate());
 			parameters.put("toDate", (userLogReportDto.getToDate() == null) ? new Date() : 
@@ -100,7 +101,7 @@ public class ReportController extends MessageController {
 		try {
 			cleanupUserSummary(reportJrxml, reportName);
 			
-			String resourcePath = getResourcePath();
+			String resourcePath = Constants.REPORT_RESOURCE_PATH;
 			Map<String, Object> parameters = new HashMap<>();
 			parameters.put("fromDate", DateUtils.parseDate("2019-03-01", new String[] {"yyyy-MM-dd"}));
 			parameters.put("toDate", new Date());
@@ -126,7 +127,7 @@ public class ReportController extends MessageController {
 		try {
 			cleanupUserSummary(reportJrxml, reportName);
 			
-			String resourcePath = getResourcePath();
+			String resourcePath = Constants.REPORT_RESOURCE_PATH;
 			Map<String, Object> parameters = new HashMap<>();
 			parameters.put("fromDate", DateUtils.parseDate("2019-03-01", new String[] {"yyyy-MM-dd"}));
 			parameters.put("toDate", new Date());
