@@ -150,7 +150,7 @@ USERTYPENAME = NVL($P{tUserType} ,  USERTYPENAME)]]>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="16" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA["Deleted User Report"]]></textFieldExpression>
+				<textFieldExpression><![CDATA["Updated User Report"]]></textFieldExpression>
 			</textField>
 			<textField pattern="MMMM d, yyyy" isBlankWhenNull="true">
 				<reportElement x="65" y="0" width="100" height="15" uuid="19d3f0e3-7ee2-4e81-be48-0a1b745db5c5"/>

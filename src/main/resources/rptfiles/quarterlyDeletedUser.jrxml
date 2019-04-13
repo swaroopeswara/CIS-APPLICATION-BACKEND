@@ -206,7 +206,7 @@ ISACTIVE='N' AND USERTYPENAME = NVL($P{tUserType},  USERTYPENAME)]]>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font size="11" isBold="true"/>
 								</textElement>
-								<text><![CDATA[Deletion Date]]></text>
+								<text><![CDATA[Date Deleted]]></text>
 							</staticText>
 						</jr:columnHeader>
 						<jr:columnFooter style="Table 1_CH" height="30" rowSpan="1"/>

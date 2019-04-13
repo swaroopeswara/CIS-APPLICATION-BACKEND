@@ -94,11 +94,11 @@
 		<parameter name="tSector" class="java.lang.String"/>
 		<queryString language="SQL">
 			<![CDATA[SELECT * FROM "V_USERDETAILS" WHERE CREATEDDATE >= $P{tFromDate} AND CREATEDDATE <= $P{tToDate} AND
-(PROVINCE = NVL( $P{tProvince},  PROVINCE) OR PROVINCE is null) AND 
-(SECTION = NVL( $P{tSection},  SECTION) OR SECTION is null) AND 
-(SECTOR = NVL( $P{tSector},  SECTOR) OR SECTOR is null) AND 
-(ORGANIZATION =NVL( $P{tOrganisation},  ORGANIZATION) OR ORGANIZATION is null) AND 
-USERTYPE = NVL( $P{tUserType},  USERTYPE)]]>
+(PROVINCE = NVL($P{tProvince},  PROVINCE) OR PROVINCE is null) AND 
+(SECTION = NVL($P{tSection},  SECTION) OR SECTION is null) AND 
+(SECTOR = NVL($P{tSector},  SECTOR) OR SECTOR is null) AND 
+(ORGANIZATION =NVL($P{tOrganisation},  ORGANIZATION) OR ORGANIZATION is null) AND 
+USERTYPE = NVL($P{tUserType}, USERTYPE)]]>
 		</queryString>
 		<field name="CREATEDDATE" class="java.sql.Timestamp">
 			<property name="com.jaspersoft.studio.field.label" value="CREATEDDATE"/>
@@ -138,10 +138,10 @@ USERTYPE = NVL( $P{tUserType},  USERTYPE)]]>
 	<parameter name="toDate" class="java.util.Date"/>
 	<parameter name="province" class="java.lang.String"/>
 	<parameter name="section" class="java.lang.String"/>
-	<parameter name="sector" class="java.lang.String"/>
 	<parameter name="userType" class="java.lang.String"/>
 	<parameter name="organisation" class="java.lang.String"/>
 	<parameter name="resourcePath" class="java.lang.String"/>
+	<parameter name="sector" class="java.lang.String"/>
 	<queryString>
 		<![CDATA[SELECT * FROM V_USERDETAILS]]>
 	</queryString>
@@ -262,7 +262,7 @@ USERTYPE = NVL( $P{tUserType},  USERTYPE)]]>
 					<property name="com.jaspersoft.studio.components.autoresize.next" value="true"/>
 				</reportElement>
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" whenNoDataType="AllSectionsNoDetail">
-					<datasetRun subDataset="UserSummaryDataset" uuid="6ee7db5d-1409-45a5-8101-eb7a815f1411">
+					<datasetRun subDataset="UserSummaryDataset" uuid="5f5f8892-95e1-4b68-8636-41aadf2ac483">
 						<datasetParameter name="tFromDate">
 							<datasetParameterExpression><![CDATA[$P{fromDate}]]></datasetParameterExpression>
 						</datasetParameter>
@@ -280,6 +280,9 @@ USERTYPE = NVL( $P{tUserType},  USERTYPE)]]>
 						</datasetParameter>
 						<datasetParameter name="tUserType">
 							<datasetParameterExpression><![CDATA[$P{userType}]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="tSector">
+							<datasetParameterExpression><![CDATA[$P{sector}]]></datasetParameterExpression>
 						</datasetParameter>
 						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 					</datasetRun>

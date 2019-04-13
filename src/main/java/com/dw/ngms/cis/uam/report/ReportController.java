@@ -8,7 +8,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
-import org.apache.commons.lang.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -18,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dw.ngms.cis.uam.controller.MessageController;
+import com.dw.ngms.cis.uam.dto.UserLogReportDto;
 import com.dw.ngms.cis.uam.dto.UserMaintainReportDto;
 import com.dw.ngms.cis.uam.dto.UserSummaryReportDto;
 import com.dw.ngms.cis.uam.utilities.Constants;
@@ -67,7 +67,7 @@ public class ReportController extends MessageController {
 
 	@PostMapping("/userLogReport")
 	public ResponseEntity<?> generateUserLogReport(HttpServletRequest request, 
-			@RequestBody @Valid UserMaintainReportDto userMaintainReportDto) {
+			@RequestBody @Valid UserLogReportDto userLogReportDto) {
 		String reportJrxml = "userLog.jrxml";
 		String reportName = "UserLogReport.pdf";		
 		try {
@@ -75,10 +75,10 @@ public class ReportController extends MessageController {
 			
 			String resourcePath = Constants.REPORT_RESOURCE_PATH;
 			Map<String, Object> parameters = new HashMap<>();
-			parameters.put("fromDate", userMaintainReportDto.getFromDate());
-			parameters.put("toDate", (userMaintainReportDto.getToDate() == null) ? new Date() : 
-				userMaintainReportDto.getToDate());
-			parameters.put("userType", userMaintainReportDto.getUserType());
+			parameters.put("fromDate", userLogReportDto.getFromDate());
+			parameters.put("toDate", (userLogReportDto.getToDate() == null) ? new Date() : 
+				userLogReportDto.getToDate());
+			parameters.put("userType", userLogReportDto.getUserType());
 			parameters.put("resourcePath", resourcePath);
 			
 			boolean isReportGenerated = reportGenerator.generateAndExportReport(reportJrxml, reportName, parameters);
@@ -104,8 +104,9 @@ public class ReportController extends MessageController {
 			
 			String resourcePath = Constants.REPORT_RESOURCE_PATH;
 			Map<String, Object> parameters = new HashMap<>();
-			parameters.put("fromDate", DateUtils.parseDate("2019-03-01", new String[] {"yyyy-MM-dd"}));
-			parameters.put("toDate", new Date());
+			parameters.put("fromDate", userMaintainReportDto.getFromDate());
+			parameters.put("toDate", (userMaintainReportDto.getToDate() == null) ? new Date() : 
+				userMaintainReportDto.getToDate());
 			parameters.put("userType", userMaintainReportDto.getUserType());
 			parameters.put("resourcePath", resourcePath);
 			
@@ -123,7 +124,8 @@ public class ReportController extends MessageController {
 	}//generateQuarterlyUpdatedUserReport
 	
 	@PostMapping("/quarterlyDeletedUserReport")
-	public ResponseEntity<?> generateQuarterlyDeletedUserReport(HttpServletRequest request) {
+	public ResponseEntity<?> generateQuarterlyDeletedUserReport(HttpServletRequest request, 
+			@RequestBody @Valid UserMaintainReportDto userMaintainReportDto) {
 		String reportJrxml = "quarterlyDeletedUser.jrxml";
 		String reportName = "QuarterlyDeletedUserReport.pdf";		
 		try {
@@ -131,8 +133,10 @@ public class ReportController extends MessageController {
 			
 			String resourcePath = Constants.REPORT_RESOURCE_PATH;
 			Map<String, Object> parameters = new HashMap<>();
-			parameters.put("fromDate", DateUtils.parseDate("2019-03-01", new String[] {"yyyy-MM-dd"}));
-			parameters.put("toDate", new Date());
+			parameters.put("fromDate", userMaintainReportDto.getFromDate());
+			parameters.put("toDate", (userMaintainReportDto.getToDate() == null) ? new Date() : 
+				userMaintainReportDto.getToDate());
+			parameters.put("userType", userMaintainReportDto.getUserType());
 			parameters.put("resourcePath", resourcePath);
 			
 			boolean isReportGenerated = reportGenerator.generateAndExportReport(reportJrxml, reportName, parameters);
