@@ -209,17 +209,13 @@ USERTYPE = NVL( $P{tUserType},  USERTYPE)]]>
 				<imageExpression><![CDATA[$P{resourcePath}+"/images/Logo_DRDLR.jpg"]]></imageExpression>
 			</image>
 			<image>
-				<reportElement x="580" y="0" width="164" height="33" uuid="db35de88-1c38-4301-adf6-7c9d943f0c81"/>
-				<imageExpression><![CDATA[$P{resourcePath}+"/images/Logo_App.jpg"]]></imageExpression>
-			</image>
-			<image>
 				<reportElement x="990" y="-2" width="100" height="56" uuid="8b8602a0-1bb7-4ac2-b968-174a97ae0c0c"/>
 				<imageExpression><![CDATA[$P{resourcePath}+"/images/Logo_Flag.jpg"]]></imageExpression>
 			</image>
 			<textField>
-				<reportElement x="430" y="73" width="160" height="30" uuid="663a13d7-46e6-4962-a0bd-3640c6e6afba"/>
-				<textElement textAlignment="Center">
-					<font isBold="true"/>
+				<reportElement x="460" y="10" width="300" height="30" uuid="663a13d7-46e6-4962-a0bd-3640c6e6afba"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="16" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA["User Summary Details Report"]]></textFieldExpression>
 			</textField>
@@ -363,7 +359,7 @@ USERTYPE = NVL( $P{tUserType},  USERTYPE)]]>
 							<textField>
 								<reportElement x="0" y="0" width="131" height="30" uuid="fd1588fe-8eaa-4e2a-a1f0-91d26aff800c"/>
 								<textElement verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{ORGANIZATION}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{ORGANIZATION} == null ? "" : $F{ORGANIZATION}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -383,7 +379,7 @@ USERTYPE = NVL( $P{tUserType},  USERTYPE)]]>
 							<textField>
 								<reportElement x="0" y="0" width="101" height="30" uuid="351d970e-0369-40e2-818c-15dc9c4e500c"/>
 								<textElement verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{SECTOR}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{SECTOR} == null ? "" : $F{SECTOR}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -503,7 +499,7 @@ USERTYPE = NVL( $P{tUserType},  USERTYPE)]]>
 							<textField>
 								<reportElement x="0" y="0" width="98" height="30" uuid="9242f4d2-f125-4518-a575-ae1f0c4f1516"/>
 								<textElement verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{SECTION}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{SECTION} == null ? "" : $F{SECTION}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
