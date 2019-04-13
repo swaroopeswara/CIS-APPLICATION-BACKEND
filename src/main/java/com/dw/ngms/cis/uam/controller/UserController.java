@@ -10,6 +10,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import com.dw.ngms.cis.uam.configuration.MailConfiguration;
 import com.dw.ngms.cis.uam.dto.*;
 import com.dw.ngms.cis.uam.entity.*;
 import com.dw.ngms.cis.uam.service.*;
@@ -64,6 +65,9 @@ public class UserController extends MessageController {
 
     @Autowired
     private TaskService taskService;
+
+    @Autowired
+    private MailConfiguration mailConfiguration;
 
     @PostMapping("/checkADUserExists")
     public ResponseEntity<?> isADUserExists(HttpServletRequest request, @RequestBody @Valid UserCredentials userCredentials) {
@@ -169,94 +173,7 @@ public class UserController extends MessageController {
     }//getAllInternalUsers
 
 
- /*@GetMapping("/getUserRegisteredCounts")
-    public ResponseEntity<?> getUserRegisteredCounts(HttpServletRequest request, @RequestParam String provincecode) {
-        try {
-            List<RegisteredCountDTO> registeredCountDTOs = new ArrayList<>();
-            List<RegisterUserDTO> registerUserDTOs = new ArrayList<>();
-            RegisterUserDTO registerUserDTO = new RegisterUserDTO();
-            List<User> userList = (StringUtils.isEmpty(provincecode) || "all".equalsIgnoreCase(provincecode.trim())) ?
-                    userService.getAllUsersByUserTypeName(EXTERNAL_USER_TYPE_NAME) :
-                    userService.getAllExternalUsersByProvinceCode(provincecode);
-            for(User userItems : userList){
-                System.out.println("user code is" +userItems.getUserCode());
-                registerUserDTOs = new ArrayList<>();
-                registerUserDTO.setUserCode(userItems.getUserCode());
-                registerUserDTOs.add(registerUserDTO);
-                System.out.println("registerUserDTO user code is" +registerUserDTO.getUserCode());
-               *//* for(ExternalUserRoles externalUserRolesItems : userItems.getExternalUserRoles()){
-                    System.out.println("externalUserRolesItems.getUserProvinceCode() " +externalUserRolesItems.getUserProvinceCode());
-                    registeredCountDTO.setUserProvinceCode(externalUserRolesItems.getUserProvinceCode()) ;
-                    registeredCountDTO.setUserProvinceName(externalUserRolesItems.getUserProvinceName());
-                    registeredCountDTOs.add(registeredCountDTO);
-                }
-                userDTO.setRegisteredCountDTOs(registeredCountDTOs);*//*
-            }
 
-
-            return (!isEmpty(registerUserDTOs) && registerUserDTOs!= null) ? ResponseEntity.status(HttpStatus.OK).body(registerUserDTOs)
-                    : ResponseEntity.status(HttpStatus.OK).body(registerUserDTOs);
-        } catch (Exception exception) {
-            return generateFailureResponse(request, exception);
-        }
-    }//getUserRegisteredCounts
-*/
-
-    /*@GetMapping("/getUserRegisteredCounts")
-    public ResponseEntity<?> getCountOfRegisteredUsers(HttpServletRequest request, @RequestParam String provincecode,  @RequestParam String type) {
-        try {
-            ArrayList<InternalUserRoles> internalUserRoles = null;
-            ArrayList<InternalUserRoles> interUserRolesList = null;
-            List<InternalUserRoles> roles = new ArrayList<>();
-            if((StringUtils.isEmpty(provincecode) || "all".equalsIgnoreCase(provincecode.trim()))){
-                if(type.equalsIgnoreCase("Internal")){
-                    List<User> userList =   userService.getAllUsersByUserTypeName(INTERNAL_USER_TYPE_NAME);
-                    for(User userInfo: userList) {
-                        interUserRolesList = new ArrayList<>();
-                        internalUserRoles = this.internalUserRoleService.getChildElementsInternal(userInfo.getUserCode());
-                        System.out.println("User code" +userInfo.getUserCode());
-                        if (!isEmpty(internalUserRoles) && internalUserRoles != null) {
-                            for (InternalUserRoles in : internalUserRoles) {
-                                System.out.println("Internal user roles" + in.getInternalRoleCode());
-                                InternalUserRoles internalUserRoles1 = new InternalUserRoles();
-                                internalUserRoles1.setProvinceCode(in.getProvinceCode());
-                                internalUserRoles1.setProvinceName(in.getProvinceName());
-                                internalUserRoles1.setCreateddate(in.getCreateddate());
-                                interUserRolesList.add(internalUserRoles1);
-                                userInfo.setInternalUserRoles(interUserRolesList);
-                            }
-                        }
-                    }
-
-                    for(User userListInfo : userList) {
-                        if (userListInfo.getInternalUserRoles() != null) {
-                            for (InternalUserRoles internal : userListInfo.getInternalUserRoles()) {
-                                InternalUserRoles internalUserRoles1 = new InternalUserRoles();
-                                roles = userListInfo.getInternalUserRoles();
-                                internalUserRoles1.setProvinceCode(internal.getProvinceCode());
-                                internalUserRoles1.setProvinceName(internal.getProvinceName());
-                                internalUserRoles1.setCreateddate(internal.getCreateddate());
-                                roles.add(internalUserRoles1);
-                            }
-                        }
-                    }
-                    if (!isEmpty(interUserRolesList)) {
-                        return ResponseEntity.status(HttpStatus.OK).body(roles);
-                    } else {
-                        return ResponseEntity.status(HttpStatus.OK).body(roles);
-                    }
-                }
-            }
-            return ResponseEntity.status(HttpStatus.OK).body("No List");
-
-
-        } catch (Exception exception) {
-            return generateFailureResponse(request, exception);
-        }
-    }//getCountOfRegisteredUsers*//*
-
-
-*/
     @GetMapping("/getAllExternalUsers")
     public ResponseEntity<?> getAllExternalUsers(HttpServletRequest request, @RequestParam String provincecode) {
         try {
@@ -589,37 +506,13 @@ public class UserController extends MessageController {
                 }
             }
             User response = userService.saveExternalUser(user);
-            if (user.getMainRoleCode().equalsIgnoreCase("EX011")) {
-                task.setTaskType("ASSISTANT_PENDING_APPROVAL");
-                task.setTaskReferenceCode(user.getUserCode());
-                task.setTaskReferenceType("EXTERNAL USER");
-                task.setTaskOpenDesc("External User Description");
-                System.out.println("Province code is "+user.getExternalUserRoles().get(0).getUserProvinceCode());
-                task.setTaskAllProvinceCode(user.getExternalUserRoles().get(0).getUserProvinceCode());
-                task.setTaskAllOCSectionCode("");
-                task.setTaskAllOCRoleCode(user.getMainRoleCode());
-                task.setTaskStatus("Open");
 
-                //createTask(task);
-            }else{
-                task.setTaskType("EXTERNAL_USER_PENDING_APPROVAL");
-                task.setTaskReferenceCode(user.getUserCode());
-                task.setTaskReferenceType("EXTERNAL USER");
-                task.setTaskOpenDesc("External User Description");
-                System.out.println("Province code is "+user.getExternalUserRoles().get(0).getUserProvinceCode());
-                task.setTaskAllProvinceCode(user.getExternalUserRoles().get(0).getUserProvinceCode());
-                task.setTaskAllOCSectionCode("");
-                task.setTaskAllOCRoleCode(user.getMainRoleCode());
-                task.setTaskStatus("Open");
-
-                //createTask(task);
-            }
             MailDTO mailDTO = getMailDTO(user);
             sendMailToUser(user, mailDTO);
-            //sendMailToAdmin(user, mailDTO);
-            //sendMailToProvinceAdmin(user, mailDTO);
+            sendMailToAdmin(user, mailDTO);
+            sendMailToProvinceAdmin(user, mailDTO);
 
-           // sendSMS(user.getMobileNo(),message);
+            //sendSMS(user.getMobileNo(),message);
             //sendSMS(user.getMobileNo(),message); //todo for provincial administrator
             return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (Exception exception) {
@@ -646,10 +539,10 @@ public class UserController extends MessageController {
             internalUser.setUserCode("USR000" + Long.toString(internalUser.getUserId()));
             User response = userService.saveInternalUser(internalUser);
 
-           /* MailDTO mailDTO = getMailDTO(internalUser);
+            MailDTO mailDTO = getMailDTO(internalUser);
             sendMailToUser(internalUser, mailDTO);
             sendMailToAdmin(internalUser, mailDTO);
-            sendMailToProvinceAdmin(internalUser, mailDTO);*/
+            sendMailToProvinceAdmin(internalUser, mailDTO);
 
             return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (Exception exception) {
@@ -800,7 +693,7 @@ public class UserController extends MessageController {
         mailDTO.setSubject("Welcome to CIS");
         mailDTO.setHeader(ExceptionConstants.header + " " + user.getFirstName() + ",");
         mailDTO.setFooter("CIS ADMIN");
-        mailDTO.setToAddress(user.getEmail());//admin user for later
+        mailDTO.setToAddress(user.getEmail());
         mailResponse = sendMail(mailDTO);
         System.out.println("mailResponse is "+mailResponse);
     }
@@ -815,7 +708,7 @@ public class UserController extends MessageController {
         mailDTO.setBody2("New task created for approval by provincial administrator");
         mailDTO.setBody3("");
         mailDTO.setBody4("");
-        mailDTO.setToAddress("ps.raju@yahoo.com");//admin user for later
+        mailDTO.setToAddress(mailConfiguration.getAdminUserMail());
         mailResponse = sendMail(mailDTO);
         System.out.println("sendMailToAdmin is "+mailResponse);
     }
@@ -831,7 +724,7 @@ public class UserController extends MessageController {
         mailDTO.setBody2("New task created for approval by you");
         mailDTO.setBody3("");
         mailDTO.setBody4("");
-        mailDTO.setToAddress("dataworldproject@gmail.com");//province admin user for later
+        mailDTO.setToAddress(mailConfiguration.getProvinceAdminMail());
         mailResponse = sendMail(mailDTO);
         System.out.println("sendMailToProvinceAdmin is "+mailResponse);
     }
