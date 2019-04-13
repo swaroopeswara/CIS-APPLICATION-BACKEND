@@ -47,11 +47,11 @@ public class ReportExporter {
         }
     }//exportToPdf
 
-    public void exportToXlsx(JasperPrint jasperPrint, String fileName, String sheetName) {
+    public void exportToXlsx(JasperPrint jasperPrint, String resourcePath, String fileName, String sheetName) {
         JRXlsxExporter exporter = new JRXlsxExporter();
 
         exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
-        exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(fileName));
+        exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(resourcePath.concat("/rptfiles/generated/".concat(fileName))));
 
         SimpleXlsxReportConfiguration reportConfig = new SimpleXlsxReportConfiguration();
         reportConfig.setSheetNames(new String[] { sheetName });
@@ -65,11 +65,11 @@ public class ReportExporter {
         }
     }//exportToXlsx
 
-    public void exportToCsv(JasperPrint jasperPrint, String fileName) {
+    public void exportToCsv(JasperPrint jasperPrint, String resourcePath, String fileName) {
         JRCsvExporter exporter = new JRCsvExporter();
 
         exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
-        exporter.setExporterOutput(new SimpleWriterExporterOutput(fileName));
+        exporter.setExporterOutput(new SimpleWriterExporterOutput(resourcePath.concat("/rptfiles/generated/".concat(fileName))));
 
         try {
             exporter.exportReport();
@@ -78,11 +78,11 @@ public class ReportExporter {
         }
     }//exportToCsv
 
-    public void exportToHtml(JasperPrint jasperPrint, String fileName) {
+    public void exportToHtml(JasperPrint jasperPrint, String resourcePath, String fileName) {
         HtmlExporter exporter = new HtmlExporter();
 
         exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
-        exporter.setExporterOutput(new SimpleHtmlExporterOutput(fileName));
+        exporter.setExporterOutput(new SimpleHtmlExporterOutput(resourcePath.concat("/rptfiles/generated/".concat(fileName))));
 
         try {
             exporter.exportReport();

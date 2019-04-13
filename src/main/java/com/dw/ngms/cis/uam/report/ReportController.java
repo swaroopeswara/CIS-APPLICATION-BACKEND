@@ -5,8 +5,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
@@ -32,31 +30,24 @@ public class ReportController extends MessageController {
 	@Autowired
 	private ReportGenerator reportGenerator;
 	
-	private String reportJrxml;
-	private String reportName;
-	
-	@PostConstruct
-	public void init() {
-		log.info("Post construct initiated");
-	}//init
-	
 	@PostMapping("/userSummaryReport")
 	public ResponseEntity<?> generateUserSummaryReport(HttpServletRequest request, @RequestBody @Valid UserSummaryReportDto userSummaryReportDto) {
-		reportJrxml = "userSummary.jrxml";
-		reportName = "UserSummaryReport.pdf";
-		
-		Map<String, Object> parameters = new HashMap<>();
-		parameters.put("fromDate", userSummaryReportDto.getFromDate());
-		parameters.put("toDate", (userSummaryReportDto.getToDate() == null) ? new Date() : 
-			userSummaryReportDto.getToDate());
-		parameters.put("organisation", userSummaryReportDto.getOrganisation());
-		parameters.put("section", userSummaryReportDto.getSection());
-		parameters.put("sector", userSummaryReportDto.getSector());
-		parameters.put("userType", userSummaryReportDto.getUserType());
-		parameters.put("province", userSummaryReportDto.getProvince());
-		
+		String reportJrxml = "userSummary.jrxml";
+		String reportName = "UserSummaryReport.pdf";		
 		try {
-			parameters.put("resourcePath", getImagePath());
+			cleanupUserSummary(reportJrxml, reportName);
+			
+			String resourcePath = getResourcePath();
+			Map<String, Object> parameters = new HashMap<>();
+			parameters.put("fromDate", userSummaryReportDto.getFromDate());
+			parameters.put("toDate", (userSummaryReportDto.getToDate() == null) ? new Date() : 
+				userSummaryReportDto.getToDate());
+			parameters.put("organisation", userSummaryReportDto.getOrganisation());
+			parameters.put("section", userSummaryReportDto.getSection());
+			parameters.put("sector", userSummaryReportDto.getSector());
+			parameters.put("userType", userSummaryReportDto.getUserType());
+			parameters.put("province", userSummaryReportDto.getProvince());		
+			parameters.put("resourcePath", resourcePath);
 			
 			boolean isReportGenerated = reportGenerator.generateAndExportReport(reportJrxml, reportName, parameters);
 			if(!isReportGenerated)
@@ -71,22 +62,22 @@ public class ReportController extends MessageController {
 		}
 	}//generateUserSummaryReport
 
-	@PreDestroy
-	public void cleanup() {
-		try {
-			log.info("cleanup of file: {}", reportJrxml);
-			deleteFile(reportJrxml);
-			log.info("cleanup of file: {}", reportName);
-			deleteFile(reportName);
-		}catch(Exception e) {
-			log.error("Cleanup filed {}", e.getMessage());
-		}
-	}//cleanup
+	public void cleanupUserSummary(String fileJrxml, String reportName) {
+		this.cleanupFileOnExists(fileJrxml.replace(".jrxml", ".jasper"));
+		this.cleanupFileOnExists(reportName);
+	}//cleanupUserSummary
 	
-	private void deleteFile(String fileName) {
-		File reportFile = new File(fileName);
-		if (reportFile.exists()) 
-			reportFile.deleteOnExit();
-	}//deleteFile
+	public void cleanupFileOnExists(String fileName) {
+		try {
+			log.info("cleanup of file: {}", fileName);
+			File reportFile = new File(fileName);
+			if (reportFile.exists()) {
+				reportFile.delete();
+				log.info("{} has been deleted", fileName);
+			}
+		}catch(Exception e) {
+			log.error("{} cleanup filed {}", fileName, e.getMessage());
+		}
+	}//cleanupFileOnExists
 	
 }
