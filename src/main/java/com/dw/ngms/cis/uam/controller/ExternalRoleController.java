@@ -40,7 +40,7 @@ public class ExternalRoleController extends MessageController {
         } catch (Exception exception) {
             return generateFailureResponse(request, exception);
         }
-    }//getSectionsByProvince
+    }//getExternalRolesByRoleCode
 
 
     @GetMapping(value = "/deleteExternalRole")
@@ -58,7 +58,7 @@ public class ExternalRoleController extends MessageController {
         } catch (Exception exception) {
             return generateFailureResponse(request, exception);
         }
-    }
+    }//deleteExternalRole
 
 
 

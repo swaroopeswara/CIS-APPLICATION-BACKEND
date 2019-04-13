@@ -1,5 +1,6 @@
 package com.dw.ngms.cis.uam.service;
 
+import com.dw.ngms.cis.uam.entity.ExternalRole;
 import com.dw.ngms.cis.uam.entity.InternalRole;
 import com.dw.ngms.cis.uam.entity.SecurityQuestion;
 import com.dw.ngms.cis.uam.repository.ExternalUserRepository;
@@ -23,6 +24,11 @@ public class InternalRoleService {
     public List<InternalRole> updateAccessRight(String roleCode) {
         return this.internalRoleRepository.updateAccessRight(roleCode);
     }
+
+    public List<InternalRole> findByRoleCode(String roleCode) {
+        return this.internalRoleRepository.findByRoleCode(roleCode);
+    }
+
 
     public List<InternalRole>  updateDashBoardAccessRight(String roleCode) {
         return this.internalRoleRepository.updateDashBoardAccessRight(roleCode);

@@ -98,12 +98,12 @@ public interface UserRepository extends JpaRepository<User, Long> {
    @Query("SELECT ppno FROM ExternalUser u WHERE u.ppno = :ppno")
    String getpPNumber(@Param("ppno") String ppno);
 
-   @Query(value = "SELECT externaluserdata.ppnno FROM externaluserdata, externaluserroles WHERE " +
+   @Query(value = "SELECT DISTINCT(externaluserdata.ppnno) FROM externaluserdata, externaluserroles WHERE " +
            "externaluserdata.usercode = externaluserroles.usercode AND externaluserdata.ppnno = ?1  AND " +
            "externaluserroles.userrolecode = 'EX010' ", nativeQuery = true)
    String getpPNumberForAssistant(@Param("ppno") String ppno);
 
-   @Query(value = "SELECT externaluserdata.usercode FROM externaluserdata, externaluserroles WHERE " +
+   @Query(value = "SELECT DISTINCT(externaluserdata.usercode) FROM externaluserdata, externaluserroles WHERE " +
            "externaluserdata.usercode = externaluserroles.usercode AND externaluserdata.ppnno = ?1  AND " +
            "externaluserroles.userrolecode = 'EX010' ", nativeQuery = true)
    String getUserCodeForAssistant(@Param("ppno") String ppno);

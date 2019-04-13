@@ -18,6 +18,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.dw.ngms.cis.uam.configuration.MailConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
@@ -38,6 +39,9 @@ public class MessageController implements ExceptionConstants {
 
 	@Autowired
 	private ResponseBuilderAgent responseBuilderAgent;
+
+	@Autowired
+	private MailConfiguration mailConfiguration;
 	
 	/**
 	 * This is to generate failure response 
@@ -96,7 +100,8 @@ public class MessageController implements ExceptionConstants {
 	}//getResourcePath
 
 	protected String sendMail(MailDTO mailDTO) {
-		SendBlueMailService http = new SendBlueMailService(ExceptionConstants.sendBlueMailLinkURL, ExceptionConstants.sendBlueMailPassword);
+		SendBlueMailService http = new SendBlueMailService(mailConfiguration.getSendBlueMailLinkURL(), mailConfiguration.getSendBlueMailPassword());
+		//SendBlueMailService http = new SendBlueMailService("https://api.sendinblue.com/v2.0", "MGzZOdpQ9wLBfnb3");
 		Map<String, String> attr = new HashMap<>();
 		attr.put("HEADER",mailDTO.getHeader());
 		attr.put("SUBJECT",mailDTO.getSubject());
@@ -113,6 +118,7 @@ public class MessageController implements ExceptionConstants {
 		data.put("to", mailDTO.getToAddress());
 		data.put("attr", attr);
 		data.put("headers", headers);
+		System.out.println(http);
 		String mailResponse = http.send_transactional_template(data);
 
 		return mailResponse;

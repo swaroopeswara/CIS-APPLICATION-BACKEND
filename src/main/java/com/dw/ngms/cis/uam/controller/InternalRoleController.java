@@ -168,6 +168,20 @@ public class InternalRoleController extends MessageController {
 
 
 
+    @GetMapping("/getInternalRolesByRoleCode")
+    public ResponseEntity<?> getInternalRolesByRoleCode(HttpServletRequest request,
+                                                        @RequestParam String roleCode
+    ) {
+        try {
+            List<InternalRole> internalRoleList = this.internalRoleService.findByRoleCode(roleCode);
+            return (CollectionUtils.isEmpty(internalRoleList)) ? ResponseEntity.status(HttpStatus.OK).body(internalRoleList)
+                    : ResponseEntity.status(HttpStatus.OK).body(internalRoleList);
+        } catch (Exception exception) {
+            return generateFailureResponse(request, exception);
+        }
+    }//getInternalRolesByRoleCode
+
+
 
 
 

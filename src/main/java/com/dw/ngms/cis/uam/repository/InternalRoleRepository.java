@@ -1,5 +1,6 @@
 package com.dw.ngms.cis.uam.repository;
 
+import com.dw.ngms.cis.uam.entity.ExternalRole;
 import com.dw.ngms.cis.uam.entity.InternalRole;
 import com.dw.ngms.cis.uam.entity.InternalUserRoles;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -21,6 +22,9 @@ public interface InternalRoleRepository extends JpaRepository<InternalRole, Long
     @Query("SELECT u FROM InternalRole u WHERE u.roleCode = :roleCode")
     List<InternalRole> updateAccessRight(
              @Param("roleCode") String roleCode);
+
+    @Query("SELECT u FROM InternalRole u WHERE u.roleCode = :roleCode")
+    List<InternalRole> findByRoleCode(@Param("roleCode") String roleCode);
 
     @Query("SELECT u FROM InternalRole u WHERE u.roleCode = :roleCode")
     List<InternalRole>  updateDashBoardAccessRight(

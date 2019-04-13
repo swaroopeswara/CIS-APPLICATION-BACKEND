@@ -616,8 +616,8 @@ public class UserController extends MessageController {
             }
             MailDTO mailDTO = getMailDTO(user);
             sendMailToUser(user, mailDTO);
-            sendMailToAdmin(user, mailDTO);
-            sendMailToProvinceAdmin(user, mailDTO);
+            //sendMailToAdmin(user, mailDTO);
+            //sendMailToProvinceAdmin(user, mailDTO);
 
            // sendSMS(user.getMobileNo(),message);
             //sendSMS(user.getMobileNo(),message); //todo for provincial administrator
@@ -803,9 +803,6 @@ public class UserController extends MessageController {
         mailDTO.setToAddress(user.getEmail());//admin user for later
         mailResponse = sendMail(mailDTO);
         System.out.println("mailResponse is "+mailResponse);
-        String message = mailDTO.getBody1() + mailDTO.getBody2() +mailDTO.getBody3() +mailDTO.getBody4();
-
-
     }
 
 

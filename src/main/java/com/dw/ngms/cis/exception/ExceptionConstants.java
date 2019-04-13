@@ -11,16 +11,13 @@ public interface ExceptionConstants {
 	String TRUE = "true";
 	String FALSE = "false";
 
-	String sendBlueMailLinkURL = "https://api.sendinblue.com/v2.0";
-	String sendBlueMailPassword = "MGzZOdpQ9wLBfnb3";
+	/*String sendBlueMailLinkURL = "https://api.sendinblue.com/v2.0";
+	String sendBlueMailPassword = "MGzZOdpQ9wLBfnb3";*/
 	int mailTemplateID = 1;
 
 	String header = "Good day";
 	String subject = "User Registered";
 	String body = "Thank you for registering with us. Your account is ";
-	String body1 = "Your password is ";
-	String body2 = "User have been registered sucessfully";
-	String body3 = "User have been registered sucessfully";
 	String footer = "Regards";
 
 }
