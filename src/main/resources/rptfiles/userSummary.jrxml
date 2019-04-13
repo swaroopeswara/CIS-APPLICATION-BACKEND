@@ -266,7 +266,7 @@ USERTYPE = NVL( $P{tUserType},  USERTYPE)]]>
 					<property name="com.jaspersoft.studio.components.autoresize.next" value="true"/>
 				</reportElement>
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" whenNoDataType="AllSectionsNoDetail">
-					<datasetRun subDataset="UserSummaryDataset" uuid="14fea95c-7e00-45ff-8154-25cc36afe503">
+					<datasetRun subDataset="UserSummaryDataset" uuid="6ee7db5d-1409-45a5-8101-eb7a815f1411">
 						<datasetParameter name="tFromDate">
 							<datasetParameterExpression><![CDATA[$P{fromDate}]]></datasetParameterExpression>
 						</datasetParameter>
@@ -285,9 +285,6 @@ USERTYPE = NVL( $P{tUserType},  USERTYPE)]]>
 						<datasetParameter name="tUserType">
 							<datasetParameterExpression><![CDATA[$P{userType}]]></datasetParameterExpression>
 						</datasetParameter>
-						<datasetParameter name="REPORT_CLASS_LOADER">
-							<datasetParameterExpression><![CDATA[$P{sector}]]></datasetParameterExpression>
-						</datasetParameter>
 						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 					</datasetRun>
 					<jr:column width="106" uuid="3fe6cc06-9b2f-416a-a518-fb714940a3d2">
@@ -298,13 +295,14 @@ USERTYPE = NVL( $P{tUserType},  USERTYPE)]]>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font size="11" isBold="true"/>
 								</textElement>
-								<text><![CDATA[CREATEDDATE]]></text>
+								<text><![CDATA[Creation Datetime]]></text>
 							</staticText>
 						</jr:columnHeader>
 						<jr:columnFooter style="Table 1_CH" height="30" rowSpan="1"/>
 						<jr:detailCell style="Table 1_TD" height="30">
 							<textField>
 								<reportElement x="0" y="0" width="106" height="30" uuid="d1af3422-25c5-4db5-b7f2-83136d09ec02"/>
+								<textElement verticalAlignment="Middle"/>
 								<textFieldExpression><![CDATA[$F{CREATEDDATE}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
@@ -317,13 +315,14 @@ USERTYPE = NVL( $P{tUserType},  USERTYPE)]]>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font size="11" isBold="true"/>
 								</textElement>
-								<text><![CDATA[FULLNAME]]></text>
+								<text><![CDATA[Full Name]]></text>
 							</staticText>
 						</jr:columnHeader>
 						<jr:columnFooter style="Table 1_CH" height="30" rowSpan="1"/>
 						<jr:detailCell style="Table 1_TD" height="30">
 							<textField>
 								<reportElement x="0" y="0" width="114" height="30" uuid="3870bdff-5a60-4c27-8289-12ddb839bb5f"/>
+								<textElement verticalAlignment="Middle"/>
 								<textFieldExpression><![CDATA[$F{FULLNAME}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
@@ -336,13 +335,14 @@ USERTYPE = NVL( $P{tUserType},  USERTYPE)]]>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font size="11" isBold="true"/>
 								</textElement>
-								<text><![CDATA[USERTYPE]]></text>
+								<text><![CDATA[User Type]]></text>
 							</staticText>
 						</jr:columnHeader>
 						<jr:columnFooter style="Table 1_CH" height="30" rowSpan="1"/>
 						<jr:detailCell style="Table 1_TD" height="30">
 							<textField>
 								<reportElement x="0" y="0" width="94" height="30" uuid="ec17ea32-a1e0-43ec-a12a-9961f8766b57"/>
+								<textElement verticalAlignment="Middle"/>
 								<textFieldExpression><![CDATA[$F{USERTYPE}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
@@ -355,13 +355,14 @@ USERTYPE = NVL( $P{tUserType},  USERTYPE)]]>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font size="11" isBold="true"/>
 								</textElement>
-								<text><![CDATA[ORGANIZATION]]></text>
+								<text><![CDATA[Organisation]]></text>
 							</staticText>
 						</jr:columnHeader>
 						<jr:columnFooter style="Table 1_CH" height="30" rowSpan="1"/>
 						<jr:detailCell style="Table 1_TD" height="30">
 							<textField>
 								<reportElement x="0" y="0" width="131" height="30" uuid="fd1588fe-8eaa-4e2a-a1f0-91d26aff800c"/>
+								<textElement verticalAlignment="Middle"/>
 								<textFieldExpression><![CDATA[$F{ORGANIZATION}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
@@ -374,13 +375,14 @@ USERTYPE = NVL( $P{tUserType},  USERTYPE)]]>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font size="11" isBold="true"/>
 								</textElement>
-								<text><![CDATA[SECTOR]]></text>
+								<text><![CDATA[Sector]]></text>
 							</staticText>
 						</jr:columnHeader>
 						<jr:columnFooter style="Table 1_CH" height="30" rowSpan="1"/>
 						<jr:detailCell style="Table 1_TD" height="30">
 							<textField>
 								<reportElement x="0" y="0" width="101" height="30" uuid="351d970e-0369-40e2-818c-15dc9c4e500c"/>
+								<textElement verticalAlignment="Middle"/>
 								<textFieldExpression><![CDATA[$F{SECTOR}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
@@ -393,13 +395,14 @@ USERTYPE = NVL( $P{tUserType},  USERTYPE)]]>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font size="11" isBold="true"/>
 								</textElement>
-								<text><![CDATA[ROLE]]></text>
+								<text><![CDATA[Role]]></text>
 							</staticText>
 						</jr:columnHeader>
 						<jr:columnFooter style="Table 1_CH" height="30" rowSpan="1"/>
 						<jr:detailCell style="Table 1_TD" height="30">
 							<textField>
 								<reportElement x="0" y="0" width="79" height="30" uuid="d9a091ee-257b-41ad-be4f-209e5cf3052d"/>
+								<textElement verticalAlignment="Middle"/>
 								<textFieldExpression><![CDATA[$F{ROLE}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
@@ -419,6 +422,7 @@ USERTYPE = NVL( $P{tUserType},  USERTYPE)]]>
 						<jr:detailCell style="Table 1_TD" height="30">
 							<textField>
 								<reportElement x="0" y="0" width="112" height="30" uuid="f252451c-1d01-412d-b72a-8a21f6e01b73"/>
+								<textElement verticalAlignment="Middle"/>
 								<textFieldExpression><![CDATA[$F{PROVINCE}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
@@ -431,13 +435,14 @@ USERTYPE = NVL( $P{tUserType},  USERTYPE)]]>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font size="11" isBold="true"/>
 								</textElement>
-								<text><![CDATA[EMAIL]]></text>
+								<text><![CDATA[Email]]></text>
 							</staticText>
 						</jr:columnHeader>
 						<jr:columnFooter style="Table 1_CH" height="30" rowSpan="1"/>
 						<jr:detailCell style="Table 1_TD" height="30">
 							<textField>
 								<reportElement x="0" y="0" width="170" height="30" uuid="27e3b1ca-8fba-45c4-892a-2385f01141dc"/>
+								<textElement verticalAlignment="Middle"/>
 								<textFieldExpression><![CDATA[$F{EMAIL}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
@@ -450,13 +455,14 @@ USERTYPE = NVL( $P{tUserType},  USERTYPE)]]>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font size="11" isBold="true"/>
 								</textElement>
-								<text><![CDATA[STATUS]]></text>
+								<text><![CDATA[Status]]></text>
 							</staticText>
 						</jr:columnHeader>
 						<jr:columnFooter style="Table 1_CH" height="30" rowSpan="1"/>
 						<jr:detailCell style="Table 1_TD" height="30">
 							<textField>
 								<reportElement x="0" y="0" width="78" height="30" uuid="911f4770-3127-4ec4-8085-d223c8c11902"/>
+								<textElement verticalAlignment="Middle"/>
 								<textFieldExpression><![CDATA[$F{STATUS}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
@@ -469,13 +475,14 @@ USERTYPE = NVL( $P{tUserType},  USERTYPE)]]>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font size="11" isBold="true"/>
 								</textElement>
-								<text><![CDATA[ADDITIONALROLES]]></text>
+								<text><![CDATA[Additional Roles]]></text>
 							</staticText>
 						</jr:columnHeader>
 						<jr:columnFooter style="Table 1_CH" height="30" rowSpan="1"/>
 						<jr:detailCell style="Table 1_TD" height="30">
 							<textField>
 								<reportElement x="0" y="0" width="98" height="30" uuid="c1b7fa14-8254-412b-9373-b8b12b4051cb"/>
+								<textElement verticalAlignment="Middle"/>
 								<textFieldExpression><![CDATA[$F{ADDITIONALROLES}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
@@ -488,13 +495,14 @@ USERTYPE = NVL( $P{tUserType},  USERTYPE)]]>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font size="11" isBold="true"/>
 								</textElement>
-								<text><![CDATA[SECTION]]></text>
+								<text><![CDATA[Section]]></text>
 							</staticText>
 						</jr:columnHeader>
 						<jr:columnFooter style="Table 1_CH" height="30" rowSpan="1"/>
 						<jr:detailCell style="Table 1_TD" height="30">
 							<textField>
 								<reportElement x="0" y="0" width="98" height="30" uuid="9242f4d2-f125-4518-a575-ae1f0c4f1516"/>
+								<textElement verticalAlignment="Middle"/>
 								<textFieldExpression><![CDATA[$F{SECTION}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
