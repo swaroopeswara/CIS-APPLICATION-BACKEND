@@ -41,7 +41,10 @@ public class AuditEntry implements Serializable {
 
 	@Column(name = "USERNAME", length = 50)
 	private String userName;
-
+	
+	@Column(name = "USERTYPENAME", length = 20)
+	private String userType;
+	
 	@Column(name = "REQUESTJSON")
 	private String requestJson;
 
@@ -56,12 +59,13 @@ public class AuditEntry implements Serializable {
 	@Column(name = "RESPONSEDATETIME")
 	private Date responseDatetime;
 
-	public AuditEntry(String operation, String requestUrl, String userCode, String userName, String requestJson) {
+	public AuditEntry(String operation, String requestUrl, String userCode, String userName, String userType, String requestJson) {
 		this.id = UUID.randomUUID();
 		this.operation = operation;
 		this.requestUrl = requestUrl;
 		this.userCode = userCode;
 		this.userName = userName;
+		this.userType = userType;
 		this.requestJson = requestJson;
 	}
 

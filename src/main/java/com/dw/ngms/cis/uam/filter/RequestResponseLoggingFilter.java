@@ -64,9 +64,10 @@ public class RequestResponseLoggingFilter implements Filter {
 		String operation = requestWrapper.getHeader("operation");
 		String userCode = requestWrapper.getHeader("usercode");
 		String userName = requestWrapper.getHeader("username");
+		String userType = requestWrapper.getHeader("usertype");
 		String requestUrl = getRequestUrl(requestWrapper);		
 		String requestBody = new String(requestWrapper.getContentAsByteArray());
-		return auditEntryService.logAuditEntry(new AuditEntry(operation, requestUrl, userCode, userName, requestBody));
+		return auditEntryService.logAuditEntry(new AuditEntry(operation, requestUrl, userCode, userName, userType, requestBody));
 	}//logRequestAuditEntry
 	
 	private AuditEntry logResponseAuditEntry(ContentCachingResponseWrapper responseWrapper, AuditEntry auditEntry) {
