@@ -10,10 +10,6 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
-import com.dw.ngms.cis.uam.configuration.MailConfiguration;
-import com.dw.ngms.cis.uam.dto.*;
-import com.dw.ngms.cis.uam.entity.*;
-import com.dw.ngms.cis.uam.service.*;
 import org.apache.commons.lang.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -30,12 +26,37 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dw.ngms.cis.exception.ExceptionConstants;
+import com.dw.ngms.cis.uam.configuration.MailConfiguration;
+import com.dw.ngms.cis.uam.dto.MailDTO;
+import com.dw.ngms.cis.uam.dto.RolesDTO;
+import com.dw.ngms.cis.uam.dto.UpdateAccessRightsDTO;
+import com.dw.ngms.cis.uam.dto.UpdatePasswordDTO;
+import com.dw.ngms.cis.uam.dto.UserDTO;
+import com.dw.ngms.cis.uam.dto.UserUpdateDTO;
+import com.dw.ngms.cis.uam.entity.ExternalRole;
+import com.dw.ngms.cis.uam.entity.ExternalUser;
+import com.dw.ngms.cis.uam.entity.ExternalUserAssistant;
+import com.dw.ngms.cis.uam.entity.ExternalUserRoles;
+import com.dw.ngms.cis.uam.entity.InternalRole;
+import com.dw.ngms.cis.uam.entity.InternalUserRoles;
+import com.dw.ngms.cis.uam.entity.Task;
+import com.dw.ngms.cis.uam.entity.User;
 import com.dw.ngms.cis.uam.enums.ApprovalStatus;
 import com.dw.ngms.cis.uam.enums.Status;
 import com.dw.ngms.cis.uam.jsonresponse.UserControllerResponse;
 import com.dw.ngms.cis.uam.ldap.UserCredentials;
+import com.dw.ngms.cis.uam.service.ExternalRoleService;
+import com.dw.ngms.cis.uam.service.ExternalUserAssistantService;
+import com.dw.ngms.cis.uam.service.ExternalUserService;
+import com.dw.ngms.cis.uam.service.InternalRoleService;
+import com.dw.ngms.cis.uam.service.InternalUserRoleService;
+import com.dw.ngms.cis.uam.service.TaskService;
+import com.dw.ngms.cis.uam.service.UserService;
 import com.google.gson.Gson;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @RestController
 @RequestMapping("/cisorigin.uam/api/v1")
 @CrossOrigin(origins = "*")
@@ -603,7 +624,7 @@ public class UserController extends MessageController {
                 }
             }
             this.userService.updatePassword(user);
-            //todo Send Email to User
+            sendPasswordChangeMailToUser(user);
             userControllerResponse.setMessage("User Password Updated Sucessfully");
             json = gson.toJson(userControllerResponse);
             return ResponseEntity.status(HttpStatus.OK).body(json);
@@ -612,8 +633,25 @@ public class UserController extends MessageController {
         }
     }//updatePassword*/
 
+    private void sendPasswordChangeMailToUser(User user) {
+    	try {
+	    	MailDTO mailDTO = getMailDTO(user);
+	    	mailDTO.setSubject("User password updated");
+	    	mailDTO.setBody1("Thank you for registering with us. Your account is pending approval.");
+	        mailDTO.setBody2("Your password is "+user.getPassword());
+	        mailDTO.setBody3("");
+	        mailDTO.setBody4("");        
+	        mailDTO.setHeader(ExceptionConstants.header + " " + user.getFirstName() + ",");
+	        mailDTO.setFooter("CIS ADMIN");
+	        mailDTO.setToAddress(user.getEmail());
+	        sendMail(mailDTO);
+    	}catch(Exception e) {
+    		log.error("Error while sending mail {}", e.getMessage());
+    	}
+	}//sendPasswordChangeMailToUser
+    
 
-    @RequestMapping(value = "/resetPassword", method = RequestMethod.POST)
+	@RequestMapping(value = "/resetPassword", method = RequestMethod.POST)
     public ResponseEntity<?> resetPassword(HttpServletRequest request, @RequestBody @Valid UserDTO userDTO) throws IOException {
         try {
             UserControllerResponse userControllerResponse = new UserControllerResponse();
