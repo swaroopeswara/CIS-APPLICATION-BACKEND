@@ -561,15 +561,15 @@ public class UserController extends MessageController {
             User response = userService.saveInternalUser(internalUser);
 
             MailDTO mailDTO = getMailDTO(internalUser);
-            sendMailToUser(internalUser, mailDTO);
-            sendMailToAdmin(internalUser, mailDTO);
-            sendMailToProvinceAdmin(internalUser, mailDTO);
+            //sendMailToUser(internalUser, mailDTO);
+            //sendMailToAdmin(internalUser, mailDTO);
+            //sendMailToProvinceAdmin(internalUser, mailDTO);
 
             return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (Exception exception) {
             return generateFailureResponse(request, exception);
         }
-    }//saveInternalUser
+    }//saveInternalUserm
 
 
     @RequestMapping(value = "/approveRejectUser", method = RequestMethod.POST)
