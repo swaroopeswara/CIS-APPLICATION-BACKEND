@@ -214,7 +214,7 @@ USERTYPENAME = NVL($P{tUserType} ,  USERTYPENAME)]]>
 							<textField>
 								<reportElement x="0" y="0" width="277" height="30" uuid="d1af3422-25c5-4db5-b7f2-83136d09ec02"/>
 								<textElement verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{CREATEDDATE}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{CREATEDDATE} == null ? "" : $F{CREATEDDATE}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -234,7 +234,7 @@ USERTYPENAME = NVL($P{tUserType} ,  USERTYPENAME)]]>
 							<textField>
 								<reportElement x="0" y="0" width="320" height="30" uuid="3870bdff-5a60-4c27-8289-12ddb839bb5f"/>
 								<textElement verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{USERCODE}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{USERCODE} == null ? "" : $F{USERCODE}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -254,7 +254,7 @@ USERTYPENAME = NVL($P{tUserType} ,  USERTYPENAME)]]>
 							<textField>
 								<reportElement x="0" y="0" width="313" height="30" uuid="ec17ea32-a1e0-43ec-a12a-9961f8766b57"/>
 								<textElement verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{USERNAME}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{USERNAME} == null ? "" : $F{USERNAME}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>

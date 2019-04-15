@@ -217,7 +217,7 @@ WHERE AE.REQUESTDATETIME >= $P{tFromDate} AND AE.REQUESTDATETIME <= $P{tToDate} 
 							<textField>
 								<reportElement x="0" y="0" width="313" height="30" uuid="d1af3422-25c5-4db5-b7f2-83136d09ec02"/>
 								<textElement verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{REQUESTDATETIME}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{REQUESTDATETIME} == null ? "" : $F{REQUESTDATETIME}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -237,7 +237,7 @@ WHERE AE.REQUESTDATETIME >= $P{tFromDate} AND AE.REQUESTDATETIME <= $P{tToDate} 
 							<textField>
 								<reportElement x="0" y="0" width="270" height="30" uuid="ec17ea32-a1e0-43ec-a12a-9961f8766b57"/>
 								<textElement verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{USERNAME}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{USERNAME} == null ? "" : $F{USERNAME}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -277,7 +277,7 @@ WHERE AE.REQUESTDATETIME >= $P{tFromDate} AND AE.REQUESTDATETIME <= $P{tToDate} 
 							<textField>
 								<reportElement x="0" y="0" width="296" height="30" uuid="649cc096-cc65-4dbc-bcbc-66b83489ab07"/>
 								<textElement verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{OPERATION}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{OPERATION} == null ? "" : $F{OPERATION}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
