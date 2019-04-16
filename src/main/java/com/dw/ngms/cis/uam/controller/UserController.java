@@ -561,9 +561,9 @@ public class UserController extends MessageController {
             User response = userService.saveInternalUser(internalUser);
 
             MailDTO mailDTO = getMailDTO(internalUser);
-            //sendMailToUser(internalUser, mailDTO);
-            //sendMailToAdmin(internalUser, mailDTO);
-            //sendMailToProvinceAdmin(internalUser, mailDTO);
+            sendMailToUser(internalUser, mailDTO);
+            sendMailToAdmin(internalUser, mailDTO);
+            sendMailToProvinceAdmin(internalUser, mailDTO);
 
             return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (Exception exception) {
@@ -756,7 +756,7 @@ public class UserController extends MessageController {
     private void sendMailToProvinceAdmin(@RequestBody @Valid User user, MailDTO mailDTO) {
         String mailResponse;
         mailDTO.setSubject("New "+ user.getUserTypeName().toLowerCase() +" User Registration");
-        mailDTO.setHeader(ExceptionConstants.header + " " + "Province Adminsistrator" + ",");
+        mailDTO.setHeader(ExceptionConstants.header + " " + "Province Administrator" + ",");
         mailDTO.setFooter("CIS ADMIN");
         mailDTO.setBody1("New user registered with email " +user.getEmail()+  " in province " +user.getExternalUserRoles().get(0).getUserProvinceName());
         mailDTO.setBody2("New task created for approval by you");
