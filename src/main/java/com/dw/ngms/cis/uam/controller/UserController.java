@@ -432,6 +432,7 @@ public class UserController extends MessageController {
                         System.out.println("Internal user roles" + in.getInternalRoleCode());
                         InternalUserRoles internalUserRoles1 = new InternalUserRoles();
                         internalUserRoles1.setInternalRoleCode(in.getInternalRoleCode());
+                        internalUserRoles1.setUserCode(in.getUserCode());
                         internalUserRoles1.setRoleCode(in.getRoleCode());
                         internalUserRoles1.setRoleName(in.getRoleName());
                         internalUserRoles1.setProvinceCode(in.getProvinceCode());
