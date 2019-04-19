@@ -38,18 +38,18 @@ public class CostSubCategoryController extends MessageController {
     }//getSubCostCategoriesByCostCategoryCode
 
 */
-    /*@PostMapping("/createSubCategory")
+  @PostMapping("/createSubCategory")
     public ResponseEntity<?> createSubCategory(HttpServletRequest request, @RequestBody @Valid CostSubCategories costSubCategories) {
         try {
-            Long categoryId = this.costSubService.getCostSubCategoryId();
-            System.out.println("categoryId is "+categoryId);
-            costSubCategories.setCa("COST" + Long.toString(categoryId));
-            CostCategories costCategoriesSave = this.costCategoryService.saveCostCategory(costCategories);
-            return ResponseEntity.status(HttpStatus.OK).body(costCategories);
+            Long subCategoryId = this.costSubService.getCostSubCategoryId();
+            System.out.println("sub categoryId is "+subCategoryId);
+            costSubCategories.setCostSubCategoryCode("SUBCOST" + Long.toString(subCategoryId));
+            CostSubCategories costSubCategoriesSave = this.costSubService.saveCostSubCategories(costSubCategories);
+            return ResponseEntity.status(HttpStatus.OK).body(costSubCategoriesSave);
         } catch (Exception exception) {
             return generateFailureResponse(request, exception);
         }
     }//createCategory
-*/
+
 
 }

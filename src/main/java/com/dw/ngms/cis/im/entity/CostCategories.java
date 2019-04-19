@@ -52,8 +52,8 @@ public class CostCategories {
     @Column(name = "CREATEDDATE", nullable = true)
     private Date createdDate = new Date();
 
-    @OneToMany(mappedBy="costSubCategory",fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+ /*   @OneToMany(mappedBy="costSubCategory",fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JsonManagedReference
-    private List<CostSubCategories> costSubCategories;
+    private List<CostSubCategories> costSubCategories;*/
 
 }

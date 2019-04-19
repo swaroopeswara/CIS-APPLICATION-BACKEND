@@ -101,15 +101,6 @@ public class InternalUserRoleController extends MessageController {
             }
             internalUserRoles.setInternalRoleCode(internalRole.getInternalRoleCode());
             InternalUserRoles savedResponse = internalUserService.saveInternalUserRole(internalUserRoles);
-            task.setTaskType("INTERNAL_USER_PENDING_APPROVAL");
-            task.setTaskReferenceCode(internalUserRoleDTO.getUserCode());
-            task.setTaskReferenceType("INTERNAL USER");
-            task.setTaskOpenDesc("Internal User Description");
-            task.setTaskAllProvinceCode(internalUserRoleDTO.getProvinceCode());
-            task.setTaskAllOCSectionCode(internalUserRoleDTO.getSectionCode());
-            task.setTaskAllOCRoleCode(internalUserRoleDTO.getRoleCode());
-            task.setTaskStatus("Open");
-
             //createTask(task);
             //taskController.createTask(request, task);
 
@@ -121,7 +112,7 @@ public class InternalUserRoleController extends MessageController {
 
 
             if (!isEmpty(user) && user != null) {
-                user.setIsApproved(ApprovalStatus.PENDING);
+               // user.setIsApproved(ApprovalStatus.PENDING);
                 this.userService.saveInternalUser(user);
             }
             return ResponseEntity.status(HttpStatus.OK).body(savedResponse);

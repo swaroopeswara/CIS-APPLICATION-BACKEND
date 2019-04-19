@@ -39,19 +39,19 @@ public class CostCategoryController extends MessageController {
     }//getCostCategories
 */
 
-   /* @PostMapping("/createCategory")
+     @PostMapping("/createCategory")
     public ResponseEntity<?> setPropertyValueByName(HttpServletRequest request, @RequestBody @Valid CostCategories costCategories) {
         try {
             Long categoryId = this.costCategoryService.getCategoryId();
             System.out.println("categoryId is "+categoryId);
             costCategories.setCategoryCode("COST" + Long.toString(categoryId));
             CostCategories costCategoriesSave = this.costCategoryService.saveCostCategory(costCategories);
-            return ResponseEntity.status(HttpStatus.OK).body(costCategories);
+            return ResponseEntity.status(HttpStatus.OK).body(costCategoriesSave);
         } catch (Exception exception) {
             return generateFailureResponse(request, exception);
         }
     }//createCategory
-*/
+
 
 
 }

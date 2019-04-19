@@ -17,6 +17,10 @@ import java.util.UUID;
 public interface CostSubRepository extends JpaRepository<CostSubCategories, UUID> {
 
 
+    @Query(value = "SELECT SUBCOSTCATEGORY_SEQ.nextval FROM dual", nativeQuery =
+            true)
+    Long getCostSubCategoryId();
+
  /*  // @Query("SELECT u FROM CostSubCategories u WHERE u.costCategoryCode = :costCategoryCode")
     List<CostSubCategories> getSubCostCategoriesByCostCategoryCode(@Param("costCategoryCode") String costCategoryCode);
 

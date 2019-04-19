@@ -561,9 +561,9 @@ public class UserController extends MessageController {
             User response = userService.saveInternalUser(internalUser);
 
             MailDTO mailDTO = getMailDTO(internalUser);
-            sendMailToUser(internalUser, mailDTO);
-            sendMailToAdmin(internalUser, mailDTO);
-            sendMailToProvinceAdmin(internalUser, mailDTO);
+            sendMailToInternalUser(internalUser, mailDTO);
+            sendMailToInternalAdmin(internalUser, mailDTO);
+            sendMailToProvinceInternalAdmin(internalUser, mailDTO);
 
             return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (Exception exception) {
@@ -737,6 +737,31 @@ public class UserController extends MessageController {
     }
 
 
+
+    private void sendMailToInternalUser(@RequestBody @Valid User user, MailDTO mailDTO) throws IOException {
+
+        if (user.getIsApproved().getDisplayString().equalsIgnoreCase("YES")) {
+            mailDTO.setBody1("Thank you for registering with us. Your account is approved.");
+            mailDTO.setBody2("");
+            mailDTO.setBody3("");
+            mailDTO.setBody4("");
+        } else {
+            mailDTO.setBody1("Thank you for registering with us. Your account is pending approval.");
+            mailDTO.setBody2("");
+            mailDTO.setBody3("");
+            mailDTO.setBody4("");
+        }
+
+        String mailResponse;
+        mailDTO.setSubject("Welcome to CIS");
+        mailDTO.setHeader(ExceptionConstants.header + " " + user.getFirstName() + ",");
+        mailDTO.setFooter("CIS ADMIN");
+        mailDTO.setToAddress(user.getEmail());
+        mailResponse = sendMail(mailDTO);
+        System.out.println("mailResponse is "+mailResponse);
+    }
+
+
     private void sendMailToAdmin(@RequestBody @Valid User user, MailDTO mailDTO) {
         String mailResponse;
         mailDTO.setSubject("New " + user.getUserTypeName().toLowerCase() +" User Registration");
@@ -753,6 +778,21 @@ public class UserController extends MessageController {
 
 
 
+    private void sendMailToInternalAdmin(@RequestBody @Valid User user, MailDTO mailDTO) {
+        String mailResponse;
+        mailDTO.setSubject("New " + user.getUserTypeName().toLowerCase() +" User Registration");
+        mailDTO.setHeader(ExceptionConstants.header + " " +"Admin Name" +",");
+        mailDTO.setFooter("CIS ADMIN");
+        mailDTO.setBody1("New user registered with email " +user.getEmail()+  " in province "+user.getInternalUserRoles().get(0).getProvinceName());
+        mailDTO.setBody2("New task created for approval by provincial administrator");
+        mailDTO.setBody3("");
+        mailDTO.setBody4("");
+        mailDTO.setToAddress(mailConfiguration.getAdminUserMail());
+        mailResponse = sendMail(mailDTO);
+        System.out.println("sendMailToAdmin is "+mailResponse);
+    }
+
+
     private void sendMailToProvinceAdmin(@RequestBody @Valid User user, MailDTO mailDTO) {
         String mailResponse;
         mailDTO.setSubject("New "+ user.getUserTypeName().toLowerCase() +" User Registration");
@@ -766,6 +806,21 @@ public class UserController extends MessageController {
         mailResponse = sendMail(mailDTO);
         System.out.println("sendMailToProvinceAdmin is "+mailResponse);
     }
+
+    private void sendMailToProvinceInternalAdmin(@RequestBody @Valid User user, MailDTO mailDTO) {
+        String mailResponse;
+        mailDTO.setSubject("New "+ user.getUserTypeName().toLowerCase() +" User Registration");
+        mailDTO.setHeader(ExceptionConstants.header + " " + "Province Administrator" + ",");
+        mailDTO.setFooter("CIS ADMIN");
+        mailDTO.setBody1("New user registered with email " +user.getEmail()+  " in province " +user.getInternalUserRoles().get(0).getProvinceName());
+        mailDTO.setBody2("New task created for approval by you");
+        mailDTO.setBody3("");
+        mailDTO.setBody4("");
+        mailDTO.setToAddress(mailConfiguration.getProvinceAdminMail());
+        mailResponse = sendMail(mailDTO);
+        System.out.println("sendMailToProvinceAdmin is "+mailResponse);
+    }
+
 
     private void externalUserRolesMapping(@RequestBody @Valid User user, ExternalUserRoles externalUserRoles, ExternalRole externalRole) {
         externalUserRoles.setExternalRoleCode(externalRole.getExternalRoleCode());

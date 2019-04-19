@@ -21,6 +21,8 @@ public class CostSubCategories {
 
 
 
+    @Column(name = "COSTCATEGORYCODE")
+    private String costCategoryCode;
 
     @Column(name = "COSTCATEGORYNAME", length = 200, unique = true)
     private String categoryName;
@@ -67,10 +69,11 @@ public class CostSubCategories {
     private Date createdDate = new Date();
 
 
+/*
     @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     @JoinColumn(name="COSTCATEGORYCODE", nullable=false)
     @JsonBackReference
-    private CostCategories costSubCategory;
+    private CostCategories costSubCategory;*/
 
 
 }
