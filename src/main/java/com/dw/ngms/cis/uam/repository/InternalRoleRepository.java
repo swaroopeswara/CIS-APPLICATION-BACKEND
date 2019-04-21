@@ -43,8 +43,8 @@ public interface InternalRoleRepository extends JpaRepository<InternalRole, Long
     @Query("SELECT accessRightJson FROM InternalRole u WHERE u.internalRoleCode = :internalRoleCode")
     String getAccessRightJson ( @Param("internalRoleCode") String internalRoleCode);
 
-    @Query("SELECT dashBoardRightJson FROM InternalRole u WHERE u.internalRoleCode = :internalRoleCode")
-    String getdashBoardRightJson ( @Param("internalRoleCode") String internalRoleCode);
+    @Query("SELECT DISTINCT (dashBoardRightJson) FROM InternalRole u WHERE u.roleCode = :roleCode")
+    String getdashBoardRightJson ( @Param("roleCode") String roleCode);
 
 
     @Query("SELECT u FROM InternalRole  u WHERE u.provinceCode = :provinceCode")

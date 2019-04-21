@@ -131,7 +131,7 @@ public class UserController extends MessageController {
 
                 for (User userInfo : userList) {
                     ArrayList<InternalUserRoles> interUserRolesList = new ArrayList<>();
-                    ArrayList<InternalUserRoles> internalUserRoles = this.internalUserRoleService.getChildElementsInternal(userInfo.getUserCode());
+                    ArrayList<InternalUserRoles> internalUserRoles = this.internalUserRoleService.getChildElementsInternalWithProvinceCodeNotNull(userInfo.getUserCode());
                     if (!isEmpty(internalUserRoles) && internalUserRoles != null) {
                         for (InternalUserRoles in : internalUserRoles) {
                             System.out.println("Internal user roles" + in.getInternalRoleCode());
@@ -426,7 +426,7 @@ public class UserController extends MessageController {
             } else if (!isEmpty(userInfo) && userInfo != null && userInfo.getUserTypeName().equalsIgnoreCase("INTERNAL")) {
                 System.out.println("User code is: " + userInfo.getUserCode());
                 List<InternalUserRoles> interUserRolesList = new ArrayList<>();
-                List<InternalUserRoles> internalUserRoles = this.internalUserRoleService.getChildElementsInternal(userInfo.getUserCode());
+                List<InternalUserRoles> internalUserRoles = this.internalUserRoleService.getChildElementsInternalWithActive(userInfo.getUserCode());
                 if (!isEmpty(internalUserRoles) && internalUserRoles != null) {
                     for (InternalUserRoles in : internalUserRoles) {
                         System.out.println("Internal user roles" + in.getInternalRoleCode());
@@ -784,7 +784,8 @@ public class UserController extends MessageController {
         mailDTO.setSubject("New " + user.getUserTypeName().toLowerCase() +" User Registration");
         mailDTO.setHeader(ExceptionConstants.header + " " +"Admin Name" +",");
         mailDTO.setFooter("CIS ADMIN");
-        mailDTO.setBody1("New user registered with email " +user.getEmail()+  " in province "+user.getInternalUserRoles().get(0).getProvinceName());
+       // mailDTO.setBody1("New user registered with email " +user.getEmail()+  " in province "+user.getInternalUserRoles().get(0).getProvinceName());
+        mailDTO.setBody1("New user registered with email " +user.getEmail());
         mailDTO.setBody2("New task created for approval by provincial administrator");
         mailDTO.setBody3("");
         mailDTO.setBody4("");
@@ -813,7 +814,8 @@ public class UserController extends MessageController {
         mailDTO.setSubject("New "+ user.getUserTypeName().toLowerCase() +" User Registration");
         mailDTO.setHeader(ExceptionConstants.header + " " + "Province Administrator" + ",");
         mailDTO.setFooter("CIS ADMIN");
-        mailDTO.setBody1("New user registered with email " +user.getEmail()+  " in province " +user.getInternalUserRoles().get(0).getProvinceName());
+        //mailDTO.setBody1("New user registered with email " +user.getEmail()+  " in province " +user.getInternalUserRoles().get(0).getProvinceName());
+        mailDTO.setBody1("New user registered with email " +user.getEmail());
         mailDTO.setBody2("New task created for approval by you");
         mailDTO.setBody3("");
         mailDTO.setBody4("");

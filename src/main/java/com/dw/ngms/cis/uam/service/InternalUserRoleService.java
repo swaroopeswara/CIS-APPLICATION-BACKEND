@@ -23,7 +23,11 @@ public class InternalUserRoleService {
     public List<InternalUserRoles> getInternalUserRole(String email) {
     	return internalUserRoleRepository.findByEmail(email);
     }//getInternalUserRole
-	
+
+    public List<InternalUserRoles> getInternalUserRoleWithActive(String email) {
+        return internalUserRoleRepository.getInternalUserRoleWithActive(email);
+    }
+
     public void deleteInternalUserRole(String usercode, String username, String internalrolecode) {
     	if(usercode == null || username == null || internalrolecode == null)
     		throw new RuntimeException("Usercode and username and internalrolecode required");
@@ -51,6 +55,18 @@ public class InternalUserRoleService {
     public ArrayList<InternalUserRoles> getChildElementsInternal(String userCode) {
         return this.internalUserRoleRepository.getChildElementsInternal(userCode);
     } //getChildElementsInternal
+
+    public ArrayList<InternalUserRoles> getChildElementsInternalWithProvinceCodeNotNull(String userCode) {
+        return this.internalUserRoleRepository.getChildElementsInternalWithProvinceCodeNotNull(userCode);
+    } //getChildElementsInternal
+
+
+    public ArrayList<InternalUserRoles> getChildElementsInternalWithActive(String userCode) {
+        return this.internalUserRoleRepository.getChildElementsInternalWithActive(userCode);
+    } //getChildElementsInternalWithActive
+
+
+
 
     public List<InternalUserRoles>getInternalUserName(String provinceCode,String sectionCode,String roleCode){
         return this.internalUserRoleRepository.getInternalUserName(provinceCode,sectionCode,roleCode);

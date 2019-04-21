@@ -16,6 +16,10 @@ public interface InternalUserRoleRepository  extends JpaRepository<InternalUserR
 	
 	@Query("select iur from InternalUserRoles iur where iur.userName = ?1")
 	List<InternalUserRoles> findByEmail(String username);
+
+	@Query("select iur from InternalUserRoles iur where iur.userName = ?1 and isActive = 'Y'")
+	List<InternalUserRoles> getInternalUserRoleWithActive(String username);
+
 	
 	@Query("select iur from InternalUserRoles iur where iur.userCode = ?1 and iur.userName = ?2 and iur.internalRoleCode = ?3")
 	InternalUserRoles findByUserCodeUserNameAndInternalRoleCode(String usercode, String username, String internalrolecode);
@@ -31,6 +35,11 @@ public interface InternalUserRoleRepository  extends JpaRepository<InternalUserR
 	@Query("select u from InternalUserRoles u where u.userCode = :userCode")
 	ArrayList<InternalUserRoles> getChildElementsInternal(@Param("userCode") String userCode);
 
+	@Query("select u from InternalUserRoles u where u.userCode = :userCode and provinceCode is not null")
+	ArrayList<InternalUserRoles> getChildElementsInternalWithProvinceCodeNotNull(@Param("userCode") String userCode);
+
+	@Query("select u from InternalUserRoles u where u.userCode = :userCode and isActive = 'Y'")
+	ArrayList<InternalUserRoles> getChildElementsInternalWithActive(@Param("userCode") String userCode);
 
 	@Query("select u from InternalUserRoles u where u.provinceCode = :provinceCode and u.sectionCode = :sectionCode and u.roleCode = :roleCode")
 	ArrayList<InternalUserRoles> getInternalUserName(@Param("provinceCode") String provinceCode,@Param("sectionCode") String sectionCode,@Param("roleCode") String roleCode);

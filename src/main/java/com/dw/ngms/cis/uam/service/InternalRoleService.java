@@ -57,8 +57,8 @@ public class InternalRoleService {
         return this.internalRoleRepository.getAccessRightJson(internalRoleCode);
     }
 
-    public String getdashBoardRightJson(String internalRoleCode) {
-        return this.internalRoleRepository.getdashBoardRightJson(internalRoleCode);
+    public String getdashBoardRightJson(String roleCode) {
+        return this.internalRoleRepository.getdashBoardRightJson(roleCode);
     }
 
 

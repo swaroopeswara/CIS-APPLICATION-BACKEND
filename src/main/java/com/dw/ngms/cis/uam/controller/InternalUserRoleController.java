@@ -185,40 +185,32 @@ public class InternalUserRoleController extends MessageController {
             message = "FAIL to upload " + file.getOriginalFilename() + "!";
             return generateFailureResponse(request, exception);
         }
-    }//handleFileUpload
-
-   /* @PostMapping("/downloadSignedUserAccess")
-    public ResponseEntity<InputStreamResource> downloadFile(HttpServletRequest request, @RequestBody @Valid InternalUserRoleDTO internalUserRoles) throws IOException {
-        // Load file from database
-       // if (internalUserRoles.getUserName() != null && internalUserRoles.getUserCode() != null) {
-            InternalUserRoles ir = this.internalUserService.findByUserByNameAndCode(internalUserRoles.getUserCode(), internalUserRoles.getUserName(),internalUserRoles.getInternalRoleCode());
-            System.out.println("Internal User Roles one " + ir.getSignedAccessDocPath());
-            int index = ir.getSignedAccessDocPath().lastIndexOf("/");
-            String fileName = ir.getSignedAccessDocPath().substring(index + 1);
-            System.out.println("File Name is " + fileName);
-            File file = new File(ir.getSignedAccessDocPath());
-
-            InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
-            String exportedContent = resource.getInputStream().toString();
-            HttpHeaders headers = new HttpHeaders();
-            headers.setAccessControlExposeHeaders(Collections.singletonList("Content-Disposition"));
-            headers.set("Content-Disposition", "attachment; filename=" + fileName);
-            headers.set("Content-Type", "application/pdf");
-
-            return ResponseEntity.ok()
-                    .header(HttpHeaders.CONTENT_DISPOSITION,
-                            "attachment;filename=" + file.getName())
-                    .contentType(MediaType.APPLICATION_PDF).contentLength(file.length())
-                    .body(resource);
-            //return new ResponseEntity<String>(exportedContent, headers, HttpStatus.OK);
-
-       // }
+    }//uploadSignedUserAccess
 
 
-    }//downloadFile
 
-*/
 
+    @PostMapping("/uploadDocumentationForInternalUsers")
+    public ResponseEntity<?> uploadDocumentationForInternalUsers(HttpServletRequest request,
+                                                                 @RequestParam MultipartFile[] multipleFiles
+    ) {
+
+        try{
+        for(MultipartFile f : multipleFiles) {
+            List<String> files = new ArrayList<String>();
+            String fileName = testService.store(f);
+            files.add(f.getOriginalFilename());
+            System.out.println("File Name is "+fileName);
+            File file = new File(Constants.uploadDirectoryPath  + fileName);
+
+        }
+
+        } catch (Exception exception) {
+            String  message = "FAIL to upload the files";
+            return generateFailureResponse(request, exception);
+        }
+        return ResponseEntity.status(HttpStatus.OK).body("sucess");
+    }//uploadDocumentationForInternalUsers
 
 
 
@@ -251,7 +243,7 @@ public class InternalUserRoleController extends MessageController {
     @GetMapping("/getInternalUserRolesByEmail")
     public ResponseEntity<?> getInternalUserRolesByEmail(HttpServletRequest request, @RequestParam String email) {
         try {
-            List<InternalUserRoles> internalUserRoles = internalUserRoleService.getInternalUserRole(email);
+            List<InternalUserRoles> internalUserRoles = internalUserRoleService.getInternalUserRoleWithActive(email);
             return (CollectionUtils.isEmpty(internalUserRoles)) ? ResponseEntity.status(HttpStatus.OK).body(internalUserRoles)
                     : ResponseEntity.status(HttpStatus.OK).body(internalUserRoles);
         } catch (Exception exception) {
