@@ -17,8 +17,8 @@ public interface InternalUserRoleRepository  extends JpaRepository<InternalUserR
 	@Query("select iur from InternalUserRoles iur where iur.userName = ?1")
 	List<InternalUserRoles> findByEmail(String username);
 
-	@Query("select iur from InternalUserRoles iur where iur.userName = ?1 and isActive = 'Y'")
-	List<InternalUserRoles> getInternalUserRoleWithActive(String username);
+	@Query("select iur from InternalUserRoles iur where iur.userName = ?1 and isActive = ?2")
+	List<InternalUserRoles> getInternalUserRoleWithActive(String username, String isActive);
 
 	
 	@Query("select iur from InternalUserRoles iur where iur.userCode = ?1 and iur.userName = ?2 and iur.internalRoleCode = ?3")

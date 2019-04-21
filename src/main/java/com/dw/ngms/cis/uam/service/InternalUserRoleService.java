@@ -24,8 +24,8 @@ public class InternalUserRoleService {
     	return internalUserRoleRepository.findByEmail(email);
     }//getInternalUserRole
 
-    public List<InternalUserRoles> getInternalUserRoleWithActive(String email) {
-        return internalUserRoleRepository.getInternalUserRoleWithActive(email);
+    public List<InternalUserRoles> getInternalUserRoleWithActive(String email, String isActive) {
+        return internalUserRoleRepository.getInternalUserRoleWithActive(email,isActive);
     }
 
     public void deleteInternalUserRole(String usercode, String username, String internalrolecode) {
