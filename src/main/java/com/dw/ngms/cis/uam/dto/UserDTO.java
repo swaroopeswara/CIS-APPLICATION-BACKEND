@@ -30,6 +30,7 @@ public class UserDTO implements Serializable {
     private String rejectionreason;
     private String isactive;
 	private String email;
+
 	private List<RegisteredCountDTO> registeredCountDTOs;
     private List<SecurityQuestionDTO> question;
 	public String getUsercode() {

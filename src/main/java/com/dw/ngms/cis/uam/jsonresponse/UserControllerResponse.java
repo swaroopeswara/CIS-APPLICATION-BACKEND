@@ -4,6 +4,8 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 /**
  * Created by swaroop on 2019/03/21.
  */
@@ -19,6 +21,7 @@ public class UserControllerResponse {
 	private String active;
 	private String firstLogin;
 	private String message;
+	private List<String> files;
     
 	public String getExists() {
 		return exists;

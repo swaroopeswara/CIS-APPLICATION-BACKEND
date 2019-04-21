@@ -190,7 +190,7 @@ public class InternalUserRoleController extends MessageController {
 
 
 
-    @PostMapping("/uploadDocumentationForInternalUsers")
+   /* @PostMapping("/uploadDocumentationForInternalUsers")
     public ResponseEntity<?> uploadDocumentationForInternalUsers(HttpServletRequest request,
                                                                  @RequestParam MultipartFile[] multipleFiles
     ) {
@@ -211,7 +211,7 @@ public class InternalUserRoleController extends MessageController {
         }
         return ResponseEntity.status(HttpStatus.OK).body("sucess");
     }//uploadDocumentationForInternalUsers
-
+*/
 
 
     @RequestMapping(value = "/downloadSignedUserAccess", method = RequestMethod.POST)

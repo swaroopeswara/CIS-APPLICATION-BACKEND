@@ -27,6 +27,10 @@ public class ExternalUserService {
         return this.externalUserRepository.findByUserCode(userDTO.getUsercode());
     }
 
+    public ExternalUser findExternalByUserCode(String userCode) {
+        return this.externalUserRepository.findByUserCode(userCode);
+    }
+
 
     public Long getRoleId() {
         return this.externalUserRepository.getRoleId();

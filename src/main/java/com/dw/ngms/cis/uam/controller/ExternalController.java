@@ -8,15 +8,19 @@ import com.dw.ngms.cis.uam.entity.User;
 import com.dw.ngms.cis.uam.jsonresponse.UserControllerResponse;
 import com.dw.ngms.cis.uam.service.ExternalUserService;
 import com.dw.ngms.cis.uam.service.UserService;
+import com.dw.ngms.cis.uam.storage.StorageService;
+import com.dw.ngms.cis.uam.utilities.Constants;
 import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +40,9 @@ public class ExternalController extends MessageController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private StorageService testService;
 
     @RequestMapping(value = "/updateSecurityQuestions", method = RequestMethod.POST)
     public ResponseEntity<?> updateSecurityQuestions(HttpServletRequest request, @RequestBody @Valid UserDTO userDTO) throws IOException {
@@ -63,6 +70,42 @@ public class ExternalController extends MessageController {
             return generateFailureResponse(request, exception);
         }
     }//updateSecurityQuestions
+
+
+  @PostMapping("/uploadDocumentationForInternalUsers")
+    public ResponseEntity<?> uploadDocumentationForInternalUsers(HttpServletRequest request,
+                                                                 @RequestParam MultipartFile[] multipleFiles,
+                                                                 @RequestParam("userCode") String userCode
+    ) {
+        String json = null;
+        Gson gson = new Gson();
+        UserControllerResponse userControllerResponse = new UserControllerResponse();
+        try{
+            ExternalUser externalUser = this.externalUserService.findExternalByUserCode(userCode);
+            if (isEmpty(externalUser)) {
+                return generateEmptyResponse(request, "Users not found");
+            }
+            if (!isEmpty(externalUser)) {
+                List<String> filesExist = new ArrayList<>();
+                for (MultipartFile f : multipleFiles) {
+                    List<String> files = new ArrayList<String>();
+                    String fileName = testService.store(f);
+                    files.add(f.getOriginalFilename());
+                    filesExist.add(Constants.uploadDirectoryPath + fileName);
+                    userControllerResponse.setFiles(filesExist);
+                    json = gson.toJson(userControllerResponse);
+                    externalUser.setDocumentUploadMultiple(json);
+                    this.externalUserService.updateSecurityQuestions(externalUser);
+                }
+            }
+
+        } catch (Exception exception) {
+            String  message = "FAIL to upload the files";
+            return generateFailureResponse(request, exception);
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(json);
+    }//uploadDocumentationForInternalUsers
+
 
 
 

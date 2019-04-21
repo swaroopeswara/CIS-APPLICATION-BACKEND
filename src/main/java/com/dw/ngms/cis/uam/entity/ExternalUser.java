@@ -130,6 +130,9 @@ public class ExternalUser implements Serializable {
     @Column(name = "SECTORNAME",length = 100)
     private String sectorname;
 
+    @Column(name = "UPLOADMULTIPLEFILES",length = 2000)
+    private String documentUploadMultiple;
+
     @Override
 	public int hashCode() {
 		final int prime = 31;
