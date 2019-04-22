@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<processes>
+	<processList>
+	    <process id="infoRequest" name="The info request">
+	    	<sequenceFlowList>
+		        <sequenceFlow id="flow1" name="theStart" state="Created" assigneeType="Role" assignee="user">
+		        	<targetList>
+		        		<target id="flow2" restRequest="restAssign" description="assign"/>
+		        	</targetList>
+		        </sequenceFlow>
+		        <sequenceFlow id="flow2" name="usrState1" state="Assigned" assigneeType="Role" assignee="manager">
+		        	<targetList>
+			        	<target id="flow3" restRequest="restReassign" description="reassign"/>
+			        	<target id="flow4" restRequest="restFinalise" description="finalise"/>
+		        	</targetList>
+		        </sequenceFlow>
+		        <sequenceFlow id="flow3" name="usrState2" state="Reassigned" assigneeType="Role" assignee="officer">
+		        	<targetList>
+		        		<target id="flow4" restRequest="restFinalise" description="finalise"/>
+		        	</targetList>
+		        </sequenceFlow>
+		        <sequenceFlow id="flow4" state="Finalised" name="theEnd"/>
+	        </sequenceFlowList>
+	    </process>  
+    </processList>  
+</processes>
