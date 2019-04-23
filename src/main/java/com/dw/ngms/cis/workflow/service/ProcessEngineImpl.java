@@ -34,10 +34,10 @@ public class ProcessEngineImpl implements ProcessEngine<Task>{
 			log.error("process not found");
 			return;
 		}
-		
-		task.setTaskStatus(process.getState());
+				
 		SequenceFlow targetSequence = process.getSequenceFlow(process.getStartSequenceFlow().getTargetList().get(0).getId());
-		task.setTaskAllOCRoleCode(targetSequence.getAssignee());
+		task.setTaskStatus(targetSequence.getState());
+		task.setTaskAllOCRoleCode(targetSequence.getAssigneeList().get(0).getName());//TODO need to fix by type
 		//need to discuss abt province and section
 		taskRepository.save(task);
 		//TODO need to add life cycle
@@ -51,8 +51,8 @@ public class ProcessEngineImpl implements ProcessEngine<Task>{
 		}
 //		SequenceFlow sequence = process.getSequenceFlow(currentState);
 		SequenceFlow targetSequence = process.getSequenceFlow(targetState);
-		task.setTaskStatus(process.getState());
-		task.setTaskAllOCRoleCode(targetSequence.getAssignee());
+		task.setTaskStatus(targetSequence.getState());
+		task.setTaskAllOCRoleCode(targetSequence.getAssigneeList().get(0).getName());
 
 		//need to discuss abt province and section
 		taskRepository.save(task);		
@@ -64,8 +64,8 @@ public class ProcessEngineImpl implements ProcessEngine<Task>{
 			log.error("process not found");
 			return;
 		}
-//		SequenceFlow sequence = process.getEndSequenceFlow();
-		task.setTaskStatus(process.getState());
+		SequenceFlow sequence = process.getEndSequenceFlow();
+		task.setTaskStatus(sequence.getState());
 		//need to discuss abt province and section
 		taskRepository.save(task);
 	}

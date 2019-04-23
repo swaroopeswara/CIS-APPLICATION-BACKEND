@@ -5,7 +5,7 @@ import static org.junit.Assert.assertEquals;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 import org.springframework.stereotype.Component;
 
 import com.dw.ngms.cis.workflow.model.Process;
@@ -55,5 +55,14 @@ public class WorkflowProcessLoader {
 	    Process value = getProcess("infoRequest");
 	    log.info("Processes id: "+value.getId());
 	    assertEquals("infoRequest", value.getId());
+	}//testLoadProcesses
+	
+	@Test
+	public void testGetAssignee() throws IOException {
+	    Process value = getProcess("infoRequest");
+	    log.info("Processes id: "+value.getId());
+	    log.info("Sequence id: "+value.getSequenceFlowList().get(1).getId());	    
+	    assertEquals("flow2", value.getSequenceFlowList().get(1).getId());
+	    assertEquals("manager", value.getSequenceFlowList().get(1).getAssigneeList().get(0).getName());
 	}//testLoadProcesses
 }

@@ -1,8 +1,5 @@
 package com.dw.ngms.cis.workflow.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.xml.bind.annotation.XmlRootElement;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -19,16 +16,10 @@ import lombok.ToString;
 @ToString
 @NoArgsConstructor
 @XmlRootElement
-public class SequenceFlow {
-	@JsonProperty("id")
-	private String id;
+public class Assignee {
+
+	@JsonProperty("type")
+	private String type;
 	@JsonProperty("name")
 	private String name;
-	@JsonProperty("state")
-	private String state;
-	@JsonProperty("assigneeList")
-	private List<Assignee> assigneeList;
-	@JsonProperty("targetList")
-	private List<Target> targetList = new ArrayList<Target>();
-		
 }

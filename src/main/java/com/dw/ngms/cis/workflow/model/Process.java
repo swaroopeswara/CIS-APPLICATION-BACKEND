@@ -26,9 +26,7 @@ public class Process {
 	@JsonProperty("id")
 	private String id;
 	@JsonProperty("name")
-	private String name;
-	@JsonProperty("state")
-	private String state;
+	private String name;	
 	@JsonProperty("sequenceFlowList")
 	private List<SequenceFlow> sequenceFlowList = new ArrayList<SequenceFlow>();
 	

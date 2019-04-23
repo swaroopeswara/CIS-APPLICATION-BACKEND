@@ -3,18 +3,28 @@
 	<processList>
 	    <process id="infoRequest" name="The info request">
 	    	<sequenceFlowList>
-		        <sequenceFlow id="flow1" name="theStart" state="Created" assigneeType="Role" assignee="user">
+		        <sequenceFlow id="flow1" name="theStart" state="Created">
+		        	<assigneeList>
+		        		<assignee type="Role" name="user"/>
+		        	</assigneeList>
 		        	<targetList>
 		        		<target id="flow2" restRequest="restAssign" description="assign"/>
 		        	</targetList>
 		        </sequenceFlow>
-		        <sequenceFlow id="flow2" name="usrState1" state="Assigned" assigneeType="Role" assignee="manager">
+		        <sequenceFlow id="flow2" name="usrState1" state="Assigned">
+		        	<assigneeList>
+		        		<assignee type="Role" name="manager"/>
+		        	</assigneeList>
 		        	<targetList>
-			        	<target id="flow3" restRequest="restReassign" description="reassign"/>
+		        		<target id="flow2" restRequest="restMove" description="move"/>
+			        	<target id="flow3" restRequest="restReassign" description="reassign"/>			        	
 			        	<target id="flow4" restRequest="restFinalise" description="finalise"/>
-		        	</targetList>
-		        </sequenceFlow>
-		        <sequenceFlow id="flow3" name="usrState2" state="Reassigned" assigneeType="Role" assignee="officer">
+		        	</targetList>		        	
+		        </sequenceFlow>		        
+		        <sequenceFlow id="flow3" name="usrState2" state="Reassigned">
+		        	<assigneeList>
+		        		<assignee type="Role" name="officer"/>
+		        	</assigneeList>
 		        	<targetList>
 		        		<target id="flow4" restRequest="restFinalise" description="finalise"/>
 		        	</targetList>
