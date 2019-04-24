@@ -26,6 +26,8 @@ public class SequenceFlow {
 	private String name;
 	@JsonProperty("state")
 	private String state;
+	@JsonProperty("restDependancy")
+	private String restDependancy;
 	@JsonProperty("assigneeList")
 	private List<Assignee> assigneeList;
 	@JsonProperty("targetList")

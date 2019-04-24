@@ -1,14 +1,28 @@
 package com.dw.ngms.cis.uam.entity;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import javax.persistence.*;
-import java.io.Serializable;
-import java.util.Date;
-import java.util.List;
 
 /**
  * Created by swaroop on 2019/04/06.
@@ -21,9 +35,9 @@ import java.util.List;
 @Table(name = "TASKS")
 public class Task implements Serializable {
 
+	private static final long serialVersionUID = -176045520796625793L;
 
-
-    @Id
+	@Id
     @Column(name = "TASKID")
     @SequenceGenerator(name = "generator", sequenceName = "task_seq", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "generator")
@@ -82,6 +96,15 @@ public class Task implements Serializable {
     @Column(name = "CREATEDDATE", nullable = true)
     private Date createdDate = new Date();
 
+    @ManyToMany(cascade = CascadeType.ALL, fetch=FetchType.LAZY)
+    @JoinTable(name = "ROLE_TASK",
+    	joinColumns = @JoinColumn(name = "TASKID"),
+        inverseJoinColumns = @JoinColumn(name = "INTERNALROLEID"))
+    private List<InternalRole> internalRoleList = new ArrayList<>();
 
-
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(name = "USER_TASK",
+    	joinColumns = @JoinColumn(name = "TASKID"),
+        inverseJoinColumns = @JoinColumn(name = "USERID"))
+    private List<User> userList = new ArrayList<>();
 }

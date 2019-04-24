@@ -1,14 +1,14 @@
 package com.dw.ngms.cis.uam.repository;
 
-import com.dw.ngms.cis.uam.entity.ExternalRole;
-import com.dw.ngms.cis.uam.entity.InternalRole;
-import com.dw.ngms.cis.uam.entity.InternalUserRoles;
+import java.util.List;
+import java.util.Set;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
+import com.dw.ngms.cis.uam.entity.InternalRole;
 
 /**
  * Created by swaroop on 2019/04/03.
@@ -26,6 +26,10 @@ public interface InternalRoleRepository extends JpaRepository<InternalRole, Long
     @Query("SELECT u FROM InternalRole u WHERE u.roleCode = :roleCode")
     List<InternalRole> findByRoleCode(@Param("roleCode") String roleCode);
 
+    @Query(value = "SELECT U.* FROM INTERNALROLES U WHERE (U.PROVINCECODE = NVL(?1, U.PROVINCECODE) OR U.PROVINCECODE is null) AND "
+    		+ "(U.SECTIONCODE = NVL(?2, U.SECTIONCODE) OR U.SECTIONCODE is null) AND U.ROLENAME = ?3", nativeQuery = true)
+    Set<InternalRole> findByProvinceCodeAndSectionCodeAndRoleName(String provinceCode, String sectionCode, String roleName);
+    
     @Query("SELECT u FROM InternalRole u WHERE u.roleCode = :roleCode")
     List<InternalRole>  updateDashBoardAccessRight(
            @Param("roleCode") String roleCode);

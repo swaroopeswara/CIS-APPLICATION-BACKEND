@@ -1,6 +1,7 @@
 package com.dw.ngms.cis.uam.entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -13,6 +14,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.PrePersist;
@@ -122,6 +124,9 @@ public class User implements Serializable {
     @Column(name = "FIRSTLOGIN",nullable = true, length = 1)
     private String firstLogin;
 
+    @ManyToMany(mappedBy = "userList", fetch=FetchType.LAZY)
+    private List<Task> taskList = new ArrayList<Task>(); 
+    
     @Transient
     private List<InternalUserRoles> internalUserRoles;
 

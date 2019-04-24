@@ -5,9 +5,9 @@ import java.io.Serializable;
 
 public interface ProcessEngine<T> extends Serializable {
 
-	void startProcess(String processId, T task);
+	void startProcess(String processId, T task, ProcessAdditionalInfo additionalInfo);
 	
-	void processUserState(Process process, T task, String currentState, String targetState);
+	void processUserState(Process process, T task, ProcessAdditionalInfo additionalInfo);
 	
-	void endProcess(Process process, T task, String currentState);
+	void endProcess(Process process, T task, ProcessAdditionalInfo additionalInfo);
 }

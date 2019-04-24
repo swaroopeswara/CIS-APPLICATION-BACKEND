@@ -63,6 +63,6 @@ public class WorkflowProcessLoader {
 	    log.info("Processes id: "+value.getId());
 	    log.info("Sequence id: "+value.getSequenceFlowList().get(1).getId());	    
 	    assertEquals("flow2", value.getSequenceFlowList().get(1).getId());
-	    assertEquals("manager", value.getSequenceFlowList().get(1).getAssigneeList().get(0).getName());
+	    assertEquals("Information Manager", value.getSequenceFlowList().get(1).getAssigneeList().get(0).getName());
 	}//testLoadProcesses
 }
