@@ -5,6 +5,8 @@ import com.dw.ngms.cis.im.repository.RequestTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * Created by swaroop on 2019/04/19.
  */
@@ -23,6 +25,11 @@ public class RequestTypeService {
     public RequestTypes saveRequestType(RequestTypes requestTypes) {
         return this.requestTypeRepository.save(requestTypes);
     } //saveRequestType
+
+
+    public List<RequestTypes> getAllRequestTypes() {
+        return this.requestTypeRepository.findAll();
+    } //getAllRequestTypes
 
 
 

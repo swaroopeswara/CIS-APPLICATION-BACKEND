@@ -1,11 +1,14 @@
 package com.dw.ngms.cis.im.service;
 
+import com.dw.ngms.cis.im.entity.DeliveryMethods;
 import com.dw.ngms.cis.im.entity.FormatTypes;
 import com.dw.ngms.cis.im.entity.GazetteTypes;
 import com.dw.ngms.cis.im.repository.FormatTypeRepository;
 import com.dw.ngms.cis.im.repository.GazetteTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * Created by swaroop on 2019/04/19.
@@ -25,6 +28,11 @@ public class GazetteTypeService {
     public GazetteTypes saveGazetteType(GazetteTypes gazetteTypes) {
         return this.gazetteTypeRepository.save(gazetteTypes);
     } //saveGazetteType
+
+    public List<GazetteTypes> getAllGazetteTypes() {
+        return this.gazetteTypeRepository.findAll();
+    } //getAllDeliveryMethos
+
 
 
 

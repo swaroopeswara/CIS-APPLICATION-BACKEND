@@ -30,10 +30,10 @@ public class CostSubService {
 
 
 
- /*   public List<CostSubCategories> getSubCostCategoriesByCostCategoryCode(String costCategoryCode) {
+  public List<CostSubCategories> getSubCostCategoriesByCostCategoryCode(String costCategoryCode) {
         return this.costSubRepository.getSubCostCategoriesByCostCategoryCode(costCategoryCode);
 
 
-    }*/
+    }
 
 }

@@ -1,5 +1,6 @@
 package com.dw.ngms.cis.im.entity;
 
+import com.dw.ngms.cis.uam.entity.User;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,7 +20,16 @@ import java.util.Date;
 @Table(name = "IMREQUESTITEMS")
 public class RequestItems implements Serializable {
 
+    @Column(name = "REQUESTID", nullable = false, length = 50, insertable = false, updatable = false)
+    private Long requestId;
+
     @Id
+    @Column(name = "REQUESTITEMID")
+    @SequenceGenerator(name = "generator", sequenceName = "REQUESTITEMS_SEQ", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "generator")
+    private Long requestItemId;
+
+
     @Column(name = "REQUESTITEMCODE")
     private String requestItemCode;
 
@@ -45,9 +55,12 @@ public class RequestItems implements Serializable {
     @Column(name = "CREATEDDATE", nullable = true)
     private Date createdDate = new Date();
 
+    @Column(name = "REQUESTCODE", nullable = true, length = 50)
+    private String requestCode;
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinColumn(name="requestCode", nullable=false)
+    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    @JoinColumn(name="REQUESTID", nullable=false)
     @JsonBackReference
     private Requests requestItems;
+
 }

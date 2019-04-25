@@ -8,6 +8,7 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -21,12 +22,25 @@ import java.util.Set;
 public class Requests implements Serializable {
 
     @Id
+    @Column(name = "REQUESTID")
+    @SequenceGenerator(name = "generator", sequenceName = "REQUESTS_SEQ", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "generator")
+    private Long requestId;
+
+
+    @OneToMany(mappedBy="requestItems",fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<RequestItems> requestItems;
+
+
     @Column(name = "REQUESTCODE")
     private String requestCode;
 
     @Column(name = "USERCODE", length = 100, unique = true)
     private String userCode;
 
+    @Column(name = "PROVINCECODE", length = 100, unique = true)
+    private String provinceCode;
 
     @Column(name = "USERNAME", length = 200)
     private String userName;
@@ -131,9 +145,7 @@ public class Requests implements Serializable {
     @Column(name = "MODIFIEDDATE")
     private Date modifiedDate;
 
-    @OneToMany(mappedBy="requestItems",fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JsonManagedReference
-    private Set<RequestItems> requestItems;
+
 
 
 }

@@ -21,10 +21,10 @@ public interface CostSubRepository extends JpaRepository<CostSubCategories, UUID
             true)
     Long getCostSubCategoryId();
 
- /*  // @Query("SELECT u FROM CostSubCategories u WHERE u.costCategoryCode = :costCategoryCode")
+    @Query("SELECT u FROM CostSubCategories u WHERE u.costCategoryCode = :costCategoryCode")
     List<CostSubCategories> getSubCostCategoriesByCostCategoryCode(@Param("costCategoryCode") String costCategoryCode);
 
-*/
+
 }
 
 

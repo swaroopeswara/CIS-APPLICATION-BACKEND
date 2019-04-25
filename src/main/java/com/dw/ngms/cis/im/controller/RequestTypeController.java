@@ -6,16 +6,18 @@ import com.dw.ngms.cis.uam.controller.MessageController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.util.List;
 
 /**
  * Created by swaroop on 2019/04/19.
  */
 @RestController
-@RequestMapping("/cisorigin.uam/api/v1")
+@RequestMapping("/cisorigin.im/api/v1")
 @CrossOrigin(origins = "*")
 public class RequestTypeController extends MessageController {
 
@@ -35,6 +37,19 @@ public class RequestTypeController extends MessageController {
             return generateFailureResponse(request, exception);
         }
     }//createCategory
+
+
+
+    @GetMapping("/getRequestTypes")
+    public ResponseEntity<?> getRequestTypes(HttpServletRequest request) {
+        try {
+            List<RequestTypes> requestTypesList = requestTypeService.getAllRequestTypes();
+            return (CollectionUtils.isEmpty(requestTypesList)) ? generateEmptyResponse(request, "RequestType(s) not found")
+                    : ResponseEntity.status(HttpStatus.OK).body(requestTypesList);
+        } catch (Exception exception) {
+            return generateFailureResponse(request, exception);
+        }
+    }//getRequestTypes
 
 
 }

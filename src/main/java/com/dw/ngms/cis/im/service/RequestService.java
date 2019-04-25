@@ -24,6 +24,28 @@ public class RequestService {
         return this.requestRepository.findAll();
     }//getAllCostCategories
 
+    public List<Requests> getRequestByUserCodeProvinceCode(String userCode, String provinceCode) {
+        return this.requestRepository.getRequestByUserCodeProvinceCode(userCode,provinceCode);
+    }//getRequestByUserCodeProvinceCode
+
+
+    public Long getRequestId() {
+        return this.requestRepository.getRequestId();
+    } //getRequestTypeID
+
+
+
+
+    public Requests saveRequest(Requests requests) {
+        return this.requestRepository.save(requests);
+    } //saveRequest
+
+    public Requests getRequestsByRequestCode(String requestCode) {
+        return this.requestRepository.getRequestsByRequestCode(requestCode);
+    } //saveRequest
+
+
+
 
 
 }

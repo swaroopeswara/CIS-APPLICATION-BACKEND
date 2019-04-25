@@ -1,11 +1,10 @@
 package com.dw.ngms.cis.workflow.service;
 
-import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.junit.Test;
+
 import org.springframework.stereotype.Component;
 
 import com.dw.ngms.cis.workflow.model.Process;
@@ -42,7 +41,7 @@ public class WorkflowProcessLoader {
 		return (processes!= null) ? processes.getProcess(processId) : null;
 	}//getProcess
 
-	@Test
+	/*@Test
 	public void testLoadProcesses() throws IOException {
 	    Processes value = loadProcesses();
 	    log.info("Processes size: "+value.getProcessList().size());
@@ -55,14 +54,5 @@ public class WorkflowProcessLoader {
 	    Process value = getProcess("infoRequest");
 	    log.info("Processes id: "+value.getId());
 	    assertEquals("infoRequest", value.getId());
-	}//testLoadProcesses
-	
-	@Test
-	public void testGetAssignee() throws IOException {
-	    Process value = getProcess("infoRequest");
-	    log.info("Processes id: "+value.getId());
-	    log.info("Sequence id: "+value.getSequenceFlowList().get(1).getId());	    
-	    assertEquals("flow2", value.getSequenceFlowList().get(1).getId());
-	    assertEquals("Information Manager", value.getSequenceFlowList().get(1).getAssigneeList().get(0).getName());
-	}//testLoadProcesses
+	}//testLoadProcesses*/
 }

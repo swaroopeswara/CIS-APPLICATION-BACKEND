@@ -1,9 +1,12 @@
 package com.dw.ngms.cis.im.service;
 
 import com.dw.ngms.cis.im.entity.MediaTypes;
+import com.dw.ngms.cis.im.entity.RequestKinds;
 import com.dw.ngms.cis.im.repository.MediaTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * Created by swaroop on 2019/04/19.
@@ -23,6 +26,11 @@ public class MediaTypeService {
     public MediaTypes saveMediaType(MediaTypes mediaTypes) {
         return this.mediaTypeRepository.save(mediaTypes);
     } //saveRequestType
+
+
+    public List<MediaTypes> getAllMediaTypes() {
+        return this.mediaTypeRepository.findAll();
+    } //getAllMediaTypes
 
 
 

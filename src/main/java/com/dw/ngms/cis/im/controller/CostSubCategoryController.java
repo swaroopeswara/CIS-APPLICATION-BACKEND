@@ -18,14 +18,14 @@ import java.util.List;
  * Created by swaroop on 2019/04/16.
  */
 @RestController
-@RequestMapping("/cisorigin.uam/api/v1")
+@RequestMapping("/cisorigin.im/api/v1")
 @CrossOrigin(origins = "*")
 public class CostSubCategoryController extends MessageController {
 
     @Autowired
     private CostSubService costSubService;
 
-   /* @GetMapping("/getSubCostCategoriesByCostCategoryCode")
+    @GetMapping("/getSubCostCategoriesByCostCategoryCode")
     public ResponseEntity<?> getSubCostCategoriesByCostCategoryCode(HttpServletRequest request,
                                                                     @RequestParam String costCategoryCode) {
         try {
@@ -37,7 +37,6 @@ public class CostSubCategoryController extends MessageController {
         }
     }//getSubCostCategoriesByCostCategoryCode
 
-*/
   @PostMapping("/createSubCategory")
     public ResponseEntity<?> createSubCategory(HttpServletRequest request, @RequestBody @Valid CostSubCategories costSubCategories) {
         try {

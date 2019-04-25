@@ -8,16 +8,18 @@ import com.dw.ngms.cis.uam.controller.MessageController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.util.List;
 
 /**
  * Created by swaroop on 2019/04/19.
  */
 @RestController
-@RequestMapping("/cisorigin.uam/api/v1")
+@RequestMapping("/cisorigin.im/api/v1")
 @CrossOrigin(origins = "*")
 public class GazetteTypeController extends MessageController {
 
@@ -37,6 +39,19 @@ public class GazetteTypeController extends MessageController {
             return generateFailureResponse(request, exception);
         }
     }//createCategory
+
+
+    @GetMapping("/getGazzetteTypes")
+    public ResponseEntity<?> getGazzetteTypes(HttpServletRequest request) {
+        try {
+            List<GazetteTypes> gazetteTypesList = gazetteTypeService.getAllGazetteTypes();
+            return (CollectionUtils.isEmpty(gazetteTypesList)) ? generateEmptyResponse(request, "GazetteType(s) not found")
+                    : ResponseEntity.status(HttpStatus.OK).body(gazetteTypesList);
+        } catch (Exception exception) {
+            return generateFailureResponse(request, exception);
+        }
+    }//getFormatTypes
+
 
 
 }
