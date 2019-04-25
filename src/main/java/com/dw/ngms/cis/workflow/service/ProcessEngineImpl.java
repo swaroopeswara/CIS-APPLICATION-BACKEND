@@ -1,20 +1,29 @@
 package com.dw.ngms.cis.workflow.service;
 
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import com.dw.ngms.cis.uam.entity.InternalRole;
 import com.dw.ngms.cis.uam.entity.Task;
+import com.dw.ngms.cis.uam.entity.TaskLifeCycle;
 import com.dw.ngms.cis.uam.entity.User;
 import com.dw.ngms.cis.uam.repository.InternalRoleRepository;
+import com.dw.ngms.cis.uam.repository.TaskLifeCycleRepository;
 import com.dw.ngms.cis.uam.repository.TaskRepository;
+import com.dw.ngms.cis.uam.repository.UserRepository;
 import com.dw.ngms.cis.workflow.api.ProcessAdditionalInfo;
 import com.dw.ngms.cis.workflow.api.ProcessEngine;
 import com.dw.ngms.cis.workflow.model.Process;
@@ -32,9 +41,13 @@ public class ProcessEngineImpl implements ProcessEngine<Task>{
 	@Autowired
 	private Processes processes;
 	@Autowired
+	private UserRepository userRepository;
+	@Autowired
 	private TaskRepository taskRepository;
 	@Autowired
-	private InternalRoleRepository internalRoleRepository;
+	private TaskLifeCycleRepository lifeCycleRepository;
+	@Autowired
+	private InternalRoleRepository internalRoleRepository;	
 	
 	@Override
 	public void startProcess(String processId, Task task, ProcessAdditionalInfo additionalInfo) {
@@ -69,7 +82,7 @@ public class ProcessEngineImpl implements ProcessEngine<Task>{
 		if(targetSequence != null) {
 			task.setTaskStatus(targetSequence.getState());
 			//check dependancy
-			validateDependancy(task, targetSequence);
+			validateDependancy(task, targetSequence, additionalInfo.getUrl());
 			updateRoleAndUserAssociations(task, additionalInfo, targetSequence);
 		}
 		taskRepository.save(task);
@@ -89,7 +102,11 @@ public class ProcessEngineImpl implements ProcessEngine<Task>{
 	}//endProcess
 
 	private void addLifeCycleEntry(Task task, ProcessAdditionalInfo additionalInfo) {
-		//FIXME need to add life cycle		
+		//FIXME update task properties		
+		TaskLifeCycle lifeCycleEntity = new TaskLifeCycle();
+//		BeanUtilsBean.getInstance().getConvertUtils().register(false, false, 0);
+		BeanUtils.copyProperties(task, lifeCycleEntity, "createdDate");
+		lifeCycleRepository.saveAndFlush(lifeCycleEntity);
 	}//addLifeCycleEntry
 
 	private void updateRoleAndUserAssociations(Task task, ProcessAdditionalInfo additionalInfo,
@@ -104,7 +121,7 @@ public class ProcessEngineImpl implements ProcessEngine<Task>{
 					roleList.addAll(internalRoleRepository.findByProvinceCodeAndSectionCodeAndRoleName(additionalInfo.getProvinceCode(), 
 							additionalInfo.getSectionCode(), assignee.getName()));						
 				} else {
-//					userList.addAll('TODO');//FIXME
+					userList.add(userRepository.findByLoginName(assignee.getName()));
 				}
 			});			
 		}
@@ -138,26 +155,47 @@ public class ProcessEngineImpl implements ProcessEngine<Task>{
 		task.getUserList().clear();
 	}//clearRoleAndUserAssociations
 
-	private void validateDependancy(Task task, SequenceFlow targetSequence) {
-		String urlString = "http://localhost:8089//cisorigin.uam/api/v1/";
+	private void validateDependancy(Task task, SequenceFlow targetSequence, String url) {
+		String urlString = "cisorigin.uam/api/v1/";
 		if(task == null || task.getTaskId() == null || targetSequence == null || 
 				StringUtils.isEmpty(targetSequence.getRestDependancy())){
 			return;
 		}
-		urlString = urlString.concat(targetSequence.getRestDependancy()).concat(task.getTaskId().toString());	
-		HttpURLConnection httpCon = null;
-		try {
-			URL url = new URL(urlString);
-			httpCon = (HttpURLConnection) url.openConnection();
-			httpCon.setRequestMethod("GET");
-			int status = httpCon.getResponseCode();
-			log.info("status : {0}", status);
-			//FIXME need to work on it
-		} catch(Exception e) {
-			throw new RuntimeException(e.getMessage(), e);
-		} finally {
-			if(httpCon != null) httpCon.disconnect();
-		}
+		boolean isDependancyCompleted = false;
+		url = url.concat(urlString).concat(targetSequence.getRestDependancy()).concat(task.getTaskId().toString());	
+		CloseableHttpClient client = HttpClients.createDefault();
+        HttpGet request = new HttpGet(url);
+        CloseableHttpResponse response = null;
+        try {
+            response = client.execute(request);
+            int status = response.getStatusLine().getStatusCode();	 
+            if (status >= 200 && status < 300) {
+                BufferedReader br;	                 
+                br = new BufferedReader(new InputStreamReader(response
+                            .getEntity().getContent()));
+	                 
+                String line = "";
+                while ((line = br.readLine()) != null) {
+                	log.info(line);
+                }
+                isDependancyCompleted = true;
+            } else {
+               log.info("Unexpected response status: {0}", status);
+            }
+        } catch (IOException | UnsupportedOperationException e) {
+        	log.error("Error: {0}", e.getMessage());
+        } finally {
+            if(null != response){
+                try {
+                    response.close();
+                    client.close();
+                } catch (IOException e) {
+                	log.error("Error: {0}", e.getMessage());
+                }
+            }
+        }
+        if(!isDependancyCompleted)
+        	throw new RuntimeException("Task dependancy is in pending.");
 	}//validateDependancy
-
+ 
 }

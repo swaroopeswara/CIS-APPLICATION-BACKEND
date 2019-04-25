@@ -17,4 +17,5 @@ public class ProcessAdditionalInfo {
 	private String sectionCode;
 	private String currentState;
 	private String targetState;
+	private String url;
 }
