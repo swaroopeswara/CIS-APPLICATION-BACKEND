@@ -67,6 +67,9 @@ public class ExternalUser implements Serializable {
     @Column(name = "PRACTISENAME", length = 100)
     private String practicename;
 
+    @Column(name = "ALTERNATIVEEMAIL",length = 255)
+    private String alternativeemail;
+
     @Column(name = "POSTALADDRESSLINE1", nullable = true, length = 70)
     private String postaladdressline1;
 
