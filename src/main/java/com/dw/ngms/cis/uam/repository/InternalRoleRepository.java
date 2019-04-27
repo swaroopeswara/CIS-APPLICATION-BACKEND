@@ -1,7 +1,6 @@
 package com.dw.ngms.cis.uam.repository;
 
 import java.util.List;
-import java.util.Set;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -17,8 +16,6 @@ import com.dw.ngms.cis.uam.entity.InternalRole;
 @Repository
 public interface InternalRoleRepository extends JpaRepository<InternalRole, Long> {
 
-
-
     @Query("SELECT u FROM InternalRole u WHERE u.roleCode = :roleCode")
     List<InternalRole> updateAccessRight(
              @Param("roleCode") String roleCode);
@@ -26,9 +23,17 @@ public interface InternalRoleRepository extends JpaRepository<InternalRole, Long
     @Query("SELECT u FROM InternalRole u WHERE u.roleCode = :roleCode")
     List<InternalRole> findByRoleCode(@Param("roleCode") String roleCode);
 
-    @Query(value = "SELECT U.* FROM INTERNALROLES U WHERE (U.PROVINCECODE = NVL(?1, U.PROVINCECODE) OR U.PROVINCECODE is null) AND "
-    		+ "(U.SECTIONCODE = NVL(?2, U.SECTIONCODE) OR U.SECTIONCODE is null) AND U.ROLENAME = ?3", nativeQuery = true)
-    Set<InternalRole> findByProvinceCodeAndSectionCodeAndRoleName(String provinceCode, String sectionCode, String roleName);
+//    @Query(value = "SELECT U.* FROM INTERNALROLES U WHERE (U.PROVINCECODE = NVL(?1, U.PROVINCECODE) OR U.PROVINCECODE is null) AND (U.SECTIONCODE = NVL(?2, U.SECTIONCODE) OR U.SECTIONCODE is null) AND U.ROLENAME = ?3", nativeQuery = true)
+//    List<InternalRole> findByProvinceCodeAndSectionCodeAndRoleName(String provinceCode, String sectionCode, String roleName);
+    
+    @Query("SELECT u FROM InternalRole  u WHERE u.roleName = ?1 ")
+    List<InternalRole> findByRoleName(String roleName);
+    
+    @Query("SELECT u FROM InternalRole  u WHERE u.provinceCode = ?1 and u.roleName = ?2 ")
+    List<InternalRole> findByProvinceCodeAndRoleName(String provinceCode, String roleName);
+    
+    @Query("SELECT u FROM InternalRole  u WHERE u.provinceCode = ?1 and u.sectionCode = ?2 and u.roleName = ?3 ")
+    List<InternalRole> findByProvinceCodeAndSectionCodeAndRoleName(String provinceCode, String sectionCode, String roleName);
     
     @Query("SELECT u FROM InternalRole u WHERE u.roleCode = :roleCode")
     List<InternalRole>  updateDashBoardAccessRight(
@@ -42,14 +47,11 @@ public interface InternalRoleRepository extends JpaRepository<InternalRole, Long
     InternalRole findByInternalRoleCode(
             @Param("internalRoleCode") String internalRoleCode);
 
-
-
     @Query("SELECT accessRightJson FROM InternalRole u WHERE u.internalRoleCode = :internalRoleCode")
     String getAccessRightJson ( @Param("internalRoleCode") String internalRoleCode);
 
     @Query("SELECT DISTINCT (dashBoardRightJson) FROM InternalRole u WHERE u.roleCode = :roleCode")
     String getdashBoardRightJson ( @Param("roleCode") String roleCode);
-
 
     @Query("SELECT u FROM InternalRole  u WHERE u.provinceCode = :provinceCode")
     List<InternalRole> getSectionsByProvinceCode (@Param("provinceCode") String provinceCode);
@@ -63,12 +65,8 @@ public interface InternalRoleRepository extends JpaRepository<InternalRole, Long
     @Query("SELECT u FROM InternalRole  u WHERE  u.sectionCode = :sectionCode and u.provinceCode IS NULL")
     List<InternalRole> getRolesBySectionsAndProvinceByProvinceCodeNull (@Param("sectionCode") String sectionCode);
 
-
-
-
     @Query(value = "SELECT U.*  FROM INTERNALROLES  u WHERE u.sectionCode is null and  u.provinceCode is null ",
             nativeQuery = true)
     List<InternalRole> getNationalRoles ();
-
 
 }

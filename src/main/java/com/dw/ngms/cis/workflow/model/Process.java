@@ -26,7 +26,9 @@ public class Process {
 	@JsonProperty("id")
 	private String id;
 	@JsonProperty("name")
-	private String name;	
+	private String name;
+	@JsonProperty("description")
+	private String description;
 	@JsonProperty("sequenceFlowList")
 	private List<SequenceFlow> sequenceFlowList = new ArrayList<SequenceFlow>();
 	
@@ -40,7 +42,13 @@ public class Process {
 		return (!CollectionUtils.isEmpty(sequenceFlowList)) ? 
 			sequenceFlowList.stream().filter(s -> (s.getName() != null) && 
 					s.getName().equals(name)).findFirst().get() : null;
-	}//getSequenceFlow
+	}//getSequenceFlowByName
+	
+	public SequenceFlow getSequenceFlowByState(String state) {
+		return (!CollectionUtils.isEmpty(sequenceFlowList)) ? 
+			sequenceFlowList.stream().filter(s -> (s.getState()!= null) && 
+					s.getState().equals(state)).findFirst().get() : null;
+	}//getSequenceFlowByState
 	
 	public SequenceFlow getStartSequenceFlow() {
 		return getSequenceFlowByName("theStart");

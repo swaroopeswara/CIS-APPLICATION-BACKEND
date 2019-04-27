@@ -136,9 +136,13 @@ public class UserService {
 
 
 	public User findByUserCode(UserDTO userDTO) {
-		return this.userRepository.findByUserCode(userDTO.getUsercode());
+		return this.findByUserCode(userDTO.getUsercode());
 	}
 
+	public User findByUserCode(String userCode) {
+		return this.userRepository.findByUserCode(userCode);
+	}
+	
 	public void deleteUserAndChild(User user) {
 		 this.userRepository.delete(user);
 	}

@@ -1,14 +1,13 @@
 package com.dw.ngms.cis.uam.service;
 
-import com.dw.ngms.cis.uam.entity.ExternalRole;
-import com.dw.ngms.cis.uam.entity.InternalRole;
-import com.dw.ngms.cis.uam.entity.SecurityQuestion;
-import com.dw.ngms.cis.uam.repository.ExternalUserRepository;
-import com.dw.ngms.cis.uam.repository.InternalRoleRepository;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import com.dw.ngms.cis.uam.entity.InternalRole;
+import com.dw.ngms.cis.uam.repository.InternalRoleRepository;
 
 /**
  * Created by swaroop on 2019/04/02.
@@ -44,11 +43,6 @@ public class InternalRoleService {
         return this.internalRoleRepository.findByInternalRoleCode(internalRoleCode);
     }
 
-
-
-
-
-
     public InternalRole updateInternalRole(InternalRole internalRole) {
         return this.internalRoleRepository.save(internalRole);
     }
@@ -60,8 +54,6 @@ public class InternalRoleService {
     public String getdashBoardRightJson(String roleCode) {
         return this.internalRoleRepository.getdashBoardRightJson(roleCode);
     }
-
-
 
     public List<InternalRole> getSectionsByProvinceCode(String provinceCode) {
         return this.internalRoleRepository.getSectionsByProvinceCode(provinceCode);
@@ -81,15 +73,19 @@ public class InternalRoleService {
         return this.internalRoleRepository.getRolesBySectionsAndProvinceBySectionCodeNull(provinceCode);
     }
 
-
-
     public List<InternalRole> getRolesBySectionsAndProvinceByProvinceCodeNull(String sectionCode) {
         return this.internalRoleRepository.getRolesBySectionsAndProvinceByProvinceCodeNull(sectionCode);
     }
-
-
-
-
-
-
+    public List<InternalRole> findByProvinceCodeAndSectionCodeAndRoleName(String provinceCode, String sectionCode, String roleName) {
+    	List<InternalRole> roles = new ArrayList<InternalRole>();
+    	if(sectionCode != null)
+    		roles = internalRoleRepository.findByProvinceCodeAndSectionCodeAndRoleName(provinceCode, sectionCode, roleName);
+    	else if(provinceCode != null)
+    		roles = internalRoleRepository.findByProvinceCodeAndRoleName(provinceCode, roleName);
+    	else
+    		roles = internalRoleRepository.findByRoleName(roleName);
+//    	List<InternalRole> roles = new ArrayList<InternalRole>();
+//    	roles.add(internalRoleRepository.findById(46L).get());
+    	return roles;
+    }//findByProvinceCodeAndSectionCodeAndRoleName
 }

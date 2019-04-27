@@ -1,36 +1,48 @@
 package com.dw.ngms.cis.uam.service;
 
-import com.dw.ngms.cis.uam.entity.Task;
-import com.dw.ngms.cis.uam.repository.TaskRepository;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import java.util.ArrayList;
-import java.util.List;
+import com.dw.ngms.cis.im.entity.Requests;
+import com.dw.ngms.cis.uam.entity.Task;
+import com.dw.ngms.cis.uam.entity.User;
+import com.dw.ngms.cis.uam.repository.TaskRepository;
+import com.dw.ngms.cis.workflow.api.ProcessAdditionalInfo;
+import com.dw.ngms.cis.workflow.api.ProcessEngine;
+import com.dw.ngms.cis.workflow.model.Process;
+import com.dw.ngms.cis.workflow.model.Target;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Created by swaroop on 2019/04/06.
  */
-
+@Slf4j
 @Service
 public class TaskService {
 
     @Autowired
     private TaskRepository taskRepository;
-
+    @Autowired
+	private UserService userService;
+    @Autowired
+	private ProcessEngine<Task> processEngine;
 
     public Task saveTask(Task task) {
         return this.taskRepository.save(task);
     } //FindUserByEmail
-
-
+    
     public List<Task> findByCriteria(String taskStatus, String taskType, String taskAllProvinceCode, String taskAllOCSectionCode, String taskAllOCRoleCode) {
         return this.taskRepository.findAll(new Specification<Task>() {
             @Override
@@ -54,9 +66,35 @@ public class TaskService {
                 return criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()]));
             }
         });
+    }//findByCriteria
 
-    }
-
+    public void startProcess(String processId, Requests requests) {
+    	if(processId == null)
+    		throw new RuntimeException("Process id is reqired to start process");    	
+    	processEngine.startProcess(processId, populateTask(requests), populateAdditionalInfo(requests));
+    }//startProcess
+    
+	public void processUserState(Process process, Task task, ProcessAdditionalInfo additionalInfo) {
+    	processEngine.processUserState(process, task, additionalInfo);
+    }//processUserState
+    
+    public void endProcess(Process process, Task task, ProcessAdditionalInfo additionalInfo) {
+    	processEngine.endProcess(process, task, additionalInfo);
+    }//processUserState
+    
+    public List<Target> getTaskTargetFlows(Long taskId){
+    	if(taskId == null)
+    		throw new RuntimeException("Task id is reqired");
+    	Task task = getTask(taskId);
+    	if(task == null) 
+    		throw new RuntimeException("Task not found with ID: "+ taskId);
+    	
+    	return processEngine.getSequenceTargetFlows(task.getTaskType(), task.getTaskStatus());
+    }//getTaskTargetFlows
+    
+    public Task getTask(Long id) {
+        return taskRepository.findById(id).get();
+    }//getTask
 
     public Long getTaskID() {
         return this.taskRepository.getTaskID();
@@ -66,5 +104,32 @@ public class TaskService {
         return this.taskRepository.getCloseTask(taskCode, taskReferenceCode, taskReferenceType);
     } //FindUserByEmail
 
+    private Task populateTask(Requests requests) {
+    	Task task = new Task();
+    	Long taskId = this.getTaskID();
+        log.info("taskId: {0}", taskId);
+        task.setTaskId(taskId);
+        task.setTaskCode("TASK000" + Long.toString(taskId));
+        task.setCreatedDate(new Date());
+        task.setTaskAllProvinceCode(requests.getProvinceCode());
+//        task.setTaskAllOCSectionCode(requests.getSectionCode());//FIXME
+        task.setTaskOpenDate(new Date());
+//        task.setTaskOpenDesc(taskOpenDesc);//TODO
+//        task.setTaskType(taskType);
+     // FIXME populate fields
+        task.setTaskReferenceCode(requests.getUserName());
+        if(!StringUtils.isEmpty(requests.getUserCode())) {
+        	User user = userService.findByUserCode(requests.getUserCode());
+        	task.setTaskReferenceType(user.getUserTypeName());        
+        }
+		return task;
+	}//populateTask
+
+	private ProcessAdditionalInfo populateAdditionalInfo(Requests requests) {
+		ProcessAdditionalInfo additionalInfo = new ProcessAdditionalInfo();
+		additionalInfo.setProvinceCode(requests.getProvinceCode());
+//		additionalInfo.setSectionCode(requests.getSectionCode());//FIXME  
+		return additionalInfo;
+	}//populateAdditionalInfo
 
 }

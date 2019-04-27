@@ -43,7 +43,6 @@ public class Task implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "generator")
     private Long taskId;
 
-
     @Column(name = "TASKCODE")
     @SequenceGenerator(name = "generator", sequenceName = "task_seq", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "generator")
@@ -73,7 +72,6 @@ public class Task implements Serializable {
     @Column(name = "TASKSTATUS", length = 10, unique=true)
     private String taskStatus;
 
-
     @Temporal(TemporalType.DATE)
     @Column(name = "TASKOPENDATE")
     private Date taskOpenDate = new Date();
@@ -85,7 +83,6 @@ public class Task implements Serializable {
     @Column(name = "TASKCLOSEDESC", length = 100, unique=true)
     private String taskCLoseDESC;
 
-
     @Column(name = "TASKDONEUSERCODE", length = 100, unique=true)
     private String taskDoneUserCode;
 
@@ -95,7 +92,7 @@ public class Task implements Serializable {
     @Temporal(TemporalType.DATE)
     @Column(name = "CREATEDDATE", nullable = true)
     private Date createdDate = new Date();
-
+    
     @ManyToMany(cascade = CascadeType.ALL, fetch=FetchType.LAZY)
     @JoinTable(name = "ROLE_TASK",
     	joinColumns = @JoinColumn(name = "TASKID"),
@@ -107,4 +104,5 @@ public class Task implements Serializable {
     	joinColumns = @JoinColumn(name = "TASKID"),
         inverseJoinColumns = @JoinColumn(name = "USERID"))
     private List<User> userList = new ArrayList<>();
+
 }

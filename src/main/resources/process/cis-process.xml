@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <processes>
 	<processList>
-	    <process id="infoRequest" name="The info request">
+	    <process id="infoRequest" name="The info request" description="The info request">
 	    	<sequenceFlowList>
 		        <sequenceFlow id="flow1" name="theStart" state="Created" restDependancy="">
 		        	<assigneeList/>
@@ -24,10 +24,19 @@
 		        		<assignee type="Role" name="Information Officer"/>
 		        	</assigneeList>
 		        	<targetList>
-		        		<target id="flow4" restRequest="restFinalise" description="finalise"/>
+		        		<target id="flow5" restRequest="restFinalise" description="finalise"/>
 		        	</targetList>
 		        </sequenceFlow>
-		        <sequenceFlow id="flow4" state="Finalised" name="theEnd" restDependancy="validatePayment?taskid="/>
+		        <sequenceFlow id="flow4" name="usrState3" state="Scrtinize" restDependancy="">
+		        	<assigneeList>
+		        		<assignee type="Role" name="Information Scrtinizer"/>
+		        	</assigneeList>
+		        	<targetList>
+		        		<target id="flow2" restRequest="restMove" description="move"/>
+		        		<target id="flow5" restRequest="restFinalise" description="finalise"/>
+		        	</targetList>
+		        </sequenceFlow>
+		        <sequenceFlow id="flow5" state="Finalised" name="theEnd" restDependancy="validatePayment?taskid="/>
 	        </sequenceFlowList>
 	    </process>  
     </processList>  

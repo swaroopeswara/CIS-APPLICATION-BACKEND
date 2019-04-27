@@ -60,7 +60,6 @@ public class TaskLifeCycle implements Serializable {
     @Column(name = "TASKSTATUS", length = 10, unique=true)
     private String taskStatus;
 
-
     @Temporal(TemporalType.DATE)
     @Column(name = "TASKOPENDATE")
     private Date taskOpenDate = new Date();
@@ -72,7 +71,6 @@ public class TaskLifeCycle implements Serializable {
     @Column(name = "TASKCLOSEDESC", length = 100, unique=true)
     private String taskCLoseDESC;
 
-
     @Column(name = "TASKDONEUSERCODE", length = 100, unique=true)
     private String taskDoneUserCode;
 
@@ -82,5 +80,5 @@ public class TaskLifeCycle implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "CREATEDDATE", nullable = true)
     private Date createdDate = new Date();
-
+    
 }
