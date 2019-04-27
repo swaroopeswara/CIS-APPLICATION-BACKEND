@@ -77,7 +77,7 @@ public class RequestController extends MessageController {
         	this.updateRequestProvinceAndSectionCodes(additionalInfo);
         	Target target = taskService.processUserState(additionalInfo);        	
         	return (target ==null) ? generateEmptyResponse(request, "Target not found") :
-        		ResponseEntity.status(HttpStatus.OK).body(target.getDescription() + "succesfully completed");
+        		ResponseEntity.status(HttpStatus.OK).body(target.getDescription() + " succesfully completed");
         } catch (Exception exception) {
             return generateFailureResponse(request, exception);
         }

@@ -69,7 +69,7 @@ public class Task implements Serializable {
     @Column(name = "TASKALLOCROLECODE", length = 50, unique=true)
     private String taskAllOCRoleCode;
 
-    @Column(name = "TASKSTATUS", length = 10, unique=true)
+    @Column(name = "TASKSTATUS", length = 30, unique=true)
     private String taskStatus;
 
     @Temporal(TemporalType.DATE)

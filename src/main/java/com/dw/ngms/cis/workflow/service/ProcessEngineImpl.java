@@ -215,9 +215,9 @@ public class ProcessEngineImpl implements ProcessEngine<Task>{
 			if(!StringUtils.isEmpty(additionalInfo.getSectionCode()))
 				task.setTaskAllOCSectionCode(additionalInfo.getSectionCode());
 			if(!StringUtils.isEmpty(additionalInfo.getUserCode()))
-				task.setTaskDoneUserCode(additionalInfo.getSectionCode());
+				task.setTaskDoneUserCode(additionalInfo.getUserCode());
 			if(!StringUtils.isEmpty(additionalInfo.getUserName()))
-				task.setTaskDoneUserName(additionalInfo.getSectionCode());
+				task.setTaskDoneUserName(additionalInfo.getUserName());
 		}
 	}//updateTaskDetails
 
