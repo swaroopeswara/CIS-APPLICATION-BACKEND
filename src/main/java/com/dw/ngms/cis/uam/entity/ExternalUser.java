@@ -79,13 +79,13 @@ public class ExternalUser implements Serializable {
     @Column(name = "POSTALADDRESSLINE3", length = 70)
     private String postaladdressline3;
 
-    @Column(name = "POSTALCODE", nullable = true, length = 15)
+    @Column(name = "POSTALCODE", nullable = true, length = 50)
     private String postalcode;
 
     @Column(name = "COMMUNICATIONMODETYPECODE", nullable = true, length = 50)
     private String communicationmodetypecode;
 
-    @Column(name = "COMMUNICATIONMODETYPENAME", nullable = true, length = 15)
+    @Column(name = "COMMUNICATIONMODETYPENAME", nullable = true, length = 70)
     private String communicationmodetypename;
 
     @Column(name = "SECURITYQUESTIONTYPECODE1", nullable = true, length = 50)
