@@ -92,19 +92,19 @@ public class RequestController extends MessageController {
             requests.setRequestId(requestId);
             requests.setRequestCode("REQ" + Long.toString(requestId));
 
-//            List<RequestItems> req = new ArrayList<>();
-//            if (!requests.getRequestItems().isEmpty()) {
-//                for (RequestItems requestItems : requests.getRequestItems()) {
-//                    Long requestItemCode = this.requestItemService.getRequestItemId();
-//                    requestItems.setRequestItemId(requestItemCode);
-//                    requestItems.setRequestId(requestId);
-//                    requestItems.setRequestItemCode("REQITEM" + Long.toString(requestItemCode));
-//                    requestItems.setRequestCode(requests.getRequestCode());
-//                    req.add(requestItems);
-//                }
-//            }
-//            requests.setRequestItems(req);
-            Requests requestToSave = requests;//this.requestService.saveRequest(requests);
+            List<RequestItems> req = new ArrayList<>();
+            if (!requests.getRequestItems().isEmpty()) {
+                for (RequestItems requestItems : requests.getRequestItems()) {
+                    Long requestItemCode = this.requestItemService.getRequestItemId();
+                    requestItems.setRequestItemId(requestItemCode);
+                    requestItems.setRequestId(requestId);
+                    requestItems.setRequestItemCode("REQITEM" + Long.toString(requestItemCode));
+                    requestItems.setRequestCode(requests.getRequestCode());
+                    req.add(requestItems);
+                }
+            }
+            requests.setRequestItems(req);
+            Requests requestToSave = this.requestService.saveRequest(requests);
 
             //FIXME need to get the 'processId'
             taskService.startProcess("infoRequest", requests);
