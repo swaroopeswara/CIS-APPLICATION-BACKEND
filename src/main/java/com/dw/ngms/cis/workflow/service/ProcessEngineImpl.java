@@ -58,7 +58,7 @@ public class ProcessEngineImpl implements ProcessEngine<Task>{
 			log.error("process not found");
 			return;
 		}		
-//		updateProvinceAndSectionCodes(task, additionalInfo);
+//		updateTaskDetails(task, additionalInfo);
 		task.setTaskOpenDesc(process.getDescription());
 		task.setTaskType(process.getId());
 		SequenceFlow targetSequence = process.getSequenceFlow(process.getStartSequenceFlow().getTargetList().get(0).getId());
@@ -71,21 +71,27 @@ public class ProcessEngineImpl implements ProcessEngine<Task>{
 	}//startProcess
 
 	@Override
-	public void processUserState(Process process, Task task, ProcessAdditionalInfo additionalInfo) {
+	public Target processUserState(Task task, ProcessAdditionalInfo additionalInfo) {
+		if(task == null || additionalInfo == null) {
+			log.error("Task details required to process");
+			return null;
+		}
+		Process process = getProcessById(task.getTaskType());
 		if(process == null) {
 			log.error("process not found");
-			return;
+			return null;
 		}
-		updateProvinceAndSectionCodes(task, additionalInfo);
-		SequenceFlow targetSequence = process.getSequenceFlow(additionalInfo.getTargetState());
+		SequenceFlow targetSequence = process.getSequenceFlow(additionalInfo.getTargetSequenceId());		
 		if(targetSequence != null) {
+			updateTaskDetails(task, additionalInfo);			
 			task.setTaskStatus(targetSequence.getState());
-			//check dependancy
-			validateDependancy(task, targetSequence, additionalInfo.getUrl());
+			//check dependancy not required
+//			validateDependancy(task, targetSequence, additionalInfo.getUrl());
 			updateRoleAndUserAssociations(task, additionalInfo, targetSequence);
 		}
 		taskRepository.save(task);
 		addLifeCycleEntry(task, additionalInfo);
+		return getTargetByIdAndProcessId(additionalInfo.getTargetSequenceId(), task.getTaskType());
 	}//processUserState
 
 	@Override
@@ -100,6 +106,27 @@ public class ProcessEngineImpl implements ProcessEngine<Task>{
 		addLifeCycleEntry(task, additionalInfo);
 	}//endProcess
 
+	public Target getTargetByIdAndProcessId(String targetId, String processId) {
+		if(targetId == null) {
+			log.error("Target id is required");
+			return null;
+		}
+		Process process = getProcessById(processId);
+		if(process == null) {
+			log.error("process not found");
+			return null;
+		}
+		for(SequenceFlow sequence: process.getSequenceFlowList()){	
+			if(sequence != null) {
+				for(Target target :sequence.getTargetList()){
+					if(targetId.equals(target.getId()))
+						return target;
+				}//inner 
+			}//end if
+		}//outer
+		return null;
+	}//getTargetByIdAndProcessId
+	
 	@Override
 	public List<Target> getSequenceTargetFlows(String processCode, String state){
 		if(StringUtils.isEmpty(processCode)) 
@@ -142,6 +169,8 @@ public class ProcessEngineImpl implements ProcessEngine<Task>{
 
 	private void updateRoleAndUserAssociations(Task task, ProcessAdditionalInfo additionalInfo,
 			SequenceFlow targetSequence) {
+		if(targetSequence == null)
+			return;
 		
 		Set<InternalRole> roleList = new HashSet<>();
 		Set<User> userList = new HashSet<>();
@@ -158,29 +187,39 @@ public class ProcessEngineImpl implements ProcessEngine<Task>{
 				}
 			});			
 		}
-		//clear all user and role associations
-		clearRoleAndUserAssociations(task);
-		
-		if(!CollectionUtils.isEmpty(roleList)) {			
+		//clear all user and role associations and reassign		
+		if(!CollectionUtils.isEmpty(roleList)) {	
+			task.getInternalRoleList().clear();
+			
 			roleList.forEach(role -> {
 				task.getInternalRoleList().add(role);
 			});
 		}//if roleList
 		if(!CollectionUtils.isEmpty(userList)) {
+			task.getUserList().clear();
+			
 			userList.forEach(user -> {
 				task.getUserList().add(user);
 			});
 		}//if userList
+		if("theEnd".equalsIgnoreCase(targetSequence.getName())) {
+			//clear all user and role associations 
+			clearRoleAndUserAssociations(task);
+		}
 	}//updateRoleAndUserAssociations
 
-	private void updateProvinceAndSectionCodes(Task task, ProcessAdditionalInfo additionalInfo) {
+	private void updateTaskDetails(Task task, ProcessAdditionalInfo additionalInfo) {
 		if(additionalInfo != null) {
 			if(!StringUtils.isEmpty(additionalInfo.getProvinceCode()))
 				task.setTaskAllProvinceCode(additionalInfo.getProvinceCode());
 			if(!StringUtils.isEmpty(additionalInfo.getSectionCode()))
 				task.setTaskAllOCSectionCode(additionalInfo.getSectionCode());
+			if(!StringUtils.isEmpty(additionalInfo.getUserCode()))
+				task.setTaskDoneUserCode(additionalInfo.getSectionCode());
+			if(!StringUtils.isEmpty(additionalInfo.getUserName()))
+				task.setTaskDoneUserName(additionalInfo.getSectionCode());
 		}
-	}//updateProvinceAndSectionCodes
+	}//updateTaskDetails
 
 	private void clearRoleAndUserAssociations(Task task) {
 		if(task == null) return;

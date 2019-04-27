@@ -30,6 +30,7 @@ import com.dw.ngms.cis.uam.controller.MessageController;
 import com.dw.ngms.cis.uam.service.TaskService;
 import com.dw.ngms.cis.uam.storage.StorageService;
 import com.dw.ngms.cis.uam.utilities.Constants;
+import com.dw.ngms.cis.workflow.api.ProcessAdditionalInfo;
 import com.dw.ngms.cis.workflow.model.Target;
 
 import lombok.extern.slf4j.Slf4j;
@@ -66,6 +67,22 @@ public class RequestController extends MessageController {
         }
 	}//getTaskTargetFlows
 	
+	@PostMapping("/processUserState")
+	public ResponseEntity<?> processUserState(HttpServletRequest request, @RequestBody @Valid ProcessAdditionalInfo additionalInfo){
+		if (additionalInfo == null || StringUtils.isEmpty(additionalInfo.getRequestCode())  || StringUtils.isEmpty(additionalInfo.getTaskId()) || 
+				StringUtils.isEmpty(additionalInfo.getTargetSequenceId())) {
+            return generateFailureResponse(request, new Exception("Invalid request/task details passed"));
+        }
+        try {        	
+        	this.updateRequestProvinceAndSectionCodes(additionalInfo);
+        	Target target = taskService.processUserState(additionalInfo);        	
+        	return (target ==null) ? generateEmptyResponse(request, "Target not found") :
+        		ResponseEntity.status(HttpStatus.OK).body(target.getDescription() + "succesfully completed");
+        } catch (Exception exception) {
+            return generateFailureResponse(request, exception);
+        }
+	}//processUserState
+	
     @GetMapping("/getRequestsOfUser")
     public ResponseEntity<?> getRequestsOfUser(HttpServletRequest request,
                                                @RequestParam(required=false) String provinceCode,
@@ -88,23 +105,23 @@ public class RequestController extends MessageController {
     public ResponseEntity<?> createRequest(HttpServletRequest request, @RequestBody @Valid Requests requests) {
         try {
             Long requestId = this.requestService.getRequestId();
-            System.out.println("requestTypeId is "+requestId);
+            log.info("requestTypeId is "+requestId);
             requests.setRequestId(requestId);
             requests.setRequestCode("REQ" + Long.toString(requestId));
 
-            List<RequestItems> req = new ArrayList<>();
-            if (!requests.getRequestItems().isEmpty()) {
-                for (RequestItems requestItems : requests.getRequestItems()) {
-                    Long requestItemCode = this.requestItemService.getRequestItemId();
-                    requestItems.setRequestItemId(requestItemCode);
-                    requestItems.setRequestId(requestId);
-                    requestItems.setRequestItemCode("REQITEM" + Long.toString(requestItemCode));
-                    requestItems.setRequestCode(requests.getRequestCode());
-                    req.add(requestItems);
-                }
-            }
-            requests.setRequestItems(req);
-            Requests requestToSave = this.requestService.saveRequest(requests);
+//            List<RequestItems> req = new ArrayList<>();
+//            if (!requests.getRequestItems().isEmpty()) {
+//                for (RequestItems requestItems : requests.getRequestItems()) {
+//                    Long requestItemCode = this.requestItemService.getRequestItemId();
+//                    requestItems.setRequestItemId(requestItemCode);
+//                    requestItems.setRequestId(requestId);
+//                    requestItems.setRequestItemCode("REQITEM" + Long.toString(requestItemCode));
+//                    requestItems.setRequestCode(requests.getRequestCode());
+//                    req.add(requestItems);
+//                }
+//            }
+//            requests.setRequestItems(req);
+            Requests requestToSave = requests;//this.requestService.saveRequest(requests);
 
             //FIXME need to get the 'processId'
             taskService.startProcess("infoRequest", requests);
@@ -145,4 +162,16 @@ public class RequestController extends MessageController {
             return generateFailureResponse(request, exception);
         }
     }//uploadPaymentConfirmation
+    
+    private void updateRequestProvinceAndSectionCodes(ProcessAdditionalInfo additionalInfo) {
+    	if(additionalInfo != null && additionalInfo.getRequestCode() != null) {
+	    	Requests request = requestService.getRequestsByRequestCode(additionalInfo.getRequestCode());
+	    	if(request != null) {		
+				if(!StringUtils.isEmpty(additionalInfo.getProvinceCode()))
+					request.setProvinceCode(additionalInfo.getProvinceCode());
+//				if(!StringUtils.isEmpty(additionalInfo.getSectionCode()))
+//					request.setSectionCode(additionalInfo.getSectionCode());//FIXME
+	    	}
+		}
+	}//updateRequestProvinceAndSectionCodes
 }

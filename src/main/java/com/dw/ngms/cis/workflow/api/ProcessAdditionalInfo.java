@@ -13,9 +13,13 @@ import lombok.ToString;
 @NoArgsConstructor
 public class ProcessAdditionalInfo {
 
+	private Long taskId;
+	private String requestCode;
 	private String provinceCode;
 	private String sectionCode;
-	private String currentState;
-	private String targetState;
+//	private String currentSequenceId;
+	private String targetSequenceId;
+	private String userCode;
+	private String userName;
 	private String url;
 }

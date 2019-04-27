@@ -74,8 +74,14 @@ public class TaskService {
     	processEngine.startProcess(processId, populateTask(requests), populateAdditionalInfo(requests));
     }//startProcess
     
-	public void processUserState(Process process, Task task, ProcessAdditionalInfo additionalInfo) {
-    	processEngine.processUserState(process, task, additionalInfo);
+	public Target processUserState(ProcessAdditionalInfo additionalInfo) {
+		if(additionalInfo == null)
+    		throw new RuntimeException("Task process details reqired to process");
+		Task task = getTask(additionalInfo.getTaskId());
+		if(task == null) 
+    		throw new RuntimeException("Task not found with ID: "+ additionalInfo.getTaskId());
+		
+    	return processEngine.processUserState(task, additionalInfo);
     }//processUserState
     
     public void endProcess(Process process, Task task, ProcessAdditionalInfo additionalInfo) {
@@ -113,14 +119,13 @@ public class TaskService {
         task.setCreatedDate(new Date());
         task.setTaskAllProvinceCode(requests.getProvinceCode());
 //        task.setTaskAllOCSectionCode(requests.getSectionCode());//FIXME
-        task.setTaskOpenDate(new Date());
-//        task.setTaskOpenDesc(taskOpenDesc);//TODO
-//        task.setTaskType(taskType);
-     // FIXME populate fields
+        task.setTaskOpenDate(new Date());        
         task.setTaskReferenceCode(requests.getUserName());
         if(!StringUtils.isEmpty(requests.getUserCode())) {
         	User user = userService.findByUserCode(requests.getUserCode());
-        	task.setTaskReferenceType(user.getUserTypeName());        
+        	task.setTaskReferenceType(user.getUserTypeName());   
+        	task.setTaskDoneUserCode(requests.getUserCode());
+            task.setTaskDoneUserName(requests.getUserName());
         }
 		return task;
 	}//populateTask
