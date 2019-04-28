@@ -160,7 +160,6 @@ public class ProcessEngineImpl implements ProcessEngine<Task>{
 	}//getSequenceByStateAndProcessId
 	
 	private void addLifeCycleEntry(Task task, ProcessAdditionalInfo additionalInfo) {
-		//FIXME update task properties		
 		TaskLifeCycle lifeCycleEntity = new TaskLifeCycle();
 //		BeanUtilsBean.getInstance().getConvertUtils().register(false, false, 0);
 		BeanUtils.copyProperties(task, lifeCycleEntity, "createdDate");

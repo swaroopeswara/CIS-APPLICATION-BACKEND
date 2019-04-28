@@ -118,7 +118,7 @@ public class TaskService {
         task.setTaskCode("TASK000" + Long.toString(taskId));
         task.setCreatedDate(new Date());
         task.setTaskAllProvinceCode(requests.getProvinceCode());
-//        task.setTaskAllOCSectionCode(requests.getSectionCode());//FIXME
+        task.setTaskAllOCSectionCode(requests.getSectionCode());
         task.setTaskOpenDate(new Date());        
         task.setTaskReferenceCode(requests.getUserName());
         if(!StringUtils.isEmpty(requests.getUserCode())) {
@@ -133,7 +133,7 @@ public class TaskService {
 	private ProcessAdditionalInfo populateAdditionalInfo(Requests requests) {
 		ProcessAdditionalInfo additionalInfo = new ProcessAdditionalInfo();
 		additionalInfo.setProvinceCode(requests.getProvinceCode());
-//		additionalInfo.setSectionCode(requests.getSectionCode());//FIXME  
+		additionalInfo.setSectionCode(requests.getSectionCode());  
 		return additionalInfo;
 	}//populateAdditionalInfo
 

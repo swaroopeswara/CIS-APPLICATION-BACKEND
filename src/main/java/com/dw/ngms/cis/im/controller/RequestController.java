@@ -108,23 +108,23 @@ public class RequestController extends MessageController {
             log.info("requestTypeId is "+requestId);
             requests.setRequestId(requestId);
             requests.setRequestCode("REQ" + Long.toString(requestId));
+            String processId = requests.getProcessId();
+            		
+            List<RequestItems> req = new ArrayList<>();
+            if (!requests.getRequestItems().isEmpty()) {
+                for (RequestItems requestItems : requests.getRequestItems()) {
+                    Long requestItemCode = this.requestItemService.getRequestItemId();
+                    requestItems.setRequestItemId(requestItemCode);
+                    requestItems.setRequestId(requestId);
+                    requestItems.setRequestItemCode("REQITEM" + Long.toString(requestItemCode));
+                    requestItems.setRequestCode(requests.getRequestCode());
+                    req.add(requestItems);
+                }
+            }
+            requests.setRequestItems(req);
+            Requests requestToSave = this.requestService.saveRequest(requests);
 
-//            List<RequestItems> req = new ArrayList<>();
-//            if (!requests.getRequestItems().isEmpty()) {
-//                for (RequestItems requestItems : requests.getRequestItems()) {
-//                    Long requestItemCode = this.requestItemService.getRequestItemId();
-//                    requestItems.setRequestItemId(requestItemCode);
-//                    requestItems.setRequestId(requestId);
-//                    requestItems.setRequestItemCode("REQITEM" + Long.toString(requestItemCode));
-//                    requestItems.setRequestCode(requests.getRequestCode());
-//                    req.add(requestItems);
-//                }
-//            }
-//            requests.setRequestItems(req);
-            Requests requestToSave = requests;//this.requestService.saveRequest(requests);
-
-            //FIXME need to get the 'processId'
-            taskService.startProcess("infoRequest", requests);
+            taskService.startProcess(processId, requests);
 
             return ResponseEntity.status(HttpStatus.OK).body(requestToSave);
         } catch (Exception exception) {
@@ -169,8 +169,8 @@ public class RequestController extends MessageController {
 	    	if(request != null) {		
 				if(!StringUtils.isEmpty(additionalInfo.getProvinceCode()))
 					request.setProvinceCode(additionalInfo.getProvinceCode());
-//				if(!StringUtils.isEmpty(additionalInfo.getSectionCode()))
-//					request.setSectionCode(additionalInfo.getSectionCode());//FIXME
+				if(!StringUtils.isEmpty(additionalInfo.getSectionCode()))
+					request.setSectionCode(additionalInfo.getSectionCode());
 	    	}
 		}
 	}//updateRequestProvinceAndSectionCodes

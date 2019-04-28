@@ -1,15 +1,28 @@
 package com.dw.ngms.cis.im.entity;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.Transient;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * Created by swaroop on 2019/04/19.
@@ -21,17 +34,17 @@ import java.util.Set;
 @Table(name = "IMREQUESTS")
 public class Requests implements Serializable {
 
-    @Id
+	private static final long serialVersionUID = 8311145174688482135L;
+
+	@Id
     @Column(name = "REQUESTID")
     @SequenceGenerator(name = "generator", sequenceName = "REQUESTS_SEQ", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "generator")
     private Long requestId;
 
-
     @OneToMany(mappedBy="requestItems",fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JsonManagedReference
     private List<RequestItems> requestItems;
-
 
     @Column(name = "REQUESTCODE")
     private String requestCode;
@@ -51,10 +64,8 @@ public class Requests implements Serializable {
     @Column(name = "REQUESTTYPENAME", length = 100, unique = true)
     private String requestTypeName;
 
-
     @Column(name = "REQUESTKINDCODE", length = 200)
     private String requestKindCode;
-
 
     @Column(name = "REQUESTKINDNAME")
     private String requestKindName;
@@ -62,10 +73,8 @@ public class Requests implements Serializable {
     @Column(name = "REQUESTTITLE", length = 100, unique = true)
     private String requestTitle;
 
-
     @Column(name = "ORGANISATION", length = 200)
     private String organisation;
-
 
     @Column(name = "DESCRIPTION")
     private String description;
@@ -88,10 +97,8 @@ public class Requests implements Serializable {
     @Column(name = "MEDIATYPE", length = 200)
     private String mediaType;
 
-
     @Column(name = "FORMATTYPE", length = 200)
     private String formatType;
-
 
     @Column(name = "PAYMENTCURRENCY", length = 200)
     private String paymentCurrency;
@@ -111,7 +118,6 @@ public class Requests implements Serializable {
     @Column(name = "INVOICEFILEPATH", length = 200)
     private String invoiceFilePath;
 
-
     @Column(name = "REFERENCENUMBER", length = 200)
     private String referenceNumber;
 
@@ -126,8 +132,6 @@ public class Requests implements Serializable {
     @Column(name = "ISDELETED", length = 200)
     private String isDeleted;
 
-
-
     @Temporal(TemporalType.DATE)
     @Column(name = "CREATEDDATE", nullable = true)
     private Date createdDate = new Date();
@@ -140,12 +144,14 @@ public class Requests implements Serializable {
     @Column(name = "DELETEDDATE")
     private Date deletedDate;
 
-
     @Temporal(TemporalType.DATE)
     @Column(name = "MODIFIEDDATE")
     private Date modifiedDate;
 
-
-
-
+    @Transient
+    private String sectionCode;
+    
+    @Transient
+    private String processId;
+    
 }
