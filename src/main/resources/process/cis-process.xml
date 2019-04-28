@@ -26,13 +26,13 @@
 		        	<targetList>
 		        		<target id="flow4" restRequest="restGenInvoice" description="Generate invoice"/>
 		        		<target id="flow5" restRequest="restUploadPOP" description="Upload proof of payment"/>
-		        		<target id="flow6" restRequest="restScrtinize" description="Scrtinize"/>
+		        		<target id="flow6" restRequest="restScrutinise" description="Scrutinise"/>
 		        		<target id="flow7" restRequest="processUserState" description="finalise"/>
 		        	</targetList>
 		        </sequenceFlow>
 		        <sequenceFlow id="flow4" name="usrState3" state="GenerateInvoice" restDependancy=""/>
 				<sequenceFlow id="flow5" name="usrState4" state="UploadPOP" restDependancy=""/>
-		        <sequenceFlow id="flow6" name="usrState5" state="Scrtinize" restDependancy="">
+		        <sequenceFlow id="flow6" name="usrState5" state="Scrutinise" restDependancy="">
 		        	<assigneeList>
 		        		<assignee type="Role" name="Information Scrtinizer"/>
 		        	</assigneeList>
@@ -41,7 +41,7 @@
 		        		<target id="flow7" restRequest="restFinalise" description="finalise"/>
 		        	</targetList>
 		        </sequenceFlow>
-		        <sequenceFlow id="flow7" state="Finalised" name="theEnd" restDependancy=""/>
+		        <sequenceFlow id="flow7" name="theEnd" state="Finalised" restDependancy=""/>
 	        </sequenceFlowList>
 	    </process>  
     </processList>  
