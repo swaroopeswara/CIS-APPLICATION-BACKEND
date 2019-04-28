@@ -21,6 +21,7 @@ public class UserControllerResponse {
 	private String active;
 	private String firstLogin;
 	private String message;
+	private String practiseName;
 	private List<String> files;
     
 	public String getExists() {

@@ -1,12 +1,15 @@
 package com.dw.ngms.cis.uam.service;
 
 import com.dw.ngms.cis.uam.dto.ExternalUserDTO;
+import com.dw.ngms.cis.uam.dto.PPNumberDTO;
 import com.dw.ngms.cis.uam.dto.UserDTO;
 import com.dw.ngms.cis.uam.entity.ExternalUser;
 import com.dw.ngms.cis.uam.entity.User;
 import com.dw.ngms.cis.uam.repository.ExternalUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * Created by swaroop on 2019/03/28.
@@ -31,6 +34,9 @@ public class ExternalUserService {
         return this.externalUserRepository.findByUserCode(userCode);
     }
 
+    public String getPpNumber(String  ppNumber) {
+        return this.externalUserRepository.getPpNumber(ppNumber);
+    }
 
     public Long getRoleId() {
         return this.externalUserRepository.getRoleId();

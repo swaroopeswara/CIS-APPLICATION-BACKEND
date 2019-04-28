@@ -614,6 +614,7 @@ public class UserController extends MessageController {
                     if (user.getPassword().equalsIgnoreCase(updatePasswordDTO.getOldpassword())) {
                         user.setPassword(updatePasswordDTO.getNewpassword());
                         user.setFirstLogin(updatePasswordDTO.getFirstlogin());
+                        sendPasswordChangeMailToUser(user);
                     } else {
                         userControllerResponse.setMessage("Old Password and new password do not match");
                         json = gson.toJson(userControllerResponse);
@@ -625,7 +626,6 @@ public class UserController extends MessageController {
                 }
             }
             this.userService.updatePassword(user);
-            sendPasswordChangeMailToUser(user);
             userControllerResponse.setMessage("User Password Updated Sucessfully");
             json = gson.toJson(userControllerResponse);
             return ResponseEntity.status(HttpStatus.OK).body(json);
@@ -678,7 +678,7 @@ public class UserController extends MessageController {
         } catch (Exception exception) {
             return generateFailureResponse(request, exception);
         }
-    }//updatePassword*/
+    }//resetPassword*/
 
 
 

@@ -1,6 +1,7 @@
 package com.dw.ngms.cis.uam.controller;
 
 import com.dw.ngms.cis.uam.dto.FilePathsDTO;
+import com.dw.ngms.cis.uam.dto.PPNumberDTO;
 import com.dw.ngms.cis.uam.dto.UserDTO;
 import com.dw.ngms.cis.uam.entity.ExternalUser;
 import com.dw.ngms.cis.uam.entity.SecurityQuestion;
@@ -216,6 +217,33 @@ public class ExternalController extends MessageController {
             return generateFailureResponse(request, exception);
         }
     }//checkUserSecurityQuestions
+
+
+    @GetMapping("/getPpNumber")
+    public ResponseEntity<?> getPpNumber(HttpServletRequest request,
+                                         @RequestParam String ppNumber) {
+        Gson gson = new Gson();
+        String json = null;
+        UserControllerResponse userControllerResponse = new UserControllerResponse();
+        try {
+            String ppNo = externalUserService.getPpNumber(ppNumber);
+            if (!isEmpty(ppNo)) {
+                String[] parts = ppNo.split(",");
+                userControllerResponse.setExists("true");
+                userControllerResponse.setPractiseName(parts[1]);
+                json = gson.toJson(userControllerResponse);
+
+                return ResponseEntity.status(HttpStatus.OK).body(json);
+            } else {
+                userControllerResponse.setExists("false");
+                json = gson.toJson(userControllerResponse);
+                return ResponseEntity.status(HttpStatus.OK).body(json);
+            }
+
+        } catch (Exception exception) {
+            return generateFailureResponse(request, exception);
+        }
+    }//getAllPlsUsers
 
 
 }
