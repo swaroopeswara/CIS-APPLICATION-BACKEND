@@ -1,6 +1,5 @@
 package com.dw.ngms.cis.uam.repository;
 
-import com.dw.ngms.cis.uam.dto.PPNumberDTO;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

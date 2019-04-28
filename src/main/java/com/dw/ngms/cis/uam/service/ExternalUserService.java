@@ -1,7 +1,6 @@
 package com.dw.ngms.cis.uam.service;
 
 import com.dw.ngms.cis.uam.dto.ExternalUserDTO;
-import com.dw.ngms.cis.uam.dto.PPNumberDTO;
 import com.dw.ngms.cis.uam.dto.UserDTO;
 import com.dw.ngms.cis.uam.entity.ExternalUser;
 import com.dw.ngms.cis.uam.entity.User;

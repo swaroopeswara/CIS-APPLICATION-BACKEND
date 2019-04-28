@@ -16,7 +16,7 @@
 		        	<targetList>
 		        		<target id="flow2" restRequest="restMove" description="move"/>
 			        	<target id="flow3" restRequest="restReassign" description="reassign"/>			        	
-			        	<target id="flow7" restRequest="restFinalise" description="finalise"/>
+			        	<target id="flow7" restRequest="processUserState" description="finalise"/>
 		        	</targetList>		        	
 		        </sequenceFlow>		        
 		        <sequenceFlow id="flow3" name="usrState2" state="Reassigned" restDependancy="">
@@ -27,7 +27,7 @@
 		        		<target id="flow4" restRequest="restGenInvoice" description="Generate invoice"/>
 		        		<target id="flow5" restRequest="restUploadPOP" description="Upload proof of payment"/>
 		        		<target id="flow6" restRequest="restScrtinize" description="Scrtinize"/>
-		        		<target id="flow7" restRequest="restFinalise" description="finalise"/>
+		        		<target id="flow7" restRequest="processUserState" description="finalise"/>
 		        	</targetList>
 		        </sequenceFlow>
 		        <sequenceFlow id="flow4" name="usrState3" state="GenerateInvoice" restDependancy=""/>

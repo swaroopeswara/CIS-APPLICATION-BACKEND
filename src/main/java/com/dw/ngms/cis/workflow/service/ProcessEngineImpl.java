@@ -81,6 +81,11 @@ public class ProcessEngineImpl implements ProcessEngine<Task>{
 			log.error("process not found");
 			return null;
 		}
+		SequenceFlow sourceSequence = process.getSequenceFlowByState(task.getTaskStatus());
+		if(sourceSequence != null && "theEnd".equalsIgnoreCase(sourceSequence.getName())) {
+			log.error("Task (Id: {0}) is already completed, can not be processed again", task.getTaskId());
+			throw new RuntimeException("Task (Id: "+task.getTaskId()+") is already completed, can not be processed again");
+		}
 		SequenceFlow targetSequence = process.getSequenceFlow(additionalInfo.getTargetSequenceId());		
 		if(targetSequence != null) {
 			updateTaskDetails(task, additionalInfo);			
