@@ -24,7 +24,7 @@
 		        		<assignee type="Role" name="Information Officer"/>
 		        	</assigneeList>
 		        	<targetList>
-		        		<target id="flow4" restRequest="restGenInvoice" description="Generate invoice"/>
+		        		<target id="flow4" restRequest="generateInvoice" description="Generate invoice"/>
 		        		<target id="flow5" restRequest="restUploadPOP" description="Upload proof of payment"/>
 		        		<target id="flow6" restRequest="restScrutinise" description="Scrutinise"/>
 		        		<target id="flow7" restRequest="processUserState" description="finalise"/>
