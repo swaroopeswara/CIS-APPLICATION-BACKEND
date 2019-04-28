@@ -44,37 +44,27 @@ public class InternalRole implements Serializable {
     private Long internalRoleId;
     
     @Column(name = "ORGCODE", nullable = true, length = 50)
-    @NotEmpty(message = "ORG CODE must not be empty")
     private String organisationCode;
 
-
-
     @Column(name = "ORGNAME", nullable = true, length = 100)
-    @NotEmpty(message = "ORG NAME must not be empty")
     private String organisationName;
 
     @Column(name = "ROLECODE", nullable = true, length = 50)
-    @NotEmpty(message = "ROLE CODE must not be empty")
     private String roleCode;
     
     @Column(name = "ROLENAME", nullable = true, length = 100)
-    @NotEmpty(message = "ROLE NAME must not be empty")
     private String roleName;
     
     @Column(name = "PROVINCECODE", nullable = true, length = 50)
-    @NotEmpty(message = "PROVINCE CODE must not be empty")
     private String provinceCode;
 
     @Column(name = "PROVINCENAME", nullable = true, length = 100)
-    @NotEmpty(message = "PROVINCE NAME must not be empty")
     private String provinceName;
 
     @Column(name = "SECTIONCODE", nullable = true, length = 100)
-    @NotEmpty(message = "SECTION CODE must not be empty")
     private String sectionCode;
 
     @Column(name = "SECTIONNAME", nullable = true, length = 50)
-    @NotEmpty(message = "SECTION NAME must not be empty")
     private String sectionName;
 
     @Column(name = "DESCRIPTION", nullable = true, length = 100)
