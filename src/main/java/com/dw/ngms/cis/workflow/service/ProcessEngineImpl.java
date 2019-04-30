@@ -141,7 +141,9 @@ public class ProcessEngineImpl implements ProcessEngine<Task>{
     	SequenceFlow sequence = getSequenceByStateAndProcessId(state, processCode);
     	if(sequence == null) 
     		throw new RuntimeException("Sequence not found with status"+state +"in process "+processCode);
-    	
+    	if(!StringUtils.isEmpty(sequence.getTargetState())) {
+    		sequence = getSequenceByStateAndProcessId(sequence.getTargetState(), processCode);
+    	}
     	return sequence.getTargetList();
 	}//getSequenceTargetFlows
 	

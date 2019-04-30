@@ -3,13 +3,13 @@
 	<processList>
 	    <process id="infoRequest" name="The info request" description="The info request">
 	    	<sequenceFlowList>
-		        <sequenceFlow id="flow1" name="theStart" state="Created" restDependancy="">
+		        <sequenceFlow id="flow1" name="theStart" state="Created" targetState="" restDependancy="">
 		        	<assigneeList/>
 		        	<targetList>
 		        		<target id="flow2" restRequest="restAssign" description="assign"/>
 		        	</targetList>
 		        </sequenceFlow>
-		        <sequenceFlow id="flow2" name="usrState1" state="Assigned" restDependancy="">
+		        <sequenceFlow id="flow2" name="usrState1" state="Assigned" targetState="" restDependancy="">
 		        	<assigneeList>
 		        		<assignee type="Role" name="Information Manager"/>
 		        	</assigneeList>
@@ -19,7 +19,7 @@
 			        	<target id="flow7" restRequest="processUserState" description="finalise"/>
 		        	</targetList>		        	
 		        </sequenceFlow>		        
-		        <sequenceFlow id="flow3" name="usrState2" state="Reassigned" restDependancy="">
+		        <sequenceFlow id="flow3" name="usrState2" state="Reassigned" targetState="" restDependancy="">
 		        	<assigneeList>
 		        		<assignee type="Role" name="Information Officer"/>
 		        	</assigneeList>
@@ -30,9 +30,9 @@
 		        		<target id="flow7" restRequest="processUserState" description="finalise"/>
 		        	</targetList>
 		        </sequenceFlow>
-		        <sequenceFlow id="flow4" name="usrState3" state="GenerateInvoice" restDependancy=""/>
-				<sequenceFlow id="flow5" name="usrState4" state="UploadPOP" restDependancy=""/>
-		        <sequenceFlow id="flow6" name="usrState5" state="Scrutinise" restDependancy="">
+		        <sequenceFlow id="flow4" name="usrState3" state="GenerateInvoice" targetState="Reassigned" restDependancy=""/>
+				<sequenceFlow id="flow5" name="usrState4" state="UploadPOP" targetState="Reassigned" restDependancy=""/>
+		        <sequenceFlow id="flow6" name="usrState5" state="Scrutinise" targetState="" restDependancy="">
 		        	<assigneeList>
 		        		<assignee type="Role" name="Information Scrtinizer"/>
 		        	</assigneeList>
@@ -41,7 +41,7 @@
 		        		<target id="flow7" restRequest="restFinalise" description="finalise"/>
 		        	</targetList>
 		        </sequenceFlow>
-		        <sequenceFlow id="flow7" name="theEnd" state="Finalised" restDependancy=""/>
+		        <sequenceFlow id="flow7" name="theEnd" state="Finalised" targetState="" restDependancy=""/>
 	        </sequenceFlowList>
 	    </process>  
     </processList>  
