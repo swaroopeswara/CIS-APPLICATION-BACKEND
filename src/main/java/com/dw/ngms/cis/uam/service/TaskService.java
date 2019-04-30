@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 
 import com.dw.ngms.cis.im.entity.Requests;
 import com.dw.ngms.cis.uam.entity.Task;
-import com.dw.ngms.cis.uam.entity.User;
 import com.dw.ngms.cis.uam.repository.TaskRepository;
 import com.dw.ngms.cis.workflow.api.ProcessAdditionalInfo;
 import com.dw.ngms.cis.workflow.api.ProcessEngine;
@@ -34,7 +33,8 @@ public class TaskService {
 
     @Autowired
     private TaskRepository taskRepository;
-    @Autowired
+    @SuppressWarnings("unused")
+	@Autowired
 	private UserService userService;
     @Autowired
 	private ProcessEngine<Task> processEngine;
@@ -120,10 +120,8 @@ public class TaskService {
         task.setTaskAllProvinceCode(requests.getProvinceCode());
         task.setTaskAllOCSectionCode(requests.getSectionCode());
         task.setTaskOpenDate(new Date());        
-        task.setTaskReferenceCode(requests.getUserName());
+        task.setTaskReferenceCode(requests.getRequestCode());
         if(!StringUtils.isEmpty(requests.getUserCode())) {
-        	User user = userService.findByUserCode(requests.getUserCode());
-        	task.setTaskReferenceType(user.getUserTypeName());   
         	task.setTaskDoneUserCode(requests.getUserCode());
             task.setTaskDoneUserName(requests.getUserName());
         }
@@ -136,5 +134,15 @@ public class TaskService {
 		additionalInfo.setSectionCode(requests.getSectionCode());  
 		return additionalInfo;
 	}//populateAdditionalInfo
+
+	public String getTaskCurrentStatus(String requestcode) {
+		if(StringUtils.isEmpty(requestcode))
+    		throw new RuntimeException("Request code is reqired");
+		Task task = taskRepository.findByReferenceCode(requestcode);
+    	if(task == null) 
+    		throw new RuntimeException("Task not found with request code: "+ requestcode);		
+		
+		return task.getTaskStatus();
+	}//getTaskCurrentStatus
 
 }

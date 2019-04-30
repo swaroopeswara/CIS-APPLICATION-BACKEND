@@ -61,6 +61,7 @@ public class ProcessEngineImpl implements ProcessEngine<Task>{
 //		updateTaskDetails(task, additionalInfo);
 		task.setTaskOpenDesc(process.getDescription());
 		task.setTaskType(process.getId());
+		task.setTaskReferenceType(process.getId());
 		SequenceFlow targetSequence = process.getSequenceFlow(process.getStartSequenceFlow().getTargetList().get(0).getId());
 		if(targetSequence != null) {
 			task.setTaskStatus(targetSequence.getState());

@@ -25,10 +25,13 @@ public interface TaskRepository extends JpaRepository<Task, Long>,JpaSpecificati
     Long getTaskID();
 
     @Query("SELECT u FROM Task u WHERE u.taskCode = :taskCode and u.taskReferenceCode = :taskReferenceCode and u.taskReferenceType = :taskReferenceType")
-    public Task getCloseTask(@Param("taskCode") String taskCode,
+    Task getCloseTask(@Param("taskCode") String taskCode,
                              @Param("taskReferenceCode") String taskReferenceCode,
                              @Param("taskReferenceType") String taskReferenceType);
 
     List<Task> findAll(Specification<Task> specification);
+
+    @Query("select t from Task t where t.taskReferenceCode = ?1")
+	Task findByReferenceCode(String requestcode);
 
 }

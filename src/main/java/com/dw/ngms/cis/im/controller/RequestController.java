@@ -1,5 +1,39 @@
 package com.dw.ngms.cis.im.controller;
 
+import static org.springframework.util.StringUtils.isEmpty;
+
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URLConnection;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.util.FileCopyUtils;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.dw.ngms.cis.im.dto.InvoiceDTO;
 import com.dw.ngms.cis.im.entity.RequestItems;
 import com.dw.ngms.cis.im.entity.Requests;
@@ -14,28 +48,8 @@ import com.dw.ngms.cis.workflow.model.Target;
 import com.itextpdf.text.pdf.AcroFields;
 import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.PdfStamper;
+
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections.CollectionUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.util.FileCopyUtils;
-import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
-import java.io.*;
-import java.net.URLConnection;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import static org.springframework.util.StringUtils.isEmpty;
 
 /**
  * Created by swaroop on 2019/04/19.
@@ -57,7 +71,7 @@ public class RequestController extends MessageController {
 
     @GetMapping("/getTaskTargetFlows")
     public ResponseEntity<?> getTaskTargetFlows(HttpServletRequest request, @RequestParam Long taskid) {
-        if (StringUtils.isEmpty(taskid)) {
+        if (taskid == null) {
             return generateFailureResponse(request, new Exception("Invalid task details passed"));
         }
         try {
@@ -69,6 +83,20 @@ public class RequestController extends MessageController {
         }
     }//getTaskTargetFlows
 
+    @GetMapping("/getRequestStatus")
+    public ResponseEntity<?> getTaskCurrentStatus(HttpServletRequest request, @RequestParam String requestcode) {
+        if (StringUtils.isEmpty(requestcode)) {
+            return generateFailureResponse(request, new Exception("Invalid request code passed"));
+        }
+        try {
+            String status = taskService.getTaskCurrentStatus(requestcode);
+            return (StringUtils.isEmpty(status)) ? generateEmptyResponse(request, "Request status not found") :
+                    ResponseEntity.status(HttpStatus.OK).body(status);
+        } catch (Exception exception) {
+            return generateFailureResponse(request, exception);
+        }
+    }//getTaskCurrentStatus
+    
     @PostMapping("/processUserState")
     public ResponseEntity<?> processUserState(HttpServletRequest request, @RequestBody @Valid ProcessAdditionalInfo additionalInfo) {
         if (additionalInfo == null || StringUtils.isEmpty(additionalInfo.getRequestCode()) || StringUtils.isEmpty(additionalInfo.getTaskId()) ||
@@ -177,7 +205,7 @@ public class RequestController extends MessageController {
         }
     }//updateRequestProvinceAndSectionCodes
 
-
+    @SuppressWarnings("unused")
     @PostMapping("/generateInvoice")
     public ResponseEntity<?> saveAndSendInvoiceMail(HttpServletRequest request, HttpServletResponse response,
                                                     @RequestParam("requestCode") String requestCode,
@@ -221,8 +249,8 @@ public class RequestController extends MessageController {
                     response.setContentLength((int) file.length());
                     InputStream inputStream = new BufferedInputStream(new FileInputStream(file));
                     FileCopyUtils.copy(inputStream, response.getOutputStream());
-                    req.setInvoiceFilePath(Constants.invoiceDirectory + "/" + filename);
-                    Requests updatedRequest = requestService.saveRequest(req);
+                    req.setInvoiceFilePath(Constants.invoiceDirectory + "/" + filename);                    
+					Requests updatedRequest = requestService.saveRequest(req);
                     ProcessAdditionalInfo processAdditionalInfo = new ProcessAdditionalInfo();
                     processAdditionalInfo.setTaskId(828L);
                     processAdditionalInfo.setRequestCode("");
