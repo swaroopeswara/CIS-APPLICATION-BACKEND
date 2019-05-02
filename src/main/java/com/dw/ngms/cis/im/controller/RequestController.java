@@ -75,7 +75,7 @@ public class RequestController extends MessageController {
             return generateFailureResponse(request, new Exception("Invalid task details passed"));
         }
         try {
-            List<Target> targets = taskService.getTaskTargetFlows(taskid);
+            List<Target> targets = taskService.getTaskTargetFlows(taskid);//FIXME confirm param taskid / request code?
             return (CollectionUtils.isEmpty(targets)) ? generateEmptyResponse(request, "Target(s) not found") :
                     ResponseEntity.status(HttpStatus.OK).body(targets);
         } catch (Exception exception) {

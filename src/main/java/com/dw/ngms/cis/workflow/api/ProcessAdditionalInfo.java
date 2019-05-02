@@ -21,5 +21,5 @@ public class ProcessAdditionalInfo {
 	private String targetSequenceId;
 	private String userCode;
 	private String userName;
-	private String url;
+	private String url;//Not required to be passed
 }

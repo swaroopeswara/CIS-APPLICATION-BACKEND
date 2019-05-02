@@ -77,7 +77,7 @@ public class TaskService {
 	public Target processUserState(ProcessAdditionalInfo additionalInfo) {
 		if(additionalInfo == null)
     		throw new RuntimeException("Task process details reqired to process");
-		Task task = getTask(additionalInfo.getTaskId());
+		Task task = getTask(additionalInfo);
 		if(task == null) 
     		throw new RuntimeException("Task not found with ID: "+ additionalInfo.getTaskId());
 		
@@ -98,8 +98,17 @@ public class TaskService {
     	return processEngine.getSequenceTargetFlows(task.getTaskType(), task.getTaskStatus());
     }//getTaskTargetFlows
     
-    public Task getTask(Long id) {
-        return taskRepository.findById(id).get();
+    public Task getTask(ProcessAdditionalInfo additionalInfo) {
+    	if(additionalInfo == null) return null;    	
+    	return (additionalInfo.getTaskId() != null) ? getTask(additionalInfo.getTaskId()) : getTask(additionalInfo.getRequestCode());
+    }//getTask
+    
+    private Task getTask(String requestCode) {
+		return (StringUtils.isEmpty(requestCode)) ? null : taskRepository.findByReferenceCode(requestCode);
+	}//getTask
+
+	public Task getTask(Long id) {
+        return (id == null) ? null : taskRepository.findById(id).get();
     }//getTask
 
     public Long getTaskID() {
@@ -138,7 +147,7 @@ public class TaskService {
 	public String getTaskCurrentStatus(String requestcode) {
 		if(StringUtils.isEmpty(requestcode))
     		throw new RuntimeException("Request code is reqired");
-		Task task = taskRepository.findByReferenceCode(requestcode);
+		Task task = getTask(requestcode);
     	if(task == null) 
     		throw new RuntimeException("Task not found with request code: "+ requestcode);		
 		
