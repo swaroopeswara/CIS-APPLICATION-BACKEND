@@ -252,13 +252,16 @@ public class RequestController extends MessageController {
                     req.setInvoiceFilePath(Constants.invoiceDirectory + "/" + filename);                    
 					Requests updatedRequest = requestService.saveRequest(req);
                     ProcessAdditionalInfo processAdditionalInfo = new ProcessAdditionalInfo();
-                    processAdditionalInfo.setTaskId(828L);
-                    processAdditionalInfo.setRequestCode("");
-                    processAdditionalInfo.setProvinceCode("PRV001");
-                    processAdditionalInfo.setSectionCode("PRV001");
-                    processAdditionalInfo.setTargetSequenceId("flow4");
-                    processAdditionalInfo.setUserCode("USR0001807");
-                    processAdditionalInfo.setUserName("sibusiso.dlamini@drdlr.gov.za");
+                    if(invoiceDTO.getProcessAdditionalInfo()!= null) {
+                        processAdditionalInfo.setTaskId(invoiceDTO.getProcessAdditionalInfo().getTaskId());
+                        processAdditionalInfo.setRequestCode(invoiceDTO.getProcessAdditionalInfo().getRequestCode());
+                        processAdditionalInfo.setProvinceCode(invoiceDTO.getProcessAdditionalInfo().getProvinceCode());
+                        processAdditionalInfo.setSectionCode(invoiceDTO.getProcessAdditionalInfo().getSectionCode());
+                        processAdditionalInfo.setTargetSequenceId(invoiceDTO.getProcessAdditionalInfo().getTargetSequenceId());
+                        processAdditionalInfo.setUserCode(invoiceDTO.getProcessAdditionalInfo().getUserCode());
+                        processAdditionalInfo.setUserName(invoiceDTO.getProcessAdditionalInfo().getUserName());
+                        invoiceDTO.setProcessAdditionalInfo(processAdditionalInfo);
+                    }
                     processUserState(request,processAdditionalInfo);
                     return ResponseEntity.status(HttpStatus.OK).body("Generated Invoice Successfully");
                 }
