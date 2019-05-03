@@ -80,6 +80,21 @@ public class IssueLogController extends MessageController {
     }
 
 
+    @GetMapping("/getMyIssues")
+    public ResponseEntity getMyIssues(HttpServletRequest request,@RequestParam String fullName) {
+        try {
+            String status = null;
+            List<IssueLog> issueLog = issueLogService.findIssueWithUserName(fullName);
+            if(StringUtils.isEmpty(issueLog)){
+                return generateEmptyWithOKResponse(request,"No Issue Log found");
+            }
+            return ResponseEntity.status(HttpStatus.OK).body(issueLog);
+        }catch (Exception exception) {
+            return generateFailureResponse(request, exception);
+        }
+    }
+
+
     @RequestMapping(value = "/issueLogUpdateStatus", method = RequestMethod.POST)
     public ResponseEntity updateStatus(HttpServletRequest request,@RequestParam Long issueID, @Valid @RequestBody IssueLog issueLogDetails) throws IOException {
 

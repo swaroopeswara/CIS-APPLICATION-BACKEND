@@ -55,6 +55,9 @@ public class Requests implements Serializable {
     @Column(name = "PROVINCECODE", length = 100, unique = true)
     private String provinceCode;
 
+    @Column(name = "SECTIONCODE", length = 100, unique = true)
+    private String sectionCode;
+
     @Column(name = "USERNAME", length = 200)
     private String userName;
 
@@ -148,9 +151,7 @@ public class Requests implements Serializable {
     @Column(name = "MODIFIEDDATE")
     private Date modifiedDate;
 
-    @Transient
-    private String sectionCode;
-    
+
     @Transient
     private String processId;
     

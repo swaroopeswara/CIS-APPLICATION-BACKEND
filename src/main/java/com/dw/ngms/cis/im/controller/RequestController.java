@@ -1,39 +1,5 @@
 package com.dw.ngms.cis.im.controller;
 
-import static org.springframework.util.StringUtils.isEmpty;
-
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URLConnection;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.util.FileCopyUtils;
-import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
-
 import com.dw.ngms.cis.im.dto.InvoiceDTO;
 import com.dw.ngms.cis.im.entity.RequestItems;
 import com.dw.ngms.cis.im.entity.Requests;
@@ -48,8 +14,28 @@ import com.dw.ngms.cis.workflow.model.Target;
 import com.itextpdf.text.pdf.AcroFields;
 import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.PdfStamper;
-
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.util.FileCopyUtils;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
+import java.io.*;
+import java.net.URLConnection;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import static org.springframework.util.StringUtils.isEmpty;
 
 /**
  * Created by swaroop on 2019/04/19.
@@ -96,7 +82,7 @@ public class RequestController extends MessageController {
             return generateFailureResponse(request, exception);
         }
     }//getTaskCurrentStatus
-    
+
     @PostMapping("/processUserState")
     public ResponseEntity<?> processUserState(HttpServletRequest request, @RequestBody @Valid ProcessAdditionalInfo additionalInfo) {
         if (additionalInfo == null || StringUtils.isEmpty(additionalInfo.getRequestCode()) || StringUtils.isEmpty(additionalInfo.getTaskId()) ||
@@ -164,8 +150,8 @@ public class RequestController extends MessageController {
 
 
     @PostMapping("/uploadPaymentConfirmation")
-    public ResponseEntity<?> handleFileUpload(HttpServletRequest request, @RequestParam("file") MultipartFile file,
-                                              @RequestParam("requestCode") String requestCode
+    public ResponseEntity<?> uploadPaymentConfirmation(HttpServletRequest request, @RequestParam("file") MultipartFile file,
+                                                 @RequestBody @Valid ProcessAdditionalInfo info
 
     ) {
         String message = "";
@@ -173,14 +159,25 @@ public class RequestController extends MessageController {
         try {
             if (file.isEmpty()) {
                 return generateEmptyResponse(request, "File Not Found to upload, Please upload a file");
-            } else if (requestCode != null && !isEmpty(requestCode)) {
-                Requests requests = this.requestService.getRequestsByRequestCode(requestCode);
+            } else if (info.getUserCode() != null && !isEmpty(info.getRequestCode())) {
+                Requests requests = this.requestService.getRequestsByRequestCode(info.getRequestCode());
                 if (requests != null && requests != null) {
                     String fileName = testService.store(file);
                     files.add(file.getOriginalFilename());
                     requests.setInvoiceFilePath(Constants.uploadDirectoryPath + fileName);
                     message = "You successfully uploaded " + requests.getInvoiceFilePath() + "!";
                     requestService.saveRequest(requests);
+
+                    ProcessAdditionalInfo processAdditionalInfo = new ProcessAdditionalInfo();
+                    processAdditionalInfo.setTaskId(info.getTaskId());
+                    processAdditionalInfo.setRequestCode(info.getRequestCode());
+                    processAdditionalInfo.setProvinceCode(info.getProvinceCode());
+                    processAdditionalInfo.setSectionCode(info.getSectionCode());
+                    processAdditionalInfo.setTargetSequenceId(info.getTargetSequenceId());
+                    processAdditionalInfo.setUserCode(info.getUserCode());
+                    processAdditionalInfo.setUserName(info.getUserName());
+                    processUserState(request,processAdditionalInfo);
+
                     return ResponseEntity.status(HttpStatus.OK).body(message);
                 } else {
                     return generateEmptyResponse(request, "No Internal User Roles  found");
@@ -249,19 +246,9 @@ public class RequestController extends MessageController {
                     response.setContentLength((int) file.length());
                     InputStream inputStream = new BufferedInputStream(new FileInputStream(file));
                     FileCopyUtils.copy(inputStream, response.getOutputStream());
-                    req.setInvoiceFilePath(Constants.invoiceDirectory + "/" + filename);                    
-					Requests updatedRequest = requestService.saveRequest(req);
-                    ProcessAdditionalInfo processAdditionalInfo = new ProcessAdditionalInfo();
-                    if(invoiceDTO.getProcessAdditionalInfo()!= null) {
-                        processAdditionalInfo.setTaskId(invoiceDTO.getProcessAdditionalInfo().getTaskId());
-                        processAdditionalInfo.setRequestCode(invoiceDTO.getProcessAdditionalInfo().getRequestCode());
-                        processAdditionalInfo.setProvinceCode(invoiceDTO.getProcessAdditionalInfo().getProvinceCode());
-                        processAdditionalInfo.setSectionCode(invoiceDTO.getProcessAdditionalInfo().getSectionCode());
-                        processAdditionalInfo.setTargetSequenceId(invoiceDTO.getProcessAdditionalInfo().getTargetSequenceId());
-                        processAdditionalInfo.setUserCode(invoiceDTO.getProcessAdditionalInfo().getUserCode());
-                        processAdditionalInfo.setUserName(invoiceDTO.getProcessAdditionalInfo().getUserName());
-                        invoiceDTO.setProcessAdditionalInfo(processAdditionalInfo);
-                    }
+                    req.setInvoiceFilePath(Constants.invoiceDirectory + "/" + filename);
+                    Requests updatedRequest = requestService.saveRequest(req);
+                    ProcessAdditionalInfo processAdditionalInfo = getProcessAdditionalInfo(invoiceDTO);
                     processUserState(request,processAdditionalInfo);
                     return ResponseEntity.status(HttpStatus.OK).body("Generated Invoice Successfully");
                 }
@@ -273,5 +260,20 @@ public class RequestController extends MessageController {
             return generateFailureResponse(request, exception);
         }
         return generateEmptyResponse(request, "No Request found with requestCode " + requestCode);
+    }
+
+    private ProcessAdditionalInfo getProcessAdditionalInfo(@RequestBody @Valid InvoiceDTO invoiceDTO) {
+        ProcessAdditionalInfo processAdditionalInfo = new ProcessAdditionalInfo();
+        if(invoiceDTO.getProcessAdditionalInfo()!= null) {
+            processAdditionalInfo.setTaskId(invoiceDTO.getProcessAdditionalInfo().getTaskId());
+            processAdditionalInfo.setRequestCode(invoiceDTO.getProcessAdditionalInfo().getRequestCode());
+            processAdditionalInfo.setProvinceCode(invoiceDTO.getProcessAdditionalInfo().getProvinceCode());
+            processAdditionalInfo.setSectionCode(invoiceDTO.getProcessAdditionalInfo().getSectionCode());
+            processAdditionalInfo.setTargetSequenceId(invoiceDTO.getProcessAdditionalInfo().getTargetSequenceId());
+            processAdditionalInfo.setUserCode(invoiceDTO.getProcessAdditionalInfo().getUserCode());
+            processAdditionalInfo.setUserName(invoiceDTO.getProcessAdditionalInfo().getUserName());
+            invoiceDTO.setProcessAdditionalInfo(processAdditionalInfo);
+        }
+        return processAdditionalInfo;
     }
 }

@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -25,5 +26,10 @@ public interface IssueLogRepository extends JpaRepository<IssueLog, Long> {
 
      @Query("SELECT u  FROM IssueLog u WHERE u.issueId = :issueId")
      IssueLog findIssueById(@Param("issueId") Long issueId);
+
+
+    @Query("SELECT u  FROM IssueLog u WHERE u.fullName = :fullName")
+    List<IssueLog> findIssueWithUserName(@Param("fullName") String fullName);
+
 
 }
