@@ -2,6 +2,9 @@ package com.dw.ngms.cis.uam.dto;
 
 import lombok.*;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * Created by swaroop on 2019/03/30.
  */
@@ -12,6 +15,24 @@ import lombok.*;
 @ToString
 @NoArgsConstructor
 public class MailDTO {
+
+    private String mailFrom;
+
+    private String mailTo;
+
+    private String mailCc;
+
+    private String mailBcc;
+
+    private String mailSubject;
+
+    private String mailContent;
+
+    private String contentType;
+
+    private List< Object > attachments;
+
+    private Map< String, Object > model;
 
     private String header;
     private String subject;

@@ -31,8 +31,8 @@ public class IssueLogService {
        return this.issueLogRepository.findIssueStatus(issueLogId);
    }
 
-    public List<IssueLog>  findIssueWithUserName(String  fullName){
-        return this.issueLogRepository.findIssueWithUserName(fullName);
+    public List<IssueLog>  findIssueWithEmail(String  email){
+        return this.issueLogRepository.findIssueWithEmail(email);
     }
 
 

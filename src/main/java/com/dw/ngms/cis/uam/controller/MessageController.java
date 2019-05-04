@@ -16,6 +16,10 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
+import freemarker.template.Configuration;
+import freemarker.template.Template;
+
+import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
 
 import com.dw.ngms.cis.uam.configuration.MailConfiguration;
@@ -25,6 +29,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
 import com.dw.ngms.cis.exception.ExceptionConstants;
@@ -42,6 +49,13 @@ public class MessageController implements ExceptionConstants {
 
 	@Autowired
 	private MailConfiguration mailConfiguration;
+
+
+	@Autowired
+	private JavaMailSender sender;
+
+	@Autowired
+	private Configuration freemarkerConfig;
 	
 	/**
 	 * This is to generate failure response 
@@ -195,6 +209,24 @@ public class MessageController implements ExceptionConstants {
 		
 		return  replyText;
 	}//sendSMS
-	
+
+
+	public void sendEmail(MailDTO mailDTO) throws Exception {
+		MimeMessage message = sender.createMimeMessage();
+
+		MimeMessageHelper helper = new MimeMessageHelper(message);
+
+		// Using a subfolder such as /templates here
+		freemarkerConfig.setClassForTemplateLoading(this.getClass(), "/templates");
+
+		Template t = freemarkerConfig.getTemplate("email-template.ftl");
+		String text = FreeMarkerTemplateUtils.processTemplateIntoString(t, mailDTO.getModel());
+
+		helper.setTo(mailDTO.getMailTo());
+		helper.setText(text, true);
+		helper.setSubject(mailDTO.getMailSubject());
+
+		sender.send(message);
+	}
 }
 

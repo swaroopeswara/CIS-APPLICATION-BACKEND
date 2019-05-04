@@ -28,8 +28,8 @@ public interface IssueLogRepository extends JpaRepository<IssueLog, Long> {
      IssueLog findIssueById(@Param("issueId") Long issueId);
 
 
-    @Query("SELECT u  FROM IssueLog u WHERE u.fullName = :fullName")
-    List<IssueLog> findIssueWithUserName(@Param("fullName") String fullName);
+    @Query("SELECT u  FROM IssueLog u WHERE u.email = :email")
+    List<IssueLog> findIssueWithEmail(@Param("email") String email);
 
 
 }

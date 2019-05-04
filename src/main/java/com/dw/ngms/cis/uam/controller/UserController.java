@@ -1,60 +1,30 @@
 package com.dw.ngms.cis.uam.controller;
 
-import static org.springframework.util.StringUtils.isEmpty;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
-
+import com.dw.ngms.cis.exception.ExceptionConstants;
+import com.dw.ngms.cis.uam.configuration.MailConfiguration;
+import com.dw.ngms.cis.uam.dto.*;
+import com.dw.ngms.cis.uam.entity.*;
+import com.dw.ngms.cis.uam.enums.ApprovalStatus;
+import com.dw.ngms.cis.uam.enums.Status;
+import com.dw.ngms.cis.uam.jsonresponse.UserControllerResponse;
+import com.dw.ngms.cis.uam.ldap.UserCredentials;
+import com.dw.ngms.cis.uam.service.*;
+import com.google.gson.Gson;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import com.dw.ngms.cis.exception.ExceptionConstants;
-import com.dw.ngms.cis.uam.configuration.MailConfiguration;
-import com.dw.ngms.cis.uam.dto.MailDTO;
-import com.dw.ngms.cis.uam.dto.RolesDTO;
-import com.dw.ngms.cis.uam.dto.UpdateAccessRightsDTO;
-import com.dw.ngms.cis.uam.dto.UpdatePasswordDTO;
-import com.dw.ngms.cis.uam.dto.UserDTO;
-import com.dw.ngms.cis.uam.dto.UserUpdateDTO;
-import com.dw.ngms.cis.uam.entity.ExternalRole;
-import com.dw.ngms.cis.uam.entity.ExternalUser;
-import com.dw.ngms.cis.uam.entity.ExternalUserAssistant;
-import com.dw.ngms.cis.uam.entity.ExternalUserRoles;
-import com.dw.ngms.cis.uam.entity.InternalRole;
-import com.dw.ngms.cis.uam.entity.InternalUserRoles;
-import com.dw.ngms.cis.uam.entity.Task;
-import com.dw.ngms.cis.uam.entity.User;
-import com.dw.ngms.cis.uam.enums.ApprovalStatus;
-import com.dw.ngms.cis.uam.enums.Status;
-import com.dw.ngms.cis.uam.jsonresponse.UserControllerResponse;
-import com.dw.ngms.cis.uam.ldap.UserCredentials;
-import com.dw.ngms.cis.uam.service.ExternalRoleService;
-import com.dw.ngms.cis.uam.service.ExternalUserAssistantService;
-import com.dw.ngms.cis.uam.service.ExternalUserService;
-import com.dw.ngms.cis.uam.service.InternalRoleService;
-import com.dw.ngms.cis.uam.service.InternalUserRoleService;
-import com.dw.ngms.cis.uam.service.TaskService;
-import com.dw.ngms.cis.uam.service.UserService;
-import com.google.gson.Gson;
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+import java.io.IOException;
+import java.util.*;
 
-import lombok.extern.slf4j.Slf4j;
+import static org.springframework.util.StringUtils.isEmpty;
 
 @Slf4j
 @RestController
@@ -194,7 +164,6 @@ public class UserController extends MessageController {
     }//getAllInternalUsers
 
 
-
     @GetMapping("/getAllExternalUsers")
     public ResponseEntity<?> getAllExternalUsers(HttpServletRequest request, @RequestParam String provincecode) {
         try {
@@ -240,30 +209,27 @@ public class UserController extends MessageController {
     }//updateInternalUser
 
 
-
     @GetMapping("/getAccessRightsByCode")
     public ResponseEntity<?> getAccessRightsByCode(HttpServletRequest request, @RequestParam String userType,
-                                                                                 @RequestParam String code) {
+                                                   @RequestParam String code) {
         try {
-            if(userType.equalsIgnoreCase("Internal")){
+            if (userType.equalsIgnoreCase("Internal")) {
                 String accessRightJson = this.internalRoleService.getAccessRightJson(code);
                 return (accessRightJson == null) ? generateEmptyResponse(request, "Access Right Json not found")
                         : ResponseEntity.status(HttpStatus.OK).body(accessRightJson);
-            }else if(userType.equalsIgnoreCase("External")){
+            } else if (userType.equalsIgnoreCase("External")) {
 
                 String accessRightJson = this.externalRoleService.getAccessRightJson(code);
                 return (accessRightJson == null) ? generateEmptyResponse(request, "Access Right Json not found")
                         : ResponseEntity.status(HttpStatus.OK).body(accessRightJson);
-            }else{
-                return  ResponseEntity.status(HttpStatus.OK).body("Access Right Json not found");
+            } else {
+                return ResponseEntity.status(HttpStatus.OK).body("Access Right Json not found");
             }
 
         } catch (Exception exception) {
             return generateFailureResponse(request, exception);
         }
     }//getAllExternalUsers
-
-
 
 
     @PostMapping("/updateAccessRights")
@@ -278,7 +244,7 @@ public class UserController extends MessageController {
                     if (!isEmpty(roles)) {
                         List<InternalRole> internalRoleList = this.internalRoleService.updateAccessRight(roles.getRolecode());
                         if (!isEmpty(internalRoleList)) {
-                            for(InternalRole internalRole:internalRoleList) {
+                            for (InternalRole internalRole : internalRoleList) {
                                 internalRole.setAccessRightJson(updateAccessRightsDTO.getAccessrightjson());
                                 this.internalRoleService.updateInternalRole(internalRole);
                             }
@@ -298,7 +264,7 @@ public class UserController extends MessageController {
                     if (!isEmpty(roles)) {
                         List<ExternalRole> externalRoleList = this.externalRoleService.updateAccessRight(roles.getRolecode());
                         if (!isEmpty(externalRoleList)) {
-                            for(ExternalRole externalRole:externalRoleList){
+                            for (ExternalRole externalRole : externalRoleList) {
                                 externalRole.setAccessRightJson(updateAccessRightsDTO.getAccessrightjson());
                                 this.externalRoleService.updateExternalRole(externalRole);
                             }
@@ -419,7 +385,7 @@ public class UserController extends MessageController {
                 List<ExternalUserRoles> externalUserRolesList = this.userService.getExternalUserRolesChildElements(userInfo.getUserCode());
                 userInfo.setExternaluser(externalUser);
                 userInfo.setExternalUserRoles(externalUserRolesList);
-                if(!CollectionUtils.isEmpty(externalUserRolesList) &&  externalUserRolesList!= null) {
+                if (!CollectionUtils.isEmpty(externalUserRolesList) && externalUserRolesList != null) {
                     userInfo.setMainRoleCode(externalUserRolesList.get(0).getUserRoleCode());
                     userInfo.setMainRoleName(externalUserRolesList.get(0).getUserRoleName());
                 }
@@ -476,7 +442,7 @@ public class UserController extends MessageController {
         }
     }
 
-    @PostMapping(value = "/registerExternalUser" , produces = "application/json")
+    @PostMapping(value = "/registerExternalUser", produces = "application/json")
     public ResponseEntity<?> createExternalUser(HttpServletRequest request, @Valid @RequestBody User user) {
         Gson gson = new Gson();
         Task task = new Task();
@@ -498,21 +464,21 @@ public class UserController extends MessageController {
                 for (ExternalUserRoles externalUserRoles : user.getExternalUserRoles()) {
                     if (user.getMainRoleCode().equalsIgnoreCase("EX011")) {
                         String response = saveExternalUserAssistant(user, externalRoleCode, externalUserRoles);
-                        if(response.equals("failed")){
+                        if (response.equals("failed")) {
                             userControllerResponse.setMessage("Surveyor is not registered with CIS");
                             json = gson.toJson(userControllerResponse);
                             return ResponseEntity.status(HttpStatus.OK).body(json);
                         }
-                    } else if(user.getMainRoleCode().equalsIgnoreCase("EX010") || user.getMainRoleCode().equalsIgnoreCase("EX002")){
+                    } else if (user.getMainRoleCode().equalsIgnoreCase("EX010") || user.getMainRoleCode().equalsIgnoreCase("EX002")) {
                         //String response = saveExternalUserAssistantForPLSExUser(user, externalRoleCode, externalUserRoles);
                         String ppNumber = this.userService.getpPNumber(user.getExternaluser().getPpno());
-                        if(ppNumber== null || ppNumber.length() == 0){
+                        if (ppNumber == null || ppNumber.length() == 0) {
                             ExternalRole externalRole = this.externalRoleService.getByRoleCodeRoleProvince(user.getMainRoleCode(), externalUserRoles.getUserProvinceCode());
                             externalUserRolesMapping(user, externalUserRoles, externalRole);
                             externalUserRoles.setUserRoleName(user.getMainRoleName());
                             externalUserRoles.setUserRoleCode(user.getMainRoleCode());
                             externalRoleCode.add(externalUserRoles);
-                        }else if(ppNumber!= null || ppNumber.length() > 0){
+                        } else if (ppNumber != null || ppNumber.length() > 0) {
                             userControllerResponse.setMessage("PLS user already Registered with this PPN NO");
                             json = gson.toJson(userControllerResponse);
                             return ResponseEntity.status(HttpStatus.OK).body(json);
@@ -543,13 +509,44 @@ public class UserController extends MessageController {
     }//createExternalUser
 
 
+    @GetMapping(value = "/mailTest", produces = "application/json")
+    public ResponseEntity<?> mailTest(HttpServletRequest request) throws Exception {
+
+
+        MailDTO mailDTO = getMailDTOTest();
+
+        MailDTO mail = new MailDTO();
+        mail.setMailFrom("javabycod@gmail.com");
+        mail.setMailTo("swaroopeswara@gmail.com");
+        mail.setMailSubject("User Registered");
+
+        Map<String, Object> model = new HashMap<String, Object>();
+        model.put("firstName", "swaroop");
+        model.put("lastName", "eswara");
+        model.put("BODY1", "Thank you for registering with us. Your account is");
+        model.put("BODY2", "");
+        model.put("BODY3", "");
+        model.put("BODY4", "");
+        model.put("FOOTER1", "Ragava");
+
+        mail.setModel(model);
+
+        sendEmail(mail);
+        //sendMailToAdmin(user, mailDTO);
+        //sendMailToProvinceAdmin(user, mailDTO);
+
+        return ResponseEntity.status(HttpStatus.OK).body("mail sent sucessfully");
+
+    }//createExternalUser
+
+
     @PostMapping("/registerInternalUser")
     public ResponseEntity<?> createInternalUser(HttpServletRequest request, @RequestBody @Valid User internalUser) {
         Gson gson = new Gson();
         UserControllerResponse userControllerResponse = new UserControllerResponse();
         String json = null;
         try {
-            System.out.println("internalUser.getEmail() "+internalUser.getEmail());
+            System.out.println("internalUser.getEmail() " + internalUser.getEmail());
             User userExists = this.userService.findByEmail(internalUser.getEmail().trim());
             if (userExists != null && userExists.getEmail() != null) {
                 userControllerResponse.setMessage("User Already Exist with this email ID");
@@ -587,7 +584,7 @@ public class UserController extends MessageController {
             }
             this.userService.updateUserApproval(user);
             MailDTO mailDTO = getMailDTO(user);
-            sendMailToUser(user, mailDTO);
+            sendMailToUser(mailDTO);
             //todo Send Email to User
             return ResponseEntity.status(HttpStatus.OK).body("User Approval Updated Successfully");
         } catch (Exception exception) {
@@ -635,24 +632,24 @@ public class UserController extends MessageController {
     }//updatePassword*/
 
     private void sendPasswordChangeMailToUser(User user) {
-    	try {
-	    	MailDTO mailDTO = getMailDTO(user);
-	    	mailDTO.setSubject("User password updated");
-	    	mailDTO.setBody1("Thank you for registering with us. Your account is pending approval.");
-	        mailDTO.setBody2("Your password is "+user.getPassword());
-	        mailDTO.setBody3("");
-	        mailDTO.setBody4("");        
-	        mailDTO.setHeader(ExceptionConstants.header + " " + user.getFirstName() + ",");
-	        mailDTO.setFooter("CIS ADMIN");
-	        mailDTO.setToAddress(user.getEmail());
-	        sendMail(mailDTO);
-    	}catch(Exception e) {
-    		log.error("Error while sending mail {}", e.getMessage());
-    	}
-	}//sendPasswordChangeMailToUser
-    
+        try {
+            MailDTO mailDTO = getMailDTO(user);
+            mailDTO.setSubject("User password updated");
+            mailDTO.setBody1("Thank you for registering with us. Your account is pending approval.");
+            mailDTO.setBody2("Your password is " + user.getPassword());
+            mailDTO.setBody3("");
+            mailDTO.setBody4("");
+            mailDTO.setHeader(ExceptionConstants.header + " " + user.getFirstName() + ",");
+            mailDTO.setFooter("CIS ADMIN");
+            mailDTO.setToAddress(user.getEmail());
+            sendMail(mailDTO);
+        } catch (Exception e) {
+            log.error("Error while sending mail {}", e.getMessage());
+        }
+    }//sendPasswordChangeMailToUser
 
-	@RequestMapping(value = "/resetPassword", method = RequestMethod.POST)
+
+    @RequestMapping(value = "/resetPassword", method = RequestMethod.POST)
     public ResponseEntity<?> resetPassword(HttpServletRequest request, @RequestBody @Valid UserDTO userDTO) throws IOException {
         try {
             UserControllerResponse userControllerResponse = new UserControllerResponse();
@@ -673,14 +670,12 @@ public class UserController extends MessageController {
             }
             userControllerResponse.setMessage("Reset Password is UnSuccessful");
             json = gson.toJson(userControllerResponse);
-            return  ResponseEntity.status(HttpStatus.OK).body(json);
+            return ResponseEntity.status(HttpStatus.OK).body(json);
 
         } catch (Exception exception) {
             return generateFailureResponse(request, exception);
         }
     }//resetPassword*/
-
-
 
 
     @RequestMapping(value = "/deactivateUser", method = RequestMethod.POST)
@@ -714,7 +709,7 @@ public class UserController extends MessageController {
     }
 
 
-    private void sendMailToUser(@RequestBody @Valid User user, MailDTO mailDTO) throws IOException {
+   /* private void sendMailToUsers(@RequestBody @Valid User user, MailDTO mailDTO) throws IOException {
 
         if (user.getIsApproved().getDisplayString().equalsIgnoreCase("YES")) {
             mailDTO.setBody1("Thank you for registering with us. Your account is approved.");
@@ -736,7 +731,59 @@ public class UserController extends MessageController {
         mailResponse = sendMail(mailDTO);
         System.out.println("mailResponse is "+mailResponse);
     }
+*/
 
+
+    private void sendMailToUser(@RequestBody @Valid User user, MailDTO mailDTO) throws Exception {
+
+        Map<String, Object> model = new HashMap<String, Object>();
+
+        if (user.getIsApproved().getDisplayString().equalsIgnoreCase("YES")) {
+            model.put("firstName", user.getFirstName());
+            model.put("BODY1", "Thank you for registering with us. Your account is approved.");
+            model.put("BODY2", "Your password is " + user.getPassword());
+            model.put("BODY3", "");
+            model.put("BODY4", "");
+
+        } else {
+
+            model.put("firstName", user.getFirstName());
+            model.put("BODY1", "Thank you for registering with us. Your account is pending approval.");
+            model.put("BODY2", "Your password is " + user.getPassword());
+            model.put("BODY3", "");
+            model.put("BODY4", "");
+
+        }
+
+        mailDTO.setMailSubject("Welcome to CIS");
+        mailDTO.setFooter("CIS ADMIN");
+        mailDTO.setMailFrom("dataworldproject@gmail.com");
+        mailDTO.setMailTo(user.getEmail());
+
+        mailDTO.setModel(model);
+        sendEmail(mailDTO);
+
+
+    }
+
+
+    private void sendMailToUser(MailDTO mailDTO) throws IOException {
+
+        mailDTO.setMailFrom("swaroop@gmail.com");
+        mailDTO.setBody1("Thank you for registering with us. Your account is approved.");
+        mailDTO.setBody2("Your password is " + "TestPassword");
+        mailDTO.setBody3("");
+        mailDTO.setBody4("");
+
+
+        String mailResponse;
+        mailDTO.setSubject("Welcome to CIS");
+        mailDTO.setHeader(ExceptionConstants.header + " " + "swaroop" + ",");
+        mailDTO.setFooter("CIS ADMIN");
+        mailDTO.setToAddress("swaroopeswara@gmail.com");
+        mailResponse = sendMail(mailDTO);
+        System.out.println("mailResponse is " + mailResponse);
+    }
 
 
     private void sendMailToInternalUser(@RequestBody @Valid User user, MailDTO mailDTO) throws IOException {
@@ -759,69 +806,68 @@ public class UserController extends MessageController {
         mailDTO.setFooter("CIS ADMIN");
         mailDTO.setToAddress(user.getEmail());
         mailResponse = sendMail(mailDTO);
-        System.out.println("mailResponse is "+mailResponse);
+        System.out.println("mailResponse is " + mailResponse);
     }
 
 
     private void sendMailToAdmin(@RequestBody @Valid User user, MailDTO mailDTO) {
         String mailResponse;
-        mailDTO.setSubject("New " + user.getUserTypeName().toLowerCase() +" User Registration");
-        mailDTO.setHeader(ExceptionConstants.header + " " +"Admin Name" +",");
+        mailDTO.setSubject("New " + user.getUserTypeName().toLowerCase() + " User Registration");
+        mailDTO.setHeader(ExceptionConstants.header + " " + "Admin Name" + ",");
         mailDTO.setFooter("CIS ADMIN");
-        mailDTO.setBody1("New user registered with email " +user.getEmail()+  " in province "+user.getExternalUserRoles().get(0).getUserProvinceName());
+        mailDTO.setBody1("New user registered with email " + user.getEmail() + " in province " + user.getExternalUserRoles().get(0).getUserProvinceName());
         mailDTO.setBody2("New task created for approval by provincial administrator");
         mailDTO.setBody3("");
         mailDTO.setBody4("");
         mailDTO.setToAddress(mailConfiguration.getAdminUserMail());
         mailResponse = sendMail(mailDTO);
-        System.out.println("sendMailToAdmin is "+mailResponse);
+        System.out.println("sendMailToAdmin is " + mailResponse);
     }
-
 
 
     private void sendMailToInternalAdmin(@RequestBody @Valid User user, MailDTO mailDTO) {
         String mailResponse;
-        mailDTO.setSubject("New " + user.getUserTypeName().toLowerCase() +" User Registration");
-        mailDTO.setHeader(ExceptionConstants.header + " " +"Admin Name" +",");
+        mailDTO.setSubject("New " + user.getUserTypeName().toLowerCase() + " User Registration");
+        mailDTO.setHeader(ExceptionConstants.header + " " + "Admin Name" + ",");
         mailDTO.setFooter("CIS ADMIN");
-       // mailDTO.setBody1("New user registered with email " +user.getEmail()+  " in province "+user.getInternalUserRoles().get(0).getProvinceName());
-        mailDTO.setBody1("New user registered with email " +user.getEmail());
+        // mailDTO.setBody1("New user registered with email " +user.getEmail()+  " in province "+user.getInternalUserRoles().get(0).getProvinceName());
+        mailDTO.setBody1("New user registered with email " + user.getEmail());
         mailDTO.setBody2("New task created for approval by provincial administrator");
         mailDTO.setBody3("");
         mailDTO.setBody4("");
         mailDTO.setToAddress(mailConfiguration.getAdminUserMail());
         mailResponse = sendMail(mailDTO);
-        System.out.println("sendMailToAdmin is "+mailResponse);
+        System.out.println("sendMailToAdmin is " + mailResponse);
     }
 
 
     private void sendMailToProvinceAdmin(@RequestBody @Valid User user, MailDTO mailDTO) {
         String mailResponse;
-        mailDTO.setSubject("New "+ user.getUserTypeName().toLowerCase() +" User Registration");
+        mailDTO.setSubject("New " + user.getUserTypeName().toLowerCase() + " User Registration");
         mailDTO.setHeader(ExceptionConstants.header + " " + "Province Administrator" + ",");
         mailDTO.setFooter("CIS ADMIN");
-        mailDTO.setBody1("New user registered with email " +user.getEmail()+  " in province " +user.getExternalUserRoles().get(0).getUserProvinceName());
+        mailDTO.setBody1("New user registered with email " + user.getEmail() + " in province " + user.getExternalUserRoles().get(0).getUserProvinceName());
         mailDTO.setBody2("New task created for approval by you");
         mailDTO.setBody3("");
         mailDTO.setBody4("");
         mailDTO.setToAddress(mailConfiguration.getProvinceAdminMail());
         mailResponse = sendMail(mailDTO);
-        System.out.println("sendMailToProvinceAdmin is "+mailResponse);
+        System.out.println("sendMailToProvinceAdmin is " + mailResponse);
     }
 
     private void sendMailToProvinceInternalAdmin(@RequestBody @Valid User user, MailDTO mailDTO) {
         String mailResponse;
-        mailDTO.setSubject("New "+ user.getUserTypeName().toLowerCase() +" User Registration");
+        mailDTO.setSubject("New " + user.getUserTypeName().toLowerCase() + " User Registration");
         mailDTO.setHeader(ExceptionConstants.header + " " + "Province Administrator" + ",");
         mailDTO.setFooter("CIS ADMIN");
         //mailDTO.setBody1("New user registered with email " +user.getEmail()+  " in province " +user.getInternalUserRoles().get(0).getProvinceName());
-        mailDTO.setBody1("New user registered with email " +user.getEmail());
+        mailDTO.setBody1("New user registered with email " + user.getEmail());
         mailDTO.setBody2("New task created for approval by you");
         mailDTO.setBody3("");
         mailDTO.setBody4("");
         mailDTO.setToAddress(mailConfiguration.getProvinceAdminMail());
         mailResponse = sendMail(mailDTO);
-        System.out.println("sendMailToProvinceAdmin is "+mailResponse);
+        System.out.println("sendMailToProvinceAdmin is " + mailResponse);
     }
 
 
@@ -842,7 +888,7 @@ public class UserController extends MessageController {
         String response = "Success";
         ExternalUserAssistant externalUserAssistant = new ExternalUserAssistant();
         response = externalUserAssistantMapping(user, externalUserAssistant);
-        if(response.equals("failed")){
+        if (response.equals("failed")) {
             return response = "failed";
         }
         ExternalRole externalRole = this.externalRoleService.getByRoleCodeRoleProvince(user.getMainRoleCode(), externalUserRoles.getUserProvinceCode());
@@ -859,7 +905,7 @@ public class UserController extends MessageController {
         String response = "Success";
         ExternalUserAssistant externalUserAssistant = new ExternalUserAssistant();
         response = externalUserAssistantMappingPlsExUser(user, externalUserAssistant);
-        if(response.equals("failed")){
+        if (response.equals("failed")) {
             return response = "failed";
         }
         ExternalRole externalRole = this.externalRoleService.getByRoleCodeRoleProvince(user.getMainRoleCode(), externalUserRoles.getUserProvinceCode());
@@ -873,10 +919,10 @@ public class UserController extends MessageController {
 
     private String externalUserAssistantMappingPlsExUser(@RequestBody @Valid User user, ExternalUserAssistant externalUserAssistant) {
         String message = "Success";
-        System.out.println("PP number is "+user.getExternaluser().getPpno());
+        System.out.println("PP number is " + user.getExternaluser().getPpno());
         String ppNumber = this.userService.getpPNumber(user.getExternaluser().getPpno());
-        System.out.println("PP number is "+ppNumber);
-        if(ppNumber == null || ppNumber.length() == 0){
+        System.out.println("PP number is " + ppNumber);
+        if (ppNumber == null || ppNumber.length() == 0) {
             String UserCode = this.userService.getUserCode(ppNumber);
             externalUserAssistant.setSurveyorusercode(user.getUserCode());
             externalUserAssistant.setSurveyorusername(user.getUserName());
@@ -888,7 +934,7 @@ public class UserController extends MessageController {
             externalUserAssistant.setUserId(user.getUserId());
             message = "Success";
             return message;
-        }else if(ppNumber!= null || ppNumber.length() > 0){
+        } else if (ppNumber != null || ppNumber.length() > 0) {
             message = "failed";
             return message;
         }
@@ -897,10 +943,10 @@ public class UserController extends MessageController {
 
     private String externalUserAssistantMapping(@RequestBody @Valid User user, ExternalUserAssistant externalUserAssistant) {
         String message = "Success";
-        if(user.getMainRoleName().equalsIgnoreCase("Land Survey Assistant") && user.getMainRoleCode().equalsIgnoreCase("EX011")){
-           String pPnumber = this.userService.getpPNumberForAssistant(user.getExternaluser().getPpno());
-            System.out.println("pPnumber is "+pPnumber);
-            if(pPnumber == null || pPnumber.length() == 0){
+        if (user.getMainRoleName().equalsIgnoreCase("Land Survey Assistant") && user.getMainRoleCode().equalsIgnoreCase("EX011")) {
+            String pPnumber = this.userService.getpPNumberForAssistant(user.getExternaluser().getPpno());
+            System.out.println("pPnumber is " + pPnumber);
+            if (pPnumber == null || pPnumber.length() == 0) {
                 message = "failed";
                 return message;
             }
@@ -925,6 +971,16 @@ public class UserController extends MessageController {
         return message;
     }
 
+    private MailDTO getMailDTOTest() {
+        MailDTO mailDTO = new MailDTO();
+        mailDTO.setHeader(ExceptionConstants.header);
+        mailDTO.setFooter(ExceptionConstants.footer);
+        System.out.println("user.getIsApproved().getDisplayString() ");
+
+        mailDTO.setSubject(ExceptionConstants.subject);
+        return mailDTO;
+    }
+
     private MailDTO getMailDTO(@RequestBody @Valid User user) {
         MailDTO mailDTO = new MailDTO();
         mailDTO.setHeader(ExceptionConstants.header);
@@ -935,10 +991,9 @@ public class UserController extends MessageController {
         return mailDTO;
     }
 
-
     private void createTask(Task task) throws IOException {
         Long taskId = this.taskService.getTaskID();
-        System.out.println("task id is" +taskId);
+        System.out.println("task id is" + taskId);
         task.setTaskCode("TASK000" + Long.toString(taskId));
         Task taskService = this.taskService.saveTask(task);
         //MailDTO mailDTO = getMailDTO(taskService);
@@ -959,22 +1014,23 @@ public class UserController extends MessageController {
         String mailResponse = null;
         String userCode = null;
 
-        System.out.println("Province Code "+task.getTaskAllProvinceCode() +"section Code " +task.getTaskAllOCSectionCode() +"taskCode "+task.getTaskAllOCRoleCode());
-        List<InternalUserRoles> userRolesList = this.internalUserRoleService.getInternalUserName(task.getTaskAllProvinceCode(),task.getTaskAllOCSectionCode(),task.getTaskAllOCRoleCode());
-        System.out.println("user code is " +userRolesList.get(0).getUserCode());
-        System.out.println("user name is " +userRolesList.get(0).getUserName());
-        for(InternalUserRoles user: userRolesList){
-            System.out.println("user code are " +user.getUserCode());
+        System.out.println("Province Code " + task.getTaskAllProvinceCode() + "section Code " + task.getTaskAllOCSectionCode() + "taskCode " + task.getTaskAllOCRoleCode());
+        List<InternalUserRoles> userRolesList = this.internalUserRoleService.getInternalUserName(task.getTaskAllProvinceCode(), task.getTaskAllOCSectionCode(), task.getTaskAllOCRoleCode());
+        System.out.println("user code is " + userRolesList.get(0).getUserCode());
+        System.out.println("user name is " + userRolesList.get(0).getUserName());
+        for (InternalUserRoles user : userRolesList) {
+            System.out.println("user code are " + user.getUserCode());
         }
         String userName = this.userService.getUserName(userRolesList.get(0).getUserCode());
         mailDTO.setHeader(ExceptionConstants.header + " " + userName + ",");
         mailDTO.setSubject("New Task Created");
         mailDTO.setBody1("New Task have been created for you.");
-        mailDTO.setBody2("Task type is " +task.getTaskReferenceType());
+        mailDTO.setBody2("Task type is " + task.getTaskReferenceType());
         mailDTO.setBody3("");
-        mailDTO.setBody4("");;
+        mailDTO.setBody4("");
+        ;
         mailDTO.setToAddress(userRolesList.get(0).getUserName());//admin user for later
         mailResponse = sendMail(mailDTO);
-        System.out.println("mailResponse is "+mailResponse);
+        System.out.println("mailResponse is " + mailResponse);
     }
 }

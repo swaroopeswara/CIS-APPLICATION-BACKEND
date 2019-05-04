@@ -81,10 +81,10 @@ public class IssueLogController extends MessageController {
 
 
     @GetMapping("/getMyIssues")
-    public ResponseEntity getMyIssues(HttpServletRequest request,@RequestParam String fullName) {
+    public ResponseEntity getMyIssues(HttpServletRequest request,@RequestParam String email) {
         try {
             String status = null;
-            List<IssueLog> issueLog = issueLogService.findIssueWithUserName(fullName);
+            List<IssueLog> issueLog = issueLogService.findIssueWithEmail(email);
             if(StringUtils.isEmpty(issueLog)){
                 return generateEmptyWithOKResponse(request,"No Issue Log found");
             }
