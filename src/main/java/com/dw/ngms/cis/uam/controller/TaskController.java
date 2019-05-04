@@ -65,7 +65,7 @@ public class TaskController extends MessageController {
     }
 
 
-    private void sendMailToTaskUser(@RequestBody @Valid Task task, MailDTO mailDTO) throws IOException {
+   /* private void sendMailToTaskUser(@RequestBody @Valid Task task, MailDTO mailDTO) throws IOException {
         String mailResponse = null;
         String userCode = null;
 
@@ -85,7 +85,7 @@ public class TaskController extends MessageController {
         mailDTO.setToAddress(userRolesList.get(0).getUserName());//admin user for later
         mailResponse = sendMail(mailDTO);
         System.out.println("mailResponse is "+mailResponse);
-    }
+    }*/
 
 
     @PostMapping("/closeTask")

@@ -542,7 +542,7 @@
                                                                     <tbody>
                                                                     <tr>
                                                                         <td style="font-size:14px; font-family:Arial,Helvetica,sans-serif, sans-serif; color:#3c4858; line-height: 21px;">
-                                                                            <div>Good day ${firstName} ${lastName},</div>
+                                                                            <div>Good day ${firstName} ,</div>
                                                                         </td>
                                                                     </tr>
                                                                     </tbody>

@@ -6,10 +6,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -295,24 +292,26 @@ public class InternalUserRoleController extends MessageController {
     private void sendMailToTaskUser(@RequestBody @Valid Task task, MailDTO mailDTO) throws IOException {
         String mailResponse = null;
         String userCode = null;
-
-        System.out.println("Province Code "+task.getTaskAllProvinceCode() +"section Code " +task.getTaskAllOCSectionCode() +"taskCode "+task.getTaskAllOCRoleCode());
+        Map<String, Object> model = new HashMap<String, Object>();
         List<InternalUserRoles> userRolesList = this.internalUserRoleService.getInternalUserName(task.getTaskAllProvinceCode(),task.getTaskAllOCSectionCode(),task.getTaskAllOCRoleCode());
-        System.out.println("user code is " +userRolesList.get(0).getUserCode());
-        System.out.println("user name is " +userRolesList.get(0).getUserName());
         for(InternalUserRoles user: userRolesList){
             System.out.println("user code are " +user.getUserCode());
         }
         String userName = this.userService.getUserName(userRolesList.get(0).getUserCode());
-        mailDTO.setHeader(ExceptionConstants.header + " " + userName + ",");
+        model.put("firstName", " " + userName + ",");
         mailDTO.setSubject("New Task Created");
         mailDTO.setBody1("New Task have been created for you.");
         mailDTO.setBody2("Task type is " +task.getTaskReferenceType());
         mailDTO.setBody3("");
         mailDTO.setBody4("");;
-        mailDTO.setToAddress(userRolesList.get(0).getUserName());//admin user for later
-        mailResponse = sendMail(mailDTO);
-        System.out.println("mailResponse is "+mailResponse);
+        mailDTO.setMailFrom("dataworldproject@gmail.com");
+        mailDTO.setMailTo(userRolesList.get(0).getUserName());//admin user for later
+        mailDTO.setModel(model);
+        try {
+            sendEmail(mailDTO);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }

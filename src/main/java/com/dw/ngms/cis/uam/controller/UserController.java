@@ -584,7 +584,7 @@ public class UserController extends MessageController {
             }
             this.userService.updateUserApproval(user);
             MailDTO mailDTO = getMailDTO(user);
-            sendMailToUser(mailDTO);
+            sendMailToUser(user, mailDTO);
             //todo Send Email to User
             return ResponseEntity.status(HttpStatus.OK).body("User Approval Updated Successfully");
         } catch (Exception exception) {
@@ -633,16 +633,19 @@ public class UserController extends MessageController {
 
     private void sendPasswordChangeMailToUser(User user) {
         try {
+            Map<String, Object> model = new HashMap<String, Object>();
             MailDTO mailDTO = getMailDTO(user);
-            mailDTO.setSubject("User password updated");
+            mailDTO.setMailSubject("User password updated");
             mailDTO.setBody1("Thank you for registering with us. Your account is pending approval.");
             mailDTO.setBody2("Your password is " + user.getPassword());
             mailDTO.setBody3("");
             mailDTO.setBody4("");
-            mailDTO.setHeader(ExceptionConstants.header + " " + user.getFirstName() + ",");
+            model.put("firstName", user.getFirstName() + ",");
             mailDTO.setFooter("CIS ADMIN");
-            mailDTO.setToAddress(user.getEmail());
-            sendMail(mailDTO);
+            mailDTO.setMailFrom("dataworldproject@gmail.com");
+            mailDTO.setMailTo(user.getEmail());
+            mailDTO.setModel(model);
+            sendEmail(mailDTO);
         } catch (Exception e) {
             log.error("Error while sending mail {}", e.getMessage());
         }
@@ -709,30 +712,6 @@ public class UserController extends MessageController {
     }
 
 
-   /* private void sendMailToUsers(@RequestBody @Valid User user, MailDTO mailDTO) throws IOException {
-
-        if (user.getIsApproved().getDisplayString().equalsIgnoreCase("YES")) {
-            mailDTO.setBody1("Thank you for registering with us. Your account is approved.");
-            mailDTO.setBody2("Your password is "+user.getPassword());
-            mailDTO.setBody3("");
-            mailDTO.setBody4("");
-        } else {
-            mailDTO.setBody1("Thank you for registering with us. Your account is pending approval.");
-            mailDTO.setBody2("Your password is "+user.getPassword());
-            mailDTO.setBody3("");
-            mailDTO.setBody4("");
-        }
-
-        String mailResponse;
-        mailDTO.setSubject("Welcome to CIS");
-        mailDTO.setHeader(ExceptionConstants.header + " " + user.getFirstName() + ",");
-        mailDTO.setFooter("CIS ADMIN");
-        mailDTO.setToAddress(user.getEmail());
-        mailResponse = sendMail(mailDTO);
-        System.out.println("mailResponse is "+mailResponse);
-    }
-*/
-
 
     private void sendMailToUser(@RequestBody @Valid User user, MailDTO mailDTO) throws Exception {
 
@@ -767,27 +746,9 @@ public class UserController extends MessageController {
     }
 
 
-    private void sendMailToUser(MailDTO mailDTO) throws IOException {
 
-        mailDTO.setMailFrom("swaroop@gmail.com");
-        mailDTO.setBody1("Thank you for registering with us. Your account is approved.");
-        mailDTO.setBody2("Your password is " + "TestPassword");
-        mailDTO.setBody3("");
-        mailDTO.setBody4("");
-
-
-        String mailResponse;
-        mailDTO.setSubject("Welcome to CIS");
-        mailDTO.setHeader(ExceptionConstants.header + " " + "swaroop" + ",");
-        mailDTO.setFooter("CIS ADMIN");
-        mailDTO.setToAddress("swaroopeswara@gmail.com");
-        mailResponse = sendMail(mailDTO);
-        System.out.println("mailResponse is " + mailResponse);
-    }
-
-
-    private void sendMailToInternalUser(@RequestBody @Valid User user, MailDTO mailDTO) throws IOException {
-
+    private void sendMailToInternalUser(@RequestBody @Valid User user, MailDTO mailDTO) throws Exception {
+        Map<String, Object> model = new HashMap<String, Object>();
         if (user.getIsApproved().getDisplayString().equalsIgnoreCase("YES")) {
             mailDTO.setBody1("Thank you for registering with us. Your account is approved.");
             mailDTO.setBody2("");
@@ -800,74 +761,79 @@ public class UserController extends MessageController {
             mailDTO.setBody4("");
         }
 
-        String mailResponse;
-        mailDTO.setSubject("Welcome to CIS");
-        mailDTO.setHeader(ExceptionConstants.header + " " + user.getFirstName() + ",");
+        mailDTO.setMailSubject("Welcome to CIS");
+        model.put("firstName", " " + user.getFirstName() + ",");
         mailDTO.setFooter("CIS ADMIN");
-        mailDTO.setToAddress(user.getEmail());
-        mailResponse = sendMail(mailDTO);
-        System.out.println("mailResponse is " + mailResponse);
+        mailDTO.setMailFrom("dataworldproject@gmail.com");
+        mailDTO.setMailTo(user.getEmail());
+        mailDTO.setModel(model);
+        sendEmail(mailDTO);
     }
 
 
-    private void sendMailToAdmin(@RequestBody @Valid User user, MailDTO mailDTO) {
-        String mailResponse;
-        mailDTO.setSubject("New " + user.getUserTypeName().toLowerCase() + " User Registration");
-        mailDTO.setHeader(ExceptionConstants.header + " " + "Admin Name" + ",");
+    private void sendMailToAdmin(@RequestBody @Valid User user, MailDTO mailDTO) throws Exception {
+
+        Map<String, Object> model = new HashMap<String, Object>();
+        mailDTO.setMailSubject("New " + user.getUserTypeName().toLowerCase() + " User Registration");
+        model.put("firstName", " " + "Admin Name" + ",");
         mailDTO.setFooter("CIS ADMIN");
         mailDTO.setBody1("New user registered with email " + user.getEmail() + " in province " + user.getExternalUserRoles().get(0).getUserProvinceName());
         mailDTO.setBody2("New task created for approval by provincial administrator");
         mailDTO.setBody3("");
         mailDTO.setBody4("");
-        mailDTO.setToAddress(mailConfiguration.getAdminUserMail());
-        mailResponse = sendMail(mailDTO);
-        System.out.println("sendMailToAdmin is " + mailResponse);
+        mailDTO.setMailFrom("dataworldproject@gmail.com");
+        mailDTO.setMailTo(mailConfiguration.getAdminUserMail());
+        mailDTO.setModel(model);
+        sendEmail(mailDTO);
     }
 
 
-    private void sendMailToInternalAdmin(@RequestBody @Valid User user, MailDTO mailDTO) {
-        String mailResponse;
-        mailDTO.setSubject("New " + user.getUserTypeName().toLowerCase() + " User Registration");
-        mailDTO.setHeader(ExceptionConstants.header + " " + "Admin Name" + ",");
+    private void sendMailToInternalAdmin(@RequestBody @Valid User user, MailDTO mailDTO) throws Exception {
+        Map<String, Object> model = new HashMap<String, Object>();
+        mailDTO.setMailSubject("New " + user.getUserTypeName().toLowerCase() + " User Registration");
+        model.put("firstName", " " + "Admin Name" + ",");
         mailDTO.setFooter("CIS ADMIN");
         // mailDTO.setBody1("New user registered with email " +user.getEmail()+  " in province "+user.getInternalUserRoles().get(0).getProvinceName());
         mailDTO.setBody1("New user registered with email " + user.getEmail());
         mailDTO.setBody2("New task created for approval by provincial administrator");
         mailDTO.setBody3("");
         mailDTO.setBody4("");
-        mailDTO.setToAddress(mailConfiguration.getAdminUserMail());
-        mailResponse = sendMail(mailDTO);
-        System.out.println("sendMailToAdmin is " + mailResponse);
+        mailDTO.setMailFrom("dataworldproject@gmail.com");
+        mailDTO.setMailTo(mailConfiguration.getAdminUserMail());
+        mailDTO.setModel(model);
+        sendEmail(mailDTO);
     }
 
 
-    private void sendMailToProvinceAdmin(@RequestBody @Valid User user, MailDTO mailDTO) {
-        String mailResponse;
-        mailDTO.setSubject("New " + user.getUserTypeName().toLowerCase() + " User Registration");
-        mailDTO.setHeader(ExceptionConstants.header + " " + "Province Administrator" + ",");
+    private void sendMailToProvinceAdmin(@RequestBody @Valid User user, MailDTO mailDTO) throws Exception {
+        Map<String, Object> model = new HashMap<String, Object>();
+        mailDTO.setMailSubject("New " + user.getUserTypeName().toLowerCase() + " User Registration");
+        model.put("firstName", " " + "Province Administrator" + ",");
         mailDTO.setFooter("CIS ADMIN");
         mailDTO.setBody1("New user registered with email " + user.getEmail() + " in province " + user.getExternalUserRoles().get(0).getUserProvinceName());
         mailDTO.setBody2("New task created for approval by you");
         mailDTO.setBody3("");
         mailDTO.setBody4("");
-        mailDTO.setToAddress(mailConfiguration.getProvinceAdminMail());
-        mailResponse = sendMail(mailDTO);
-        System.out.println("sendMailToProvinceAdmin is " + mailResponse);
+        mailDTO.setMailFrom("dataworldproject@gmail.com");
+        mailDTO.setMailTo(mailConfiguration.getProvinceAdminMail());
+        mailDTO.setModel(model);
+        sendEmail(mailDTO);
     }
 
-    private void sendMailToProvinceInternalAdmin(@RequestBody @Valid User user, MailDTO mailDTO) {
-        String mailResponse;
-        mailDTO.setSubject("New " + user.getUserTypeName().toLowerCase() + " User Registration");
-        mailDTO.setHeader(ExceptionConstants.header + " " + "Province Administrator" + ",");
+    private void sendMailToProvinceInternalAdmin(@RequestBody @Valid User user, MailDTO mailDTO) throws Exception {
+        Map<String, Object> model = new HashMap<String, Object>();
+        mailDTO.setMailSubject("New " + user.getUserTypeName().toLowerCase() + " User Registration");
+        model.put("firstName", " " + "Province Administrator" + ",");
         mailDTO.setFooter("CIS ADMIN");
         //mailDTO.setBody1("New user registered with email " +user.getEmail()+  " in province " +user.getInternalUserRoles().get(0).getProvinceName());
         mailDTO.setBody1("New user registered with email " + user.getEmail());
         mailDTO.setBody2("New task created for approval by you");
         mailDTO.setBody3("");
         mailDTO.setBody4("");
-        mailDTO.setToAddress(mailConfiguration.getProvinceAdminMail());
-        mailResponse = sendMail(mailDTO);
-        System.out.println("sendMailToProvinceAdmin is " + mailResponse);
+        mailDTO.setMailFrom("dataworldproject@gmail.com");
+        mailDTO.setMailTo(mailConfiguration.getProvinceAdminMail());
+        mailDTO.setModel(model);
+        sendEmail(mailDTO);
     }
 
 
@@ -985,8 +951,6 @@ public class UserController extends MessageController {
         MailDTO mailDTO = new MailDTO();
         mailDTO.setHeader(ExceptionConstants.header);
         mailDTO.setFooter(ExceptionConstants.footer);
-        System.out.println("user.getIsApproved().getDisplayString() " + user.getIsApproved().getDisplayString());
-
         mailDTO.setSubject(ExceptionConstants.subject);
         return mailDTO;
     }
@@ -1010,7 +974,7 @@ public class UserController extends MessageController {
     }
 
 
-    private void sendMailToTaskUser(@RequestBody @Valid Task task, MailDTO mailDTO) throws IOException {
+    /*private void sendMailToTaskUser(@RequestBody @Valid Task task, MailDTO mailDTO) throws IOException {
         String mailResponse = null;
         String userCode = null;
 
@@ -1032,5 +996,5 @@ public class UserController extends MessageController {
         mailDTO.setToAddress(userRolesList.get(0).getUserName());//admin user for later
         mailResponse = sendMail(mailDTO);
         System.out.println("mailResponse is " + mailResponse);
-    }
+    }*/
 }

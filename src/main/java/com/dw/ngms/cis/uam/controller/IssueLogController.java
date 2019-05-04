@@ -17,7 +17,9 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by swaroop on 2019/04/11.
@@ -123,7 +125,7 @@ public class IssueLogController extends MessageController {
 
 
     private void sendMailToUser(@RequestBody @Valid IssueLog issueLog, MailDTO mailDTO) throws IOException {
-
+        Map<String, Object> model = new HashMap<String, Object>();
         if (issueLog.getIssueStatus().equalsIgnoreCase("OPEN")) {
             mailDTO.setBody1("Your issue is open.");
             mailDTO.setBody2("");
@@ -135,14 +137,17 @@ public class IssueLogController extends MessageController {
             mailDTO.setBody3("");
             mailDTO.setBody4("");
         }
-
-        String mailResponse;
         mailDTO.setSubject("Welcome to CIS");
-        mailDTO.setHeader(ExceptionConstants.header + " " + issueLog.getFullName() + ",");
+        model.put("firstName", issueLog.getFullName());
         mailDTO.setFooter("CIS ADMIN");
-        mailDTO.setToAddress(issueLog.getEmail());
-        mailResponse = sendMail(mailDTO);
-        System.out.println("mailResponse is "+mailResponse);
+        mailDTO.setMailFrom("dataworldproject@gmail.com");
+        mailDTO.setMailTo(issueLog.getEmail());
+        mailDTO.setModel(model);
+        try {
+            sendEmail(mailDTO);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 
