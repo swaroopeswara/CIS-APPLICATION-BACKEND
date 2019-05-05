@@ -61,14 +61,13 @@ public class Requests implements Serializable {
     @Column(name = "USERNAME", length = 200)
     private String userName;
 
-    @Column(name = "REQUESTTYPECODE")
-    private String requestTypeCode;
+    @Column(name = "EMAIL", length = 200)
+    private String email;
+
 
     @Column(name = "REQUESTTYPENAME", length = 100, unique = true)
     private String requestTypeName;
 
-    @Column(name = "REQUESTKINDCODE", length = 200)
-    private String requestKindCode;
 
     @Column(name = "REQUESTKINDNAME")
     private String requestKindName;

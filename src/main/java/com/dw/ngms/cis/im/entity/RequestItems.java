@@ -33,6 +33,15 @@ public class RequestItems implements Serializable {
     @Column(name = "REQUESTITEMCODE")
     private String requestItemCode;
 
+    @Column(name = "RESULTID")
+    private String resultId;
+
+    @Column(name = "SEARCHTYPE")
+    private String searchType;
+
+    @Column(name = "SEARCHTEXT")
+    private String searchText;
+
 
     @Column(name = "REQUESTGAZZETTETYPE", length = 200)
     private String requestGazetteType;

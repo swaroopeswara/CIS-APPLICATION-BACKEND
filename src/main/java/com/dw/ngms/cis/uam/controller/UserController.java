@@ -527,7 +527,7 @@ public class UserController extends MessageController {
         model.put("BODY2", "");
         model.put("BODY3", "");
         model.put("BODY4", "");
-        model.put("FOOTER1", "Ragava");
+        model.put("FOOTER", "Ragava");
 
         mail.setModel(model);
 
