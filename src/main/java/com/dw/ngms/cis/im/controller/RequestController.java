@@ -126,8 +126,8 @@ public class RequestController extends MessageController {
             requests.setRequestCode("REQ" + Long.toString(requestId));
             requests.setReferenceNumber("REQ" + Long.toString(requestId));
             requests.setPaymentStatus("PENDING");
-            String processId = requests.getProcessId();
-
+            //String processId = requests.getProcessId();
+            String processId = "infoRequest";
             List<RequestItems> req = new ArrayList<>();
             if (!requests.getRequestItems().isEmpty()) {
                 for (RequestItems requestItems : requests.getRequestItems()) {

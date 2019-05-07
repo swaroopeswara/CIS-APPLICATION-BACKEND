@@ -67,6 +67,9 @@ public class RequestItems implements Serializable {
     @Column(name = "REQUESTCODE", nullable = true, length = 50)
     private String requestCode;
 
+    @Column(name = "RESULTJSON", length = 2000)
+    private String resultJson;
+
     @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     @JoinColumn(name="REQUESTID", nullable=false)
     @JsonBackReference
