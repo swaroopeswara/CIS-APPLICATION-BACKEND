@@ -20,15 +20,21 @@ import java.util.Date;
 public class CostSubCategories {
 
 
+    @Column(name = "COSTCATEGORYID", nullable = false, length = 50, insertable = false, updatable = false)
+    private Long costCategoryId;
+
+    @Id
+    @Column(name = "SUBCATEGORYID")
+    @SequenceGenerator(name = "generator", sequenceName = "SUBCOSTCATEGORY_SEQ", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "generator")
+    private Long subCategoryId;
 
     @Column(name = "COSTCATEGORYCODE")
     private String costCategoryCode;
 
     @Column(name = "COSTCATEGORYNAME", length = 200, unique = true)
-    private String categoryName;
+    private String costCategoryName;
 
-
-    @Id
     @Column(name = "COSTSUBCATEGORYCODE", length = 50, unique = true)
     private String costSubCategoryCode;
 
@@ -56,7 +62,7 @@ public class CostSubCategories {
     @Column(name = "MODIFIEDDATE")
     private Date modifiedDate;
 
-    @Column(name = "ISDELETED", length = 10, unique = true)
+    @Column(name = "ISDELETED", length = 10)
     private String isDeleted;
 
 
@@ -69,11 +75,10 @@ public class CostSubCategories {
     private Date createdDate = new Date();
 
 
-/*
     @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
-    @JoinColumn(name="COSTCATEGORYCODE", nullable=false)
+    @JoinColumn(name="COSTCATEGORYID", nullable=false)
     @JsonBackReference
-    private CostCategories costSubCategory;*/
+    private CostCategories subCategoriesItems;
 
 
 }

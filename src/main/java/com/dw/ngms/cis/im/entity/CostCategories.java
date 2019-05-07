@@ -20,9 +20,16 @@ import java.util.List;
 @Table(name = "IMCOSTCATEGORIES")
 public class CostCategories {
 
-
-
     @Id
+    @Column(name = "COSTCATEGORYID")
+    @SequenceGenerator(name = "generator", sequenceName = "COSTCATEGORY_SEQ", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "generator")
+    private Long costCategoryId;
+
+    @OneToMany(mappedBy="subCategoriesItems",fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<CostSubCategories> subCategoriesItems;
+
     @Column(name = "COSTCATEGORYCODE")
     private String categoryCode;
 
@@ -51,9 +58,5 @@ public class CostCategories {
     @Temporal(TemporalType.DATE)
     @Column(name = "CREATEDDATE", nullable = true)
     private Date createdDate = new Date();
-
- /*   @OneToMany(mappedBy="costSubCategory",fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JsonManagedReference
-    private List<CostSubCategories> costSubCategories;*/
 
 }

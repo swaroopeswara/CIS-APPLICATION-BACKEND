@@ -1,5 +1,6 @@
 package com.dw.ngms.cis.im.repository;
 
+import com.dw.ngms.cis.im.entity.CostCategories;
 import com.dw.ngms.cis.im.entity.CostSubCategories;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -21,8 +22,11 @@ public interface CostSubRepository extends JpaRepository<CostSubCategories, UUID
             true)
     Long getCostSubCategoryId();
 
-    @Query("SELECT u FROM CostSubCategories u WHERE u.costCategoryCode = :costCategoryCode")
+    @Query("SELECT u FROM CostSubCategories u WHERE u.costCategoryCode = :costCategoryCode and isActive = 'Y'")
     List<CostSubCategories> getSubCostCategoriesByCostCategoryCode(@Param("costCategoryCode") String costCategoryCode);
+
+    @Query("SELECT u FROM CostSubCategories u WHERE u.costSubCategoryCode = :costSubCategoryCode")
+    CostSubCategories findBycostSubCategoryCode(@Param("costSubCategoryCode") String costSubCategoryCode);
 
 
 }

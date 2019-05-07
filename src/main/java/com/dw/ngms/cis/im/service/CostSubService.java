@@ -1,12 +1,10 @@
 package com.dw.ngms.cis.im.service;
 
-import com.dw.ngms.cis.im.entity.CostCategories;
 import com.dw.ngms.cis.im.entity.CostSubCategories;
 import com.dw.ngms.cis.im.repository.CostSubRepository;
-import com.dw.ngms.cis.uam.entity.Task;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 
@@ -29,8 +27,33 @@ public class CostSubService {
     } //saveCostSubCategories
 
 
+    public CostSubCategories findBycostSubCategoryCode(String costSubCategoryCode) {
+        return this.costSubRepository.findBycostSubCategoryCode(costSubCategoryCode);
+    }
 
-  public List<CostSubCategories> getSubCostCategoriesByCostCategoryCode(String costCategoryCode) {
+
+    public CostSubCategories updateCostSubCategory(CostSubCategories costSubCategories) {
+        CostSubCategories costSubCategoriesItem = this.costSubRepository.findBycostSubCategoryCode((costSubCategories.getCostSubCategoryCode()));
+        if (costSubCategoriesItem == null)
+            throw new RuntimeException("Cost Category is not registered with code " + costSubCategories.getCostCategoryCode());
+
+        return this.costSubRepository.save(populateCostSubCategory(costSubCategories, costSubCategoriesItem));
+    }//updateCostSubCategory
+
+
+    private CostSubCategories populateCostSubCategory(CostSubCategories costSubCategories, CostSubCategories costSubCategoriesItem) {
+        if(costSubCategories.getCostCategoryName() != null)  costSubCategoriesItem.setCostCategoryName(costSubCategories.getCostCategoryName());
+        if(costSubCategories.getCostSubCategoryName() != null)costSubCategoriesItem.setCostSubCategoryName(costSubCategories.getCostSubCategoryName());
+        if(costSubCategories.getDescription() != null) costSubCategoriesItem.setDescription(costSubCategories.getDescription());
+        if(costSubCategories.getFixedRate() != null)costSubCategoriesItem.setFixedRate(costSubCategories.getFixedRate());
+        if(costSubCategories.getHourRate() != null) costSubCategoriesItem.setHourRate(costSubCategories.getHourRate());
+        if(costSubCategories.getHalfHourRate() != null) costSubCategoriesItem.setHalfHourRate(costSubCategories.getHalfHourRate());
+        if(costSubCategories.getIsActive() != null)costSubCategoriesItem.setIsActive(costSubCategories.getIsActive());
+        if(costSubCategories.getIsDeleted() != null)costSubCategoriesItem.setIsDeleted(costSubCategories.getIsDeleted());
+        return costSubCategoriesItem;
+    }//populateCostSubCategory
+
+    public List<CostSubCategories> getSubCostCategoriesByCostCategoryCode(String costCategoryCode) {
         return this.costSubRepository.getSubCostCategoriesByCostCategoryCode(costCategoryCode);
 
 
