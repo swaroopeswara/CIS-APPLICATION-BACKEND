@@ -81,16 +81,16 @@ public class Requests implements Serializable {
     @Column(name = "DESCRIPTION")
     private String description;
 
-    @Column(name = "POSTALADDRESS1", length = 100, unique = true)
+    @Column(name = "POSTALADDRESS1", length = 100)
     private String postalAddress1;
 
-    @Column(name = "POSTALADDRESS2", length = 100, unique = true)
+    @Column(name = "POSTALADDRESS2", length = 100)
     private String postalAddress2;
 
-    @Column(name = "POSTALADDRESS3", length = 100, unique = true)
+    @Column(name = "POSTALADDRESS3", length = 100)
     private String postalAddress3;
 
-    @Column(name = "POSTALADDRESS4", length = 100, unique = true)
+    @Column(name = "POSTALADDRESS4", length = 100)
     private String postalAddress4;
 
     @Column(name = "DELIVERYMETHOD", length = 200)

@@ -124,6 +124,7 @@ public class RequestController extends MessageController {
             log.info("requestTypeId is " + requestId);
             requests.setRequestId(requestId);
             requests.setRequestCode("REQ" + Long.toString(requestId));
+            requests.setReferenceNumber("REQ" + Long.toString(requestId));
             requests.setPaymentStatus("PENDING");
             String processId = requests.getProcessId();
 
