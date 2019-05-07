@@ -42,9 +42,22 @@ public class InternalUserRoleService {
     }//getInternalUserRole
 
 
-
     public InternalUserRoles getInternalUserRoleCode(String userCode, String userName,String provinceCode, String sectionCode, String roleCode, String internalRoleCode) {
         return this.internalUserRoleRepository.getInternalRoleCode(userCode,userName,provinceCode,sectionCode,roleCode,internalRoleCode);
+    }//get Internal Role Code
+
+
+    public InternalUserRoles getOfficersOfMySection(String provinceCode, String sectionCode) {
+        return this.internalUserRoleRepository.getOfficersOfMySection(provinceCode,sectionCode);
+    }//get Internal Role Code
+
+    public InternalUserRoles getOfficersOfMySectionProvinceCode(String provinceCode) {
+        return this.internalUserRoleRepository.getOfficersOfMySectionProvinceCode(provinceCode);
+    }//get Internal Role Code
+
+
+    public InternalUserRoles getOfficersOfMySectionSectionCode(String sectionCode) {
+        return this.internalUserRoleRepository.getOfficersOfMySectionSectionCode(sectionCode);
     }//get Internal Role Code
 
     public InternalUserRoles getInternalUserRoleCodeWithEmptySectionCode(String userCode, String userName,String provinceCode, String roleCode, String internalRoleCode) {

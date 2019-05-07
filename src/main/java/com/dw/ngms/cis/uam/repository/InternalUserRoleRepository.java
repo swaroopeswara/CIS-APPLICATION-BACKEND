@@ -28,6 +28,17 @@ public interface InternalUserRoleRepository  extends JpaRepository<InternalUserR
 	@Query("select u from InternalUserRoles u where u.userCode = :userCode and u.userName = :userName and u.provinceCode = :provinceCode and u.sectionCode = :sectionCode and u.roleCode = :roleCode and u.internalRoleCode = :internalRoleCode")
 	InternalUserRoles getInternalRoleCode(@Param("userCode") String userCode,@Param("userName") String userName,@Param("provinceCode") String provinceCode,@Param("sectionCode") String sectionCode,@Param("roleCode") String roleCode, @Param("internalRoleCode") String internalRoleCode);
 
+	@Query("select u from InternalUserRoles u where u.provinceCode = :provinceCode and u.sectionCode = :sectionCode and USERROLECODE = 'IN014'")
+	InternalUserRoles getOfficersOfMySection(@Param("provinceCode") String provinceCode,@Param("sectionCode") String sectionCode);
+
+	@Query("select u from InternalUserRoles u where u.provinceCode = :provinceCode and USERROLECODE = 'IN014'")
+	InternalUserRoles getOfficersOfMySectionProvinceCode(@Param("provinceCode") String provinceCode);
+
+
+	@Query("select u from InternalUserRoles u where u.sectionCode = :sectionCode and USERROLECODE = 'IN014'")
+	InternalUserRoles getOfficersOfMySectionSectionCode(@Param("sectionCode") String sectionCode);
+
+
 	@Query("select u from InternalUserRoles u where u.userCode = :userCode and u.userName = :userName and u.provinceCode = :provinceCode and u.sectionCode IS NULL and u.roleCode = :roleCode and u.internalRoleCode = :internalRoleCode")
 	InternalUserRoles getInternalUserRoleCodeWithEmptySectionCode(@Param("userCode") String userCode,@Param("userName") String userName,@Param("provinceCode") String provinceCode,@Param("roleCode") String roleCode, @Param("internalRoleCode") String internalRoleCode);
 

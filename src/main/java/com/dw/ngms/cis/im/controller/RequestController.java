@@ -124,6 +124,7 @@ public class RequestController extends MessageController {
             log.info("requestTypeId is " + requestId);
             requests.setRequestId(requestId);
             requests.setRequestCode("REQ" + Long.toString(requestId));
+            requests.setPaymentStatus("PENDING");
             String processId = requests.getProcessId();
 
             List<RequestItems> req = new ArrayList<>();
@@ -164,7 +165,7 @@ public class RequestController extends MessageController {
                 if (requests != null && requests != null) {
                     String fileName = testService.store(file);
                     files.add(file.getOriginalFilename());
-                    requests.setInvoiceFilePath(Constants.uploadDirectoryPath + fileName);
+                    requests.setPopFilePath(Constants.uploadDirectoryPath + fileName);
                     message = "You successfully uploaded " + requests.getInvoiceFilePath() + "!";
                     requestService.saveRequest(requests);
 

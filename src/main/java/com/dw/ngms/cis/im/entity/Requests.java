@@ -120,6 +120,13 @@ public class Requests implements Serializable {
     @Column(name = "INVOICEFILEPATH", length = 200)
     private String invoiceFilePath;
 
+    @Column(name = "POPFILEPATH", length = 200)
+    private String popFilePath;
+
+    @Column(name = "PAYMENTSTATUS", length = 10)
+    private String paymentStatus;
+
+
     @Column(name = "REFERENCENUMBER", length = 200)
     private String referenceNumber;
 
