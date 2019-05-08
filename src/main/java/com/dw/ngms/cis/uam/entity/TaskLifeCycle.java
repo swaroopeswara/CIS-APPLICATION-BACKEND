@@ -81,4 +81,8 @@ public class TaskLifeCycle implements Serializable {
     @Column(name = "CREATEDDATE", nullable = true)
     private Date createdDate = new Date();
     
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "UPDATEDDATE", nullable = true)
+    private Date updatedDate = new Date();
+    
 }

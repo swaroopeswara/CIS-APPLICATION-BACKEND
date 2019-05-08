@@ -89,9 +89,13 @@ public class Task implements Serializable {
     @Column(name = "TASKDONEUSERNAME", length = 100, unique=true)
     private String taskDoneUserName;
 
-    @Temporal(TemporalType.DATE)
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "CREATEDDATE", nullable = true)
     private Date createdDate = new Date();
+    
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "UPDATEDDATE", nullable = true)
+    private Date updatedDate = new Date();
     
     @ManyToMany(cascade = CascadeType.ALL, fetch=FetchType.LAZY)
     @JoinTable(name = "ROLE_TASK",
