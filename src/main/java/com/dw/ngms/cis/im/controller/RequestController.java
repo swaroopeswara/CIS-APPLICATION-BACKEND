@@ -150,7 +150,21 @@ public class RequestController extends MessageController {
         }
     }//createRequest
 
-
+    @GetMapping("/updateRequestOnLapse")
+    public ResponseEntity<?> updateRequestOnLapse(HttpServletRequest request, 
+    		@RequestParam @Valid String reuestcode, @RequestParam @Valid boolean isLapsed) {
+        if (StringUtils.isEmpty(reuestcode)) {
+            return generateFailureResponse(request, new Exception("Invalid request code"));
+        }
+        try {
+            boolean isProcessed = requestService.updateRequestOnLapse(reuestcode, isLapsed);
+            return (!isProcessed) ? generateFailureResponse(request, new Exception("Failed to update request")) :
+                    ResponseEntity.status(HttpStatus.OK).body("Request succesfully processed");
+        } catch (Exception exception) {
+        	return generateFailureResponse(request, exception);
+        }  
+    }//updateRequestOnLapse
+    
     @PostMapping("/uploadPaymentConfirmation")
     public ResponseEntity<?> uploadPaymentConfirmation(HttpServletRequest request, @RequestParam("file") MultipartFile file,
                                                  @RequestBody @Valid ProcessAdditionalInfo info

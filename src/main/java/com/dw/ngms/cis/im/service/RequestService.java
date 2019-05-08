@@ -7,8 +7,11 @@ import com.dw.ngms.cis.im.repository.RequestRepository;
 import com.dw.ngms.cis.im.repository.RequestTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
+
+import javax.validation.Valid;
 
 /**
  * Created by swaroop on 2019/04/19.
@@ -43,6 +46,18 @@ public class RequestService {
     public Requests getRequestsByRequestCode(String requestCode) {
         return this.requestRepository.getRequestsByRequestCode(requestCode);
     } //saveRequest
+
+	public boolean updateRequestOnLapse(@Valid String requestCode, @Valid boolean isLapsed) {
+		if (StringUtils.isEmpty(requestCode)) 
+			throw new RuntimeException("Invalid request code");		
+		Requests request = getRequestsByRequestCode(requestCode);
+		if (request == null)
+			throw new RuntimeException("No request found, code: "+requestCode);
+		//FIXME need to add a column on Requets entity
+//		request.setLapseStatus(isLapsed ? "LAPSED" : "PRELAPSE");
+		requestRepository.save(request);
+		return true;
+	}//updateRequestOnLapse
 
 
 
