@@ -126,6 +126,7 @@ public class TaskService {
         task.setTaskId(taskId);
         task.setTaskCode("TASK000" + Long.toString(taskId));
         task.setCreatedDate(new Date());
+        task.setUpdatedDate(new Date());
         task.setTaskAllProvinceCode(requests.getProvinceCode());
         task.setTaskAllOCSectionCode(requests.getSectionCode());
         task.setTaskOpenDate(new Date());        
