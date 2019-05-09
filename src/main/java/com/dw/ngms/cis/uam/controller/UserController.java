@@ -555,14 +555,14 @@ public class UserController extends MessageController {
             Long userID = this.userService.getUserId();
             internalUser.setUserId(userID);
             internalUser.setUserCode("USR000" + Long.toString(internalUser.getUserId()));
-            //User response = userService.saveInternalUser(internalUser);
+            User response = userService.saveInternalUser(internalUser);
 
             MailDTO mailDTO = new MailDTO();
             sendMailToInternalUser(internalUser, mailDTO);
             sendMailToInternalAdmin(internalUser, mailDTO);
             sendMailToProvinceInternalAdmin(internalUser, mailDTO);
 
-            return ResponseEntity.status(HttpStatus.OK).body("sucess");
+            return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (Exception exception) {
             return generateFailureResponse(request, exception);
         }
