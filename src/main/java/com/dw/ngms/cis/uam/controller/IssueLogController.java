@@ -104,7 +104,7 @@ public class IssueLogController extends MessageController {
         if (!StringUtils.isEmpty(issueLog)) {
             issueLog.setIssueStatus(issueLogDetails.getIssueStatus());
             IssueLog updateIssueLog = this.issueLogService.saveIssueLog(issueLog);
-            MailDTO mailDTO = getMailDTO(updateIssueLog);
+            MailDTO mailDTO = new MailDTO();
             sendMailToUser(updateIssueLog, mailDTO);
             return ResponseEntity.status(HttpStatus.OK).body(updateIssueLog);
         }else{
@@ -114,14 +114,6 @@ public class IssueLogController extends MessageController {
     }
 
 
-    private MailDTO getMailDTO(@RequestBody @Valid IssueLog issueLog) {
-        MailDTO mailDTO = new MailDTO();
-        mailDTO.setHeader(ExceptionConstants.header);
-        mailDTO.setFooter(ExceptionConstants.footer);
-
-        mailDTO.setSubject("Issue Log Registered");
-        return mailDTO;
-    }
 
 
     private void sendMailToUser(@RequestBody @Valid IssueLog issueLog, MailDTO mailDTO) throws IOException {
@@ -142,7 +134,7 @@ public class IssueLogController extends MessageController {
         }
         mailDTO.setSubject("Welcome to CIS");
         model.put("firstName", issueLog.getFullName());
-        mailDTO.setFooter("CIS ADMIN");
+        model.put("FOOTER", "CIS ADMIN");
         mailDTO.setMailFrom("dataworldproject@gmail.com");
         mailDTO.setMailTo(issueLog.getEmail());
         mailDTO.setModel(model);
