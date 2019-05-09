@@ -20,6 +20,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -96,13 +97,15 @@ public class Task implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "UPDATEDDATE", nullable = true)
     private Date updatedDate = new Date();
-    
+
+    @JsonIgnore
     @ManyToMany(cascade = CascadeType.ALL, fetch=FetchType.LAZY)
     @JoinTable(name = "ROLE_TASK",
     	joinColumns = @JoinColumn(name = "TASKID"),
         inverseJoinColumns = @JoinColumn(name = "INTERNALROLEID"))
     private List<InternalRole> internalRoleList = new ArrayList<>();
 
+    @JsonIgnore
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "USER_TASK",
     	joinColumns = @JoinColumn(name = "TASKID"),

@@ -43,7 +43,7 @@ public class TaskService {
         return this.taskRepository.save(task);
     } //FindUserByEmail
     
-    public List<Task> findByCriteria(String taskStatus, String taskType, String taskAllProvinceCode, String taskAllOCSectionCode, String taskAllOCRoleCode) {
+    public List<Task> findByCriteria(String taskStatus, String taskType, String taskAllProvinceCode, String taskAllOCSectionCode, String taskAllOCRoleCode,String omitTaskStatus) {
         return this.taskRepository.findAll(new Specification<Task>() {
             @Override
             public Predicate toPredicate(Root<Task> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
@@ -62,6 +62,10 @@ public class TaskService {
                 }
                 if (taskAllOCRoleCode != null && !StringUtils.isEmpty(taskAllOCRoleCode)) {
                     predicates.add(criteriaBuilder.and(criteriaBuilder.equal(root.get("taskAllOCRoleCode"), taskAllOCRoleCode)));
+                }
+
+                if (omitTaskStatus != null && !StringUtils.isEmpty(omitTaskStatus)) {
+                    predicates.add(criteriaBuilder.and(criteriaBuilder.notEqual(root.get("taskStatus"), omitTaskStatus)));
                 }
                 return criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()]));
             }

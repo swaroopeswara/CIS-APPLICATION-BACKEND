@@ -110,12 +110,28 @@ public class RequestController extends MessageController {
             } else if (!StringUtils.isEmpty(userCode) && !StringUtils.isEmpty(provinceCode.trim())) {
                 requestList = requestService.getRequestByUserCodeProvinceCode(userCode, provinceCode);
             }
-            return (CollectionUtils.isEmpty(requestList)) ? generateEmptyResponse(request, "Request(s) not found")
+            return (CollectionUtils.isEmpty(requestList)) ? ResponseEntity.status(HttpStatus.OK).body(requestList)
                     : ResponseEntity.status(HttpStatus.OK).body(requestList);
         } catch (Exception exception) {
             return generateFailureResponse(request, exception);
         }
     }//getRequestsOfUser
+
+
+    @GetMapping("/getRequestByRequestCode")
+    public ResponseEntity<?> getRequestByRequestCode(HttpServletRequest request,
+                                               @RequestParam String requestCode) {
+        try {
+
+           Requests requests = this.requestService.getRequestsByRequestCode(requestCode);
+            return (requests!= null) ? ResponseEntity.status(HttpStatus.OK).body(requests)
+                    : generateEmptyResponse(request, "Request(s) not found");
+        } catch (Exception exception) {
+            return generateFailureResponse(request, exception);
+        }
+    }//RequestController
+
+
 
     @PostMapping("/createRequest")
     public ResponseEntity<?> createRequest(HttpServletRequest request, @RequestBody @Valid Requests requests) {

@@ -48,8 +48,8 @@ public class BulkTypeController extends MessageController {
 
 
 
-    @PostMapping("/createBulkType")
-    public ResponseEntity<?> createBulkType(HttpServletRequest request, @RequestBody @Valid BulkTypes bulkTypes) {
+    @PostMapping("/createBulkRequestType")
+    public ResponseEntity<?> createBulkRequestType(HttpServletRequest request, @RequestBody @Valid BulkTypes bulkTypes) {
         try {
             Long bulkTypeId = this.bulkTypeService.getBulkTypeId();
             System.out.println("Bulk Type Id "+bulkTypeId);
