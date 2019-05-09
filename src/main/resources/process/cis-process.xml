@@ -41,7 +41,7 @@
 		        		<target id="flow7" restRequest="restFinalise" description="finalise"/>
 		        	</targetList>
 		        </sequenceFlow>
-		        <sequenceFlow id="flow7" name="theEnd" state="Finalised" targetState="" restDependancy=""/>
+		        <sequenceFlow id="flow7" name="theEnd" state="Closed" targetState="" restDependancy=""/>
 	        </sequenceFlowList>
 	    </process>  
     </processList>  

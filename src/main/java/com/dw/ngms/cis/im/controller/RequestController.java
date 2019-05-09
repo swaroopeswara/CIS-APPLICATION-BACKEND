@@ -110,12 +110,28 @@ public class RequestController extends MessageController {
             } else if (!StringUtils.isEmpty(userCode) && !StringUtils.isEmpty(provinceCode.trim())) {
                 requestList = requestService.getRequestByUserCodeProvinceCode(userCode, provinceCode);
             }
-            return (CollectionUtils.isEmpty(requestList)) ? generateEmptyResponse(request, "Request(s) not found")
+            return (CollectionUtils.isEmpty(requestList)) ? ResponseEntity.status(HttpStatus.OK).body(requestList)
                     : ResponseEntity.status(HttpStatus.OK).body(requestList);
         } catch (Exception exception) {
             return generateFailureResponse(request, exception);
         }
     }//getRequestsOfUser
+
+
+    @GetMapping("/getRequestByRequestCode")
+    public ResponseEntity<?> getRequestByRequestCode(HttpServletRequest request,
+                                               @RequestParam String requestCode) {
+        try {
+
+           Requests requests = this.requestService.getRequestsByRequestCode(requestCode);
+            return (requests!= null) ? ResponseEntity.status(HttpStatus.OK).body(requests)
+                    : generateEmptyResponse(request, "Request(s) not found");
+        } catch (Exception exception) {
+            return generateFailureResponse(request, exception);
+        }
+    }//RequestController
+
+
 
     @PostMapping("/createRequest")
     public ResponseEntity<?> createRequest(HttpServletRequest request, @RequestBody @Valid Requests requests) {
@@ -152,12 +168,13 @@ public class RequestController extends MessageController {
 
     @GetMapping("/updateRequestOnLapse")
     public ResponseEntity<?> updateRequestOnLapse(HttpServletRequest request, 
-    		@RequestParam @Valid String reuestcode, @RequestParam @Valid boolean isLapsed) {
+    		@RequestParam @Valid String reuestcode, @RequestParam @Valid Integer lapsetime, 
+    			@RequestParam @Valid boolean isLapsed) {
         if (StringUtils.isEmpty(reuestcode)) {
             return generateFailureResponse(request, new Exception("Invalid request code"));
         }
         try {
-            boolean isProcessed = requestService.updateRequestOnLapse(reuestcode, isLapsed);
+            boolean isProcessed = requestService.updateRequestOnLapse(reuestcode, lapsetime, isLapsed);
             return (!isProcessed) ? generateFailureResponse(request, new Exception("Failed to update request")) :
                     ResponseEntity.status(HttpStatus.OK).body("Request succesfully processed");
         } catch (Exception exception) {

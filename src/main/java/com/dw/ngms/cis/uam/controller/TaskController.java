@@ -96,7 +96,7 @@ public class TaskController extends MessageController {
                 task.setTaskCLoseDESC(taskDTO.getTaskCloseDesc());
                 task.setTaskDoneUserCode(taskDTO.getTaskDoneByUserCode());
                 task.setTaskDoneUserName(taskDTO.getTaskDoneByUserName());
-                task.setTaskStatus("CLOSE");
+                task.setTaskStatus("Closed");
                 this.taskService.saveTask(task);
                 return ResponseEntity.status(HttpStatus.OK).body(task);
             }
@@ -113,8 +113,9 @@ public class TaskController extends MessageController {
                                        @RequestParam(required = false) String taskType,
                                        @RequestParam(required = false) String taskAllProvinceCode,
                                        @RequestParam(required = false) String taskAllOCSectionCode,
-                                       @RequestParam(required = false) String taskAllOCRoleCode) {
+                                       @RequestParam(required = false) String taskAllOCRoleCode,
+                                       @RequestParam(required = false) String omitTaskStatus) {
 
-        return  this.taskService.findByCriteria(taskStatus,taskType,taskAllProvinceCode,taskAllOCSectionCode,taskAllOCRoleCode);
+        return  this.taskService.findByCriteria(taskStatus,taskType,taskAllProvinceCode,taskAllOCSectionCode,taskAllOCRoleCode,omitTaskStatus);
     }
 }

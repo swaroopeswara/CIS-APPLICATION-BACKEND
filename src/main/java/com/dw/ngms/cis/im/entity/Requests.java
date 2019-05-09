@@ -7,6 +7,8 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -18,6 +20,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
+import com.dw.ngms.cis.uam.enums.LapseStatus;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import lombok.Getter;
@@ -163,6 +166,9 @@ public class Requests implements Serializable {
     @Column(name = "MODIFIEDDATE")
     private Date modifiedDate;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "LAPSESTATUS", length = 20)
+    private LapseStatus lapseStatus = LapseStatus.NONE;
 
     @Transient
     private String processId;
