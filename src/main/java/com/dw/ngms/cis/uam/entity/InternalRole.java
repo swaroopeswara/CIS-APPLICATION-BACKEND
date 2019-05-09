@@ -17,6 +17,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotEmpty;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -93,6 +94,7 @@ public class InternalRole implements Serializable {
     @Column(name = "INTERNALROLECODE",length = 50)
     private String internalRoleCode;
 
+    @JsonIgnore
     @ManyToMany(mappedBy = "internalRoleList", fetch=FetchType.LAZY)
     private List<Task> taskList = new ArrayList<Task>();   
     

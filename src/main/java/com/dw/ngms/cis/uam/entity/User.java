@@ -27,6 +27,7 @@ import javax.persistence.Transient;
 
 import com.dw.ngms.cis.uam.enums.ApprovalStatus;
 import com.dw.ngms.cis.uam.enums.Status;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import lombok.Getter;
@@ -124,6 +125,7 @@ public class User implements Serializable {
     @Column(name = "FIRSTLOGIN",nullable = true, length = 1)
     private String firstLogin;
 
+    @JsonIgnore
     @ManyToMany(mappedBy = "userList", fetch=FetchType.LAZY)
     private List<Task> taskList = new ArrayList<Task>(); 
     
