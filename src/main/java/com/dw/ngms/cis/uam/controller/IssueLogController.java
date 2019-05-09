@@ -127,15 +127,18 @@ public class IssueLogController extends MessageController {
     private void sendMailToUser(@RequestBody @Valid IssueLog issueLog, MailDTO mailDTO) throws IOException {
         Map<String, Object> model = new HashMap<String, Object>();
         if (issueLog.getIssueStatus().equalsIgnoreCase("OPEN")) {
-            mailDTO.setBody1("Your issue is open.");
-            mailDTO.setBody2("");
-            mailDTO.setBody3("");
-            mailDTO.setBody4("");
+
+            model.put("body1", "Your issue is open.");
+            model.put("body2", "");
+            model.put("body3", "");
+            model.put("body4", "");
+
         } else  if (issueLog.getIssueStatus().equalsIgnoreCase("CLOSE"))  {
-            mailDTO.setBody1("Your issue is closed.");
-            mailDTO.setBody2("");
-            mailDTO.setBody3("");
-            mailDTO.setBody4("");
+            model.put("body1", "Your issue is closed.");
+            model.put("body2", "");
+            model.put("body3", "");
+            model.put("body4", "");
+
         }
         mailDTO.setSubject("Welcome to CIS");
         model.put("firstName", issueLog.getFullName());

@@ -56,13 +56,6 @@ public class TaskController extends MessageController {
     }//createTask
 
 
-    private MailDTO getMailDTO(@RequestBody @Valid Task task) {
-        MailDTO mailDTO = new MailDTO();
-        mailDTO.setHeader(ExceptionConstants.header);
-        mailDTO.setFooter(ExceptionConstants.footer);
-        mailDTO.setSubject(ExceptionConstants.subject);
-        return mailDTO;
-    }
 
 
    /* private void sendMailToTaskUser(@RequestBody @Valid Task task, MailDTO mailDTO) throws IOException {

@@ -621,7 +621,7 @@
                                                                     <tbody>
                                                                     <tr>
                                                                         <td style="font-size:14px; font-family:Arial,Helvetica,sans-serif, sans-serif; color:#3c4858; line-height: 21px;">
-                                                                            <div>${BODY1}</div>
+                                                                            <div>${body1}</div>
                                                                         </td>
                                                                     </tr>
                                                                     </tbody>
@@ -700,7 +700,7 @@
                                                                     <tbody>
                                                                     <tr>
                                                                         <td style="font-size:14px; font-family:Arial,Helvetica,sans-serif, sans-serif; color:#3c4858; line-height: 21px;">
-                                                                            <div>${BODY2}</div>
+                                                                            <div>${body2}</div>
                                                                         </td>
                                                                     </tr>
                                                                     </tbody>
@@ -779,7 +779,7 @@
                                                                     <tbody>
                                                                     <tr>
                                                                         <td style="font-size:14px; font-family:Arial,Helvetica,sans-serif, sans-serif; color:#3c4858; line-height: 21px;">
-                                                                            <div>${BODY3}</div>
+                                                                            <div>${body3}</div>
                                                                         </td>
                                                                     </tr>
                                                                     </tbody>
@@ -858,7 +858,7 @@
                                                                     <tbody>
                                                                     <tr>
                                                                         <td style="font-size:14px; font-family:Arial,Helvetica,sans-serif, sans-serif; color:#3c4858; line-height: 21px;">
-                                                                            <div>${BODY4}</div>
+                                                                            <div>${body4}</div>
                                                                         </td>
                                                                     </tr>
                                                                     </tbody>

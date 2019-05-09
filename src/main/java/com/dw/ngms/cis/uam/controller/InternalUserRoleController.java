@@ -310,13 +310,6 @@ public class InternalUserRoleController extends MessageController {
     }
 */
 
-    private MailDTO getMailDTO(@RequestBody @Valid Task task) {
-        MailDTO mailDTO = new MailDTO();
-        mailDTO.setHeader(ExceptionConstants.header);
-        mailDTO.setFooter(ExceptionConstants.footer);
-        mailDTO.setSubject(ExceptionConstants.subject);
-        return mailDTO;
-    }
 
 
     private void sendMailToTaskUser(@RequestBody @Valid Task task, MailDTO mailDTO) throws IOException {
@@ -330,10 +323,12 @@ public class InternalUserRoleController extends MessageController {
         String userName = this.userService.getUserName(userRolesList.get(0).getUserCode());
         model.put("firstName", " " + userName + ",");
         mailDTO.setSubject("New Task Created");
-        mailDTO.setBody1("New Task have been created for you.");
-        mailDTO.setBody2("Task type is " +task.getTaskReferenceType());
-        mailDTO.setBody3("");
-        mailDTO.setBody4("");;
+
+        model.put("body1", "New Task have been created for you.");
+        model.put("body2", "Task type is " +task.getTaskReferenceType());
+        model.put("body3", "");
+        model.put("body4", "");
+
         mailDTO.setMailFrom("dataworldproject@gmail.com");
         mailDTO.setMailTo(userRolesList.get(0).getUserName());//admin user for later
         mailDTO.setModel(model);
