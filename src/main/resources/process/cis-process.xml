@@ -22,6 +22,7 @@
 		        <sequenceFlow id="flow3" name="usrState2" state="Reassigned" targetState="" restDependancy="">
 		        	<assigneeList>
 		        		<assignee type="Role" name="Information Officer"/>
+		        		<assignee type="User" name="?"/>
 		        	</assigneeList>
 		        	<targetList>
 		        		<target id="flow4" restRequest="generateInvoice" description="Generate invoice"/>
@@ -35,6 +36,7 @@
 		        <sequenceFlow id="flow6" name="usrState5" state="Scrutinise" targetState="" restDependancy="">
 		        	<assigneeList>
 		        		<assignee type="Role" name="Information Scrtinizer"/>
+		        		<assignee type="User" name="?"/>
 		        	</assigneeList>
 		        	<targetList>
 		        		<target id="flow2" restRequest="restMove" description="move"/>

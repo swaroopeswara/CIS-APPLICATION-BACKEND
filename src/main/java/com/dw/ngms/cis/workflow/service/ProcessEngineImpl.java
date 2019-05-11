@@ -28,6 +28,7 @@ import com.dw.ngms.cis.uam.repository.UserRepository;
 import com.dw.ngms.cis.uam.service.InternalRoleService;
 import com.dw.ngms.cis.workflow.api.ProcessAdditionalInfo;
 import com.dw.ngms.cis.workflow.api.ProcessEngine;
+import com.dw.ngms.cis.workflow.model.Assignee;
 import com.dw.ngms.cis.workflow.model.Process;
 import com.dw.ngms.cis.workflow.model.Processes;
 import com.dw.ngms.cis.workflow.model.SequenceFlow;
@@ -181,41 +182,56 @@ public class ProcessEngineImpl implements ProcessEngine<Task>{
 			return;
 		
 		Set<InternalRole> roleList = new HashSet<>();
-		Set<User> userList = new HashSet<>();
+		Set<User> userList = new HashSet<>();		
 		
-		if(!CollectionUtils.isEmpty(targetSequence.getAssigneeList())) {
-			targetSequence.getAssigneeList().forEach(assignee -> {
-				if("Role".equalsIgnoreCase(assignee.getType())) {
-					List<InternalRole> roles = internalRoleService.findByProvinceCodeAndSectionCodeAndRoleName(additionalInfo.getProvinceCode(), 
-							additionalInfo.getSectionCode(), assignee.getName());
-					if(!CollectionUtils.isEmpty(roles))
-						roleList.addAll(roles);						
-				} else {
-					userList.add(userRepository.findByLoginName(assignee.getName()));
-				}
-			});			
-		}
+		List<Assignee> assigneeList = (additionalInfo != null && !CollectionUtils.isEmpty(additionalInfo.getAssigneeList())) ?
+				additionalInfo.getAssigneeList() : targetSequence.getAssigneeList();
+		this.populateAssigneeUserAndRoleLists(additionalInfo, assigneeList, roleList, userList);
+		
 		//clear all user and role associations and reassign		
 		if(!CollectionUtils.isEmpty(roleList)) {	
-			task.getInternalRoleList().clear();
-			
+			task.getInternalRoleList().clear();			
 			roleList.forEach(role -> {
 				task.getInternalRoleList().add(role);
 			});
 		}//if roleList
+		
 		if(!CollectionUtils.isEmpty(userList)) {
-			task.getUserList().clear();
-			
+			task.getUserList().clear();			
 			userList.forEach(user -> {
 				task.getUserList().add(user);
 			});
 		}//if userList
+		
 		if("theEnd".equalsIgnoreCase(targetSequence.getName())) {
 			//clear all user and role associations 
 			clearRoleAndUserAssociations(task);
 		}
 	}//updateRoleAndUserAssociations
 
+	private void populateAssigneeUserAndRoleLists(ProcessAdditionalInfo additionalInfo, List<Assignee> assigneeList, 
+			Set<InternalRole> roleList, Set<User> userList) {
+		if(!CollectionUtils.isEmpty(assigneeList)) {
+			assigneeList.forEach(assignee -> {
+				if("Role".equalsIgnoreCase(assignee.getType())) {
+					if(!isDynamicAssignee(assignee.getName())) {
+						List<InternalRole> roles = internalRoleService.findByProvinceCodeAndSectionCodeAndRoleName(additionalInfo.getProvinceCode(), 
+								additionalInfo.getSectionCode(), assignee.getName());
+						if(!CollectionUtils.isEmpty(roles))
+							roleList.addAll(roles);		
+					}
+				} else {
+					if(!isDynamicAssignee(assignee.getName()))
+						userList.add(userRepository.findByLoginName(assignee.getName()));
+				}
+			});			
+		}
+	}//populateAssigneeUserAndRoleLists
+
+	private boolean isDynamicAssignee(String assineeName) {
+		return !StringUtils.isEmpty(assineeName) && "?".equals(assineeName);
+	}//isDynamicAssignee
+	
 	private void updateTaskDetails(Task task, ProcessAdditionalInfo additionalInfo) {
 		if(additionalInfo != null) {
 			if(!StringUtils.isEmpty(additionalInfo.getProvinceCode()))
@@ -236,6 +252,7 @@ public class ProcessEngineImpl implements ProcessEngine<Task>{
 		task.getUserList().clear();
 	}//clearRoleAndUserAssociations
 
+	@SuppressWarnings("unused")
 	private void validateDependancy(Task task, SequenceFlow targetSequence, String url) {
 		String urlString = "cisorigin.uam/api/v1/";
 		if(task == null || task.getTaskId() == null || targetSequence == null || 
