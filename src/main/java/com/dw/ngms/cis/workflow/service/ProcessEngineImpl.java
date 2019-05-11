@@ -184,8 +184,7 @@ public class ProcessEngineImpl implements ProcessEngine<Task>{
 		Set<InternalRole> roleList = new HashSet<>();
 		Set<User> userList = new HashSet<>();		
 		
-		List<Assignee> assigneeList = (additionalInfo != null && !CollectionUtils.isEmpty(additionalInfo.getAssigneeList())) ?
-				additionalInfo.getAssigneeList() : targetSequence.getAssigneeList();
+		List<Assignee> assigneeList = getAssigneeList(additionalInfo, targetSequence);
 		this.populateAssigneeUserAndRoleLists(additionalInfo, assigneeList, roleList, userList);
 		
 		//clear all user and role associations and reassign		
@@ -209,28 +208,46 @@ public class ProcessEngineImpl implements ProcessEngine<Task>{
 		}
 	}//updateRoleAndUserAssociations
 
+	private List<Assignee> getAssigneeList(ProcessAdditionalInfo additionalInfo, SequenceFlow targetSequence) {		
+		List<Assignee> assigneeList = (!hasDynamicAssignee(targetSequence)) ? targetSequence.getAssigneeList() :
+			(additionalInfo != null && !CollectionUtils.isEmpty(additionalInfo.getAssigneeList())) ?
+				additionalInfo.getAssigneeList() : targetSequence.getAssigneeList();
+		return assigneeList;
+	}//getAssigneeList
+
 	private void populateAssigneeUserAndRoleLists(ProcessAdditionalInfo additionalInfo, List<Assignee> assigneeList, 
 			Set<InternalRole> roleList, Set<User> userList) {
 		if(!CollectionUtils.isEmpty(assigneeList)) {
 			assigneeList.forEach(assignee -> {
 				if("Role".equalsIgnoreCase(assignee.getType())) {
-					if(!isDynamicAssignee(assignee.getName())) {
+					if(isValidAssignee(assignee.getName())) {
 						List<InternalRole> roles = internalRoleService.findByProvinceCodeAndSectionCodeAndRoleName(additionalInfo.getProvinceCode(), 
 								additionalInfo.getSectionCode(), assignee.getName());
 						if(!CollectionUtils.isEmpty(roles))
 							roleList.addAll(roles);		
 					}
 				} else {
-					if(!isDynamicAssignee(assignee.getName()))
+					if(isValidAssignee(assignee.getName()))
 						userList.add(userRepository.findByLoginName(assignee.getName()));
 				}
 			});			
 		}
 	}//populateAssigneeUserAndRoleLists
 
-	private boolean isDynamicAssignee(String assineeName) {
-		return !StringUtils.isEmpty(assineeName) && "?".equals(assineeName);
-	}//isDynamicAssignee
+	private boolean isValidAssignee(String assineeName) {
+		return (!StringUtils.isEmpty(assineeName) && !"?".equals(assineeName));
+	}//isValidAssignee
+	
+	private boolean hasDynamicAssignee(SequenceFlow targetSequence) {
+		if(targetSequence != null && !CollectionUtils.isEmpty(targetSequence.getAssigneeList())) {
+			for(Assignee assignee : targetSequence.getAssigneeList()){
+				if(!StringUtils.isEmpty(assignee.getName()) && "?".equals(assignee.getName())) {
+					return true;
+				}
+			}//for
+		}
+		return false;
+	}//hasDynamicAssignee
 	
 	private void updateTaskDetails(Task task, ProcessAdditionalInfo additionalInfo) {
 		if(additionalInfo != null) {
