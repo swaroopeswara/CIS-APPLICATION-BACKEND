@@ -32,6 +32,7 @@ public class RequestService {
 	private TaskService taskService;
     @Autowired
     private RequestRepository requestRepository;
+
     @Autowired
     private MessageController messageController;
 
@@ -73,9 +74,9 @@ public class RequestService {
 		this.updateAndPersistRequest(isLapsed, request);
 
 			Boolean isProcessed = this.populateTemplateAndSendMail(request, lapseTime);
-		if(!isProcessed) 
+		if(!isProcessed)
 			throw new RuntimeException("Failed to send mail on lapse request "+requestCode);
-				
+
 		log.info("Lapse request updated successfully");
 		
 		return true;

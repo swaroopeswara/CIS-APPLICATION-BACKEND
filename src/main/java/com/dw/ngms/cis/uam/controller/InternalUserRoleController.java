@@ -242,7 +242,8 @@ public class InternalUserRoleController extends MessageController {
                                                          @RequestParam(required = false)  String provinceCode,
                                                          @RequestParam(required = false)  String sectionCode) {
         try {
-            InternalUserRoles internalUserRoles = null;
+            List<InternalUserRoles> internalUserRoles = null;
+            List<User> userDto = new ArrayList<>();
             if(!StringUtils.isEmpty(provinceCode)){
                  internalUserRoles = this.internalUserRoleService.getOfficersOfMySectionProvinceCode(provinceCode);
             }else if(!StringUtils.isEmpty(provinceCode)){
@@ -250,10 +251,14 @@ public class InternalUserRoleController extends MessageController {
             }else if(!StringUtils.isEmpty(provinceCode)) {
                  internalUserRoles = this.internalUserRoleService.getOfficersOfMySection(provinceCode, sectionCode);
             }
-                if(!isEmpty(internalUserRoles)){
-               internalUserRoles.getUserCode();
-               User user = this.userService.findByUserCode(internalUserRoles.getUserCode());
-               return ResponseEntity.status(HttpStatus.OK).body(user);
+
+            if(!isEmpty(internalUserRoles)){
+                for(InternalUserRoles in: internalUserRoles){
+                    in.getUserCode();
+                    User user = this.userService.findByUserCode(in.getUserCode());
+                    userDto.add(user);
+                }
+               return ResponseEntity.status(HttpStatus.OK).body(userDto);
            }else{
                return generateEmptyResponse(request, "No Internal User Roles  found");
            }

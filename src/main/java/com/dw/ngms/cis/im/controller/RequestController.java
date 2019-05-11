@@ -120,17 +120,85 @@ public class RequestController extends MessageController {
 
     @GetMapping("/getRequestByRequestCode")
     public ResponseEntity<?> getRequestByRequestCode(HttpServletRequest request,
-                                               @RequestParam String requestCode) {
+                                                     @RequestParam String requestCode) {
         try {
 
-           Requests requests = this.requestService.getRequestsByRequestCode(requestCode);
-            return (requests!= null) ? ResponseEntity.status(HttpStatus.OK).body(requests)
+            Requests requests = this.requestService.getRequestsByRequestCode(requestCode);
+            return (requests != null) ? ResponseEntity.status(HttpStatus.OK).body(requests)
                     : generateEmptyResponse(request, "Request(s) not found");
         } catch (Exception exception) {
             return generateFailureResponse(request, exception);
         }
     }//RequestController
 
+
+    @GetMapping("/updateRequestOnLapse")
+    public ResponseEntity<?> updateRequestOnLapse(HttpServletRequest request,
+                                                  @RequestParam @Valid String reuestcode, @RequestParam @Valid Integer lapsetime,
+                                                  @RequestParam @Valid boolean isLapsed) {
+        if (StringUtils.isEmpty(reuestcode)) {
+            return generateFailureResponse(request, new Exception("Invalid request code"));
+        }
+        try {
+            boolean isProcessed = requestService.updateRequestOnLapse(reuestcode, lapsetime, isLapsed);
+            return (!isProcessed) ? generateFailureResponse(request, new Exception("Failed to update request")) :
+                    ResponseEntity.status(HttpStatus.OK).body("Request succesfully processed");
+        } catch (Exception exception) {
+            return generateFailureResponse(request, exception);
+        }
+    }//updateRequestOnLapse
+
+
+    @PostMapping("/uploadPaymentConfirmation")
+    public ResponseEntity<?> handleFileUpload(HttpServletRequest request, @RequestParam("file") MultipartFile file,
+                                              @RequestParam("taskId") Long taskId,
+                                              @RequestParam("requestCode") String requestCode,
+                                              @RequestParam("provinceCode") String provinceCode,
+                                              @RequestParam("sectionCode") String sectionCode,
+                                              @RequestParam("targetSequenceId") String targetSequenceId,
+                                              @RequestParam("userCode") String userCode,
+                                              @RequestParam("userName") String userName,
+                                              @RequestParam("url") String url
+    ) {
+        String message = "";
+        List<String> files = new ArrayList<String>();
+        try {
+            if (file.isEmpty()) {
+                return generateEmptyResponse(request, "File Not Found to upload, Please upload a file");
+            } else if (requestCode != null && !isEmpty(requestCode)) {
+                Requests requests = this.requestService.getRequestsByRequestCode(requestCode);
+                if (requests != null && requests != null) {
+                    String fileName = testService.store(file);
+                    files.add(file.getOriginalFilename());
+                    requests.setInvoiceFilePath(Constants.uploadDirectoryPath + fileName);
+                    message = "You successfully uploaded " + requests.getInvoiceFilePath() + "!";
+                    requestService.saveRequest(requests);
+
+                    ProcessAdditionalInfo processAdditionalInfo = new ProcessAdditionalInfo();
+                    processAdditionalInfo.setTaskId(taskId);
+                    processAdditionalInfo.setRequestCode(requestCode);
+                    processAdditionalInfo.setProvinceCode(provinceCode);
+                    processAdditionalInfo.setSectionCode(sectionCode);
+                    processAdditionalInfo.setTargetSequenceId(targetSequenceId);
+                    processAdditionalInfo.setUserCode(userCode);
+                    processAdditionalInfo.setUserName(userName);
+                    processAdditionalInfo.setUrl(url);
+
+
+                    processUserState(request, processAdditionalInfo);
+
+                    return ResponseEntity.status(HttpStatus.OK).body(message);
+
+                } else {
+                    return generateEmptyResponse(request, "No Internal User Roles  found");
+                }
+            }
+            return generateEmptyResponse(request, "No Internal User Roles  found");
+        } catch (Exception exception) {
+            message = "FAIL to upload " + file.getOriginalFilename() + "!";
+            return generateFailureResponse(request, exception);
+        }
+    }//uploadPaymentConfirmation
 
 
     @PostMapping("/createRequest")
@@ -166,70 +234,57 @@ public class RequestController extends MessageController {
         }
     }//createRequest
 
-    @GetMapping("/updateRequestOnLapse")
-    public ResponseEntity<?> updateRequestOnLapse(HttpServletRequest request, 
-    		@RequestParam @Valid String reuestcode, @RequestParam @Valid Integer lapsetime, 
-    			@RequestParam @Valid boolean isLapsed) {
-        if (StringUtils.isEmpty(reuestcode)) {
-            return generateFailureResponse(request, new Exception("Invalid request code"));
-        }
-        try {
-            boolean isProcessed = requestService.updateRequestOnLapse(reuestcode, lapsetime, isLapsed);
-            return (!isProcessed) ? generateFailureResponse(request, new Exception("Failed to update request")) :
-                    ResponseEntity.status(HttpStatus.OK).body("Request succesfully processed");
-        } catch (Exception exception) {
-        	return generateFailureResponse(request, exception);
-        }  
-    }//updateRequestOnLapse
-    
-    @PostMapping("/uploadPaymentConfirmation")
-    public ResponseEntity<?> uploadPaymentConfirmation(HttpServletRequest request, @RequestParam("file") MultipartFile file,
-                                                 @RequestBody @Valid ProcessAdditionalInfo info
 
-    ) {
-        String message = "";
-        List<String> files = new ArrayList<String>();
-        try {
-            if (file.isEmpty()) {
-                return generateEmptyResponse(request, "File Not Found to upload, Please upload a file");
-            } else if (info.getUserCode() != null && !isEmpty(info.getRequestCode())) {
-                Requests requests = this.requestService.getRequestsByRequestCode(info.getRequestCode());
-                if (requests != null && requests != null) {
-                    String fileName = testService.store(file);
-                    files.add(file.getOriginalFilename());
-                    requests.setPopFilePath(Constants.uploadDirectoryPath + fileName);
-                    message = "You successfully uploaded " + requests.getInvoiceFilePath() + "!";
-                    requestService.saveRequest(requests);
 
-                    ProcessAdditionalInfo processAdditionalInfo = new ProcessAdditionalInfo();
-                    processAdditionalInfo.setTaskId(info.getTaskId());
-                    processAdditionalInfo.setRequestCode(info.getRequestCode());
-                    processAdditionalInfo.setProvinceCode(info.getProvinceCode());
-                    processAdditionalInfo.setSectionCode(info.getSectionCode());
-                    processAdditionalInfo.setTargetSequenceId(info.getTargetSequenceId());
-                    processAdditionalInfo.setUserCode(info.getUserCode());
-                    processAdditionalInfo.setUserName(info.getUserName());
-                    processUserState(request,processAdditionalInfo);
 
-                    return ResponseEntity.status(HttpStatus.OK).body(message);
-                } else {
-                    return generateEmptyResponse(request, "No Internal User Roles  found");
-                }
-            }
-            return generateEmptyResponse(request, "No Internal User Roles  found");
-        } catch (Exception exception) {
-            message = "FAIL to upload " + file.getOriginalFilename() + "!";
-            return generateFailureResponse(request, exception);
-        }
-    }//uploadPaymentConfirmation
+   /* @PostMapping("/uploadPaymentConfirmation")
+     public ResponseEntity<?> uploadPaymentConfirmation(HttpServletRequest request, @RequestParam("file") MultipartFile file
+                                                       ,@RequestBody @Valid ProcessAdditionalInfo info
+
+     ) {
+         String message = "";
+         List<String> files = new ArrayList<String>();
+         try {
+             if (file.isEmpty()) {
+                 return generateEmptyResponse(request, "File Not Found to upload, Please upload a file");
+             } else if (info.getUserCode() != null && !isEmpty(info.getRequestCode())) {
+                 Requests requests = this.requestService.getRequestsByRequestCode(info.getRequestCode());
+                 if (requests != null && requests != null) {
+                     String fileName = testService.store(file);
+                     files.add(file.getOriginalFilename());
+                     requests.setPopFilePath(Constants.uploadDirectoryPath + fileName);
+                     message = "You successfully uploaded " + requests.getInvoiceFilePath() + "!";
+                     requestService.saveRequest(requests);
+
+                     ProcessAdditionalInfo processAdditionalInfo = new ProcessAdditionalInfo();
+                     processAdditionalInfo.setTaskId(info.getTaskId());
+                     processAdditionalInfo.setRequestCode(info.getRequestCode());
+                     processAdditionalInfo.setProvinceCode(info.getProvinceCode());
+                     processAdditionalInfo.setSectionCode(info.getSectionCode());
+                     processAdditionalInfo.setTargetSequenceId(info.getTargetSequenceId());
+                     processAdditionalInfo.setUserCode(info.getUserCode());
+                     processAdditionalInfo.setUserName(info.getUserName());
+                     processUserState(request,processAdditionalInfo);
+
+                     return ResponseEntity.status(HttpStatus.OK).body(message);
+                 } else {
+                     return generateEmptyResponse(request, "No Internal User Roles  found");
+                 }
+             }
+             return generateEmptyResponse(request, "No Internal User Roles  found");
+         } catch (Exception exception) {
+             message = "FAIL to upload " + file.getOriginalFilename() + "!";
+             return generateFailureResponse(request, exception);
+         }
+     }//uploadPaymentConfirmation*/
 
     private void updateRequestProvinceAndSectionCodes(ProcessAdditionalInfo additionalInfo) {
-        if(additionalInfo != null && additionalInfo.getRequestCode() != null) {
+        if (additionalInfo != null && additionalInfo.getRequestCode() != null) {
             Requests request = requestService.getRequestsByRequestCode(additionalInfo.getRequestCode());
-            if(request != null) {
-                if(!StringUtils.isEmpty(additionalInfo.getProvinceCode()))
+            if (request != null) {
+                if (!StringUtils.isEmpty(additionalInfo.getProvinceCode()))
                     request.setProvinceCode(additionalInfo.getProvinceCode());
-                if(!StringUtils.isEmpty(additionalInfo.getSectionCode()))
+                if (!StringUtils.isEmpty(additionalInfo.getSectionCode()))
                     request.setSectionCode(additionalInfo.getSectionCode());
             }
         }
@@ -282,7 +337,7 @@ public class RequestController extends MessageController {
                     req.setInvoiceFilePath(Constants.invoiceDirectory + "/" + filename);
                     Requests updatedRequest = requestService.saveRequest(req);
                     ProcessAdditionalInfo processAdditionalInfo = getProcessAdditionalInfo(invoiceDTO);
-                    processUserState(request,processAdditionalInfo);
+                    processUserState(request, processAdditionalInfo);
                     return ResponseEntity.status(HttpStatus.OK).body("Generated Invoice Successfully");
                 }
             } else {
@@ -297,7 +352,7 @@ public class RequestController extends MessageController {
 
     private ProcessAdditionalInfo getProcessAdditionalInfo(@RequestBody @Valid InvoiceDTO invoiceDTO) {
         ProcessAdditionalInfo processAdditionalInfo = new ProcessAdditionalInfo();
-        if(invoiceDTO.getProcessAdditionalInfo()!= null) {
+        if (invoiceDTO.getProcessAdditionalInfo() != null) {
             processAdditionalInfo.setTaskId(invoiceDTO.getProcessAdditionalInfo().getTaskId());
             processAdditionalInfo.setRequestCode(invoiceDTO.getProcessAdditionalInfo().getRequestCode());
             processAdditionalInfo.setProvinceCode(invoiceDTO.getProcessAdditionalInfo().getProvinceCode());

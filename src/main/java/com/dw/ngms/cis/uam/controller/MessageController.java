@@ -15,6 +15,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
@@ -31,6 +32,7 @@ import java.util.Base64;
 
 
 @CrossOrigin(origins = "*")
+@Controller
 public class MessageController implements ExceptionConstants {
 
     @Autowired

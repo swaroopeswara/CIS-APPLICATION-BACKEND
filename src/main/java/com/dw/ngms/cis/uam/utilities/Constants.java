@@ -5,8 +5,8 @@ package com.dw.ngms.cis.uam.utilities;
  */
 public class Constants {
 
-    //  public static final String uploadDirectoryPath = "/Users/swaroop/Documents/test-upload/";
-    //public static final String downloadDirectoryPath = "/Users/swaroop/Documents/test-download/";
+     // public static final String uploadDirectoryPath = "/Users/swaroop/Documents/test-upload/";
+     //public static final String downloadDirectoryPath = "/Users/swaroop/Documents/test-download/";
     public static final String uploadDirectoryPath = "C:/Users/Administrator/Documents/signed/";
     public static final String downloadDirectoryPath = "C:/Users/Administrator/Documents/filesDownload";
     public static final String REPORT_RESOURCE_PATH = "C:/Users/Administrator/Documents/reports";

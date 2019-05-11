@@ -52,6 +52,12 @@ public class RequestItems implements Serializable {
     @Column(name = "REQUESTGAZZETTE2", length = 100, unique = true)
     private String requestGazette2;
 
+    @Column(name = "GAZETTETYPE1", length = 200)
+    private String gazetteType1;
+
+    @Column(name = "GAZETTETYPE2", length = 200)
+    private String gazetteType2;
+
 
     @Column(name = "REQUESTCOST", length = 200)
     private String requestCost;

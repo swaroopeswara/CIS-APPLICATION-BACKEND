@@ -96,11 +96,7 @@ public class Requests implements Serializable {
     @Column(name = "POSTALADDRESS4", length = 100)
     private String postalAddress4;
 
-    @Column(name = "GAZETTETYPE1", length = 200)
-    private String gazetteType1;
 
-    @Column(name = "GAZETTETYPE2", length = 200)
-    private String gazetteType2;
 
     @Column(name = "DELIVERYMETHOD", length = 200)
     private String deliveryMethod;
