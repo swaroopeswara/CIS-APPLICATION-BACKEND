@@ -1,12 +1,24 @@
 package com.dw.ngms.cis.uam.controller;
 
-import com.dw.ngms.cis.exception.ExceptionConstants;
-import com.dw.ngms.cis.exception.ResponseBuilderAgent;
-import com.dw.ngms.cis.exception.RestResponse;
-import com.dw.ngms.cis.uam.configuration.MailConfiguration;
-import com.dw.ngms.cis.uam.dto.MailDTO;
-import freemarker.template.Configuration;
-import freemarker.template.Template;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLConnection;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Base64;
+import java.util.Map;
+
+import javax.mail.internet.MimeMessage;
+import javax.servlet.http.HttpServletRequest;
+
+import org.jfree.util.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
@@ -17,18 +29,21 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
-import javax.mail.internet.MimeMessage;
-import javax.servlet.http.HttpServletRequest;
-import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLConnection;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Base64;
+import com.dw.ngms.cis.exception.ExceptionConstants;
+import com.dw.ngms.cis.exception.ResponseBuilderAgent;
+import com.dw.ngms.cis.exception.RestResponse;
+import com.dw.ngms.cis.uam.configuration.MailConfiguration;
+import com.dw.ngms.cis.uam.dto.MailDTO;
+
+import freemarker.core.ParseException;
+import freemarker.template.Configuration;
+import freemarker.template.MalformedTemplateNameException;
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
+import freemarker.template.TemplateNotFoundException;
 
 
 @CrossOrigin(origins = "*")
@@ -201,23 +216,44 @@ public class MessageController implements ExceptionConstants {
         return replyText;
     }//sendSMS
 
-
     public void sendEmail(MailDTO mailDTO) throws Exception {
-        MimeMessage message = sender.createMimeMessage();
+        this.sendEmail(mailDTO.getModel(), mailDTO.getMailTo(), mailDTO.getMailSubject());
+    }//sendEmail
 
+    public void sendEmails(MailDTO mail) {
+    	Map<String, Object> model = mail.getModel();
+    	if(!CollectionUtils.isEmpty(mail.getMailsTo())) {
+    		mail.getMailsTo().forEach(mailTo -> {
+    			try {    				
+    				model.put("firstName", mail.getUserNameMap().get(mailTo) + ",");
+					this.sendEmail(model, mailTo, mail.getMailSubject());
+				} catch (Exception e) {
+					Log.error("Failed to send email "+e.getMessage());
+				}
+    		});    		
+    	}
+	}//sendEmails
+    
+    public void sendEmail(Map<String, Object> model, String mailTo, String mailSubject) throws Exception {
+        MimeMessage message = sender.createMimeMessage();
+        
         MimeMessageHelper helper = new MimeMessageHelper(message);
 
-        // Using a subfolder such as /templates here
+        helper.setTo(mailTo);
+        helper.setText(getProcessedTemplate(model), true);
+        helper.setSubject(mailSubject);
+
+        sender.send(message);
+    }//sendEmail
+    
+	private String getProcessedTemplate(Map<String, Object> model) throws TemplateNotFoundException,
+			MalformedTemplateNameException, ParseException, IOException, TemplateException {
+		// Using a subfolder such as /templates here
         freemarkerConfig.setClassForTemplateLoading(this.getClass(), "/templates");
 
         Template t = freemarkerConfig.getTemplate("email-template.ftl");
-        String text = FreeMarkerTemplateUtils.processTemplateIntoString(t, mailDTO.getModel());
+        return FreeMarkerTemplateUtils.processTemplateIntoString(t, model);
+	}//getProcessedTemplate
 
-        helper.setTo(mailDTO.getMailTo());
-        helper.setText(text, true);
-        helper.setSubject(mailDTO.getMailSubject());
-
-        sender.send(message);
-    }
 }
 

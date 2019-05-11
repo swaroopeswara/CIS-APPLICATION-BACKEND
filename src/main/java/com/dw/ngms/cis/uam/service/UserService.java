@@ -55,7 +55,11 @@ public class UserService {
 	public List<User> getAllInternalUsersByProvinceCode(String provinceCode){
 		return userRepository.findInternalUsersByProvinceCode(provinceCode);
 	}//getAllUsersByUserTypeNameAndProvinceCode
-
+	
+	public List<User> getAllInternalUsersByInternalRoleCode(String internalRoleCode){
+		return userRepository.findInternalUsersByInternalRoleCode(internalRoleCode);
+	}//getAllInternalUsersByInternalRoleCode
+	
 	public List<User> getAllExternalUsersByProvinceCode(String provinceCode){
 		return userRepository.findExternalUsersByProvinceCode(provinceCode);
 	}//getAllUsersByUserTypeNameAndProvinceCode

@@ -1,9 +1,7 @@
 package com.dw.ngms.cis.uam.service;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import com.dw.ngms.cis.uam.entity.InternalRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -37,6 +35,10 @@ public class InternalUserRoleService {
     	internalUserRoleRepository.delete(internalUserRoles);
     }//deleteInternalUserRole
     
+    public InternalUserRoles getInternalUserRoleWithInternalRoleCodeAndStatus(String internalRoleCode, String isActive) {
+        return internalUserRoleRepository.findByInternalRoleCodeAndStatus(internalRoleCode, isActive);
+    }
+    
     public InternalUserRoles getInternalUserRole(String usercode, String username, String internalrolecode) {
     	return internalUserRoleRepository.findByUserCodeUserNameAndInternalRoleCode(usercode, username, internalrolecode);
     }//getInternalUserRole
@@ -65,16 +67,16 @@ public class InternalUserRoleService {
     }//get Internal Role Code
 
 
-    public ArrayList<InternalUserRoles> getChildElementsInternal(String userCode) {
+    public List<InternalUserRoles> getChildElementsInternal(String userCode) {
         return this.internalUserRoleRepository.getChildElementsInternal(userCode);
     } //getChildElementsInternal
 
-    public ArrayList<InternalUserRoles> getChildElementsInternalWithProvinceCodeNotNull(String userCode) {
+    public List<InternalUserRoles> getChildElementsInternalWithProvinceCodeNotNull(String userCode) {
         return this.internalUserRoleRepository.getChildElementsInternalWithProvinceCodeNotNull(userCode);
     } //getChildElementsInternal
 
 
-    public ArrayList<InternalUserRoles> getChildElementsInternalWithActive(String userCode) {
+    public List<InternalUserRoles> getChildElementsInternalWithActive(String userCode) {
         return this.internalUserRoleRepository.getChildElementsInternalWithActive(userCode);
     } //getChildElementsInternalWithActive
 

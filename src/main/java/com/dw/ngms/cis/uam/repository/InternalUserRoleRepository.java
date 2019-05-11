@@ -1,13 +1,12 @@
 package com.dw.ngms.cis.uam.repository;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import com.dw.ngms.cis.uam.entity.InternalUserRoles;
-import org.springframework.data.repository.query.Param;
 
 /**
  * Created by swaroop on 2019/03/28.
@@ -20,6 +19,8 @@ public interface InternalUserRoleRepository  extends JpaRepository<InternalUserR
 	@Query("select iur from InternalUserRoles iur where iur.userName = ?1 and isActive = ?2")
 	List<InternalUserRoles> getInternalUserRoleWithActive(String username, String isActive);
 
+	@Query("select iur from InternalUserRoles iur where iur.internalRoleCode = ?1 and iur.isActive = ?2")
+	InternalUserRoles findByInternalRoleCodeAndStatus(String internalrolecode, String isActive);
 	
 	@Query("select iur from InternalUserRoles iur where iur.userCode = ?1 and iur.userName = ?2 and iur.internalRoleCode = ?3")
 	InternalUserRoles findByUserCodeUserNameAndInternalRoleCode(String usercode, String username, String internalrolecode);
@@ -44,18 +45,15 @@ public interface InternalUserRoleRepository  extends JpaRepository<InternalUserR
 
 
 	@Query("select u from InternalUserRoles u where u.userCode = :userCode")
-	ArrayList<InternalUserRoles> getChildElementsInternal(@Param("userCode") String userCode);
+	List<InternalUserRoles> getChildElementsInternal(@Param("userCode") String userCode);
 
 	@Query("select u from InternalUserRoles u where u.userCode = :userCode and provinceCode is not null")
-	ArrayList<InternalUserRoles> getChildElementsInternalWithProvinceCodeNotNull(@Param("userCode") String userCode);
+	List<InternalUserRoles> getChildElementsInternalWithProvinceCodeNotNull(@Param("userCode") String userCode);
 
 	@Query("select u from InternalUserRoles u where u.userCode = :userCode and isActive = 'Y'")
-	ArrayList<InternalUserRoles> getChildElementsInternalWithActive(@Param("userCode") String userCode);
+	List<InternalUserRoles> getChildElementsInternalWithActive(@Param("userCode") String userCode);
 
 	@Query("select u from InternalUserRoles u where u.provinceCode = :provinceCode and u.sectionCode = :sectionCode and u.roleCode = :roleCode")
-	ArrayList<InternalUserRoles> getInternalUserName(@Param("provinceCode") String provinceCode,@Param("sectionCode") String sectionCode,@Param("roleCode") String roleCode);
-
-
-
+	List<InternalUserRoles> getInternalUserName(@Param("provinceCode") String provinceCode,@Param("sectionCode") String sectionCode,@Param("roleCode") String roleCode);
 
 }

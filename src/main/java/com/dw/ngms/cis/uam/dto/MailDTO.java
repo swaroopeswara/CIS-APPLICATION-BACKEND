@@ -1,9 +1,15 @@
 package com.dw.ngms.cis.uam.dto;
 
-import lombok.*;
-
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 /**
  * Created by swaroop on 2019/03/30.
@@ -30,10 +36,14 @@ public class MailDTO {
 
     private String contentType;
 
-    private List< Object > attachments;
+    private List<Object> attachments = new ArrayList<>();
 
-    private Map< String, Object > model;
+    private Map<String, Object> model = new HashMap<String, Object>();
 
+    private List<String> mailsTo = new ArrayList<>();
+    
+    private Map<String, String> userNameMap = new HashMap<String, String>();
+    
     private String header;
     private String subject;
     private String body1;

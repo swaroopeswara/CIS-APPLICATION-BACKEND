@@ -1,11 +1,11 @@
 package com.dw.ngms.cis.im.service;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -14,10 +14,12 @@ import com.dw.ngms.cis.im.entity.Requests;
 import com.dw.ngms.cis.im.repository.RequestRepository;
 import com.dw.ngms.cis.uam.controller.MessageController;
 import com.dw.ngms.cis.uam.dto.MailDTO;
+import com.dw.ngms.cis.uam.entity.InternalRole;
 import com.dw.ngms.cis.uam.entity.Task;
 import com.dw.ngms.cis.uam.entity.User;
 import com.dw.ngms.cis.uam.enums.LapseStatus;
 import com.dw.ngms.cis.uam.service.TaskService;
+import com.dw.ngms.cis.uam.service.UserService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -29,13 +31,16 @@ import lombok.extern.slf4j.Slf4j;
 public class RequestService {
 
 	@Autowired
+	private Environment env;
+	@Autowired
 	private TaskService taskService;
+	@Autowired
+	private UserService userService;
     @Autowired
     private RequestRepository requestRepository;
-
     @Autowired
     private MessageController messageController;
-
+    
     public List<Requests> getAllRequests() {
         return this.requestRepository.findAll();
     }//getAllCostCategories
@@ -48,9 +53,6 @@ public class RequestService {
     public Long getRequestId() {
         return this.requestRepository.getRequestId();
     } //getRequestTypeID
-
-
-
 
     public Requests saveRequest(Requests requests) {
         return this.requestRepository.save(requests);
@@ -73,7 +75,7 @@ public class RequestService {
 		
 		this.updateAndPersistRequest(isLapsed, request);
 
-			Boolean isProcessed = this.populateTemplateAndSendMail(request, lapseTime);
+		Boolean isProcessed = this.populateAndSendMail(request, lapseTime, isLapsed);
 		if(!isProcessed)
 			throw new RuntimeException("Failed to send mail on lapse request "+requestCode);
 
@@ -82,49 +84,84 @@ public class RequestService {
 		return true;
 	}//updateRequestOnLapse
 
-	private boolean populateTemplateAndSendMail(Requests request, Integer lapseTime) {
-		Boolean isProcessed = Boolean.TRUE;
-		List<MailDTO> mailList = this.populateMailTemplate(request, lapseTime);
-		if(!CollectionUtils.isEmpty(mailList)) {
-			for(MailDTO mail: mailList) {
-				log.info("Sending mail {0}", mail.toString());
-				try {
-					messageController.sendEmail(mail);
-				} catch (Exception e) {
-					log.error("Lapse request failed to send mail, error {0}", e.getMessage());
-					isProcessed = Boolean.FALSE;
-				}
+	private boolean populateAndSendMail(Requests request, Integer lapseTime, boolean isLapsed) {
+		try {
+			MailDTO mail = this.populateMail(request, lapseTime, isLapsed);
+			if(mail != null) {
+				log.info("Sending mail {0}", mail.toString());			
+				messageController.sendEmails(mail);			
 			}
+		} catch (Exception e) {
+			log.error("Lapse request failed to send mail, error {0}", e.getMessage());
+			return Boolean.FALSE;
 		}
-		return isProcessed;
-	}//populateTemplateAndSendMail
+		return Boolean.TRUE;
+	}//populateAndSendMail
 
-	private List<MailDTO> populateMailTemplate(Requests request, Integer lapseTime) {
-		List<MailDTO> mailList = new ArrayList<>();
-		String mailBody = "";
+	private MailDTO populateMail(Requests request, Integer lapseTime, boolean isLapsed) {		
         Task task = taskService.getTask(request.getRequestCode());
-        //FIXME
-		return mailList;
-	}//populateMailTemplate
+        
+        String mailBody = (isLapsed) ? getPropertyValue("lapsed.notification.body1", request.getRequestCode()) :
+        		getPropertyValue("prelapse.notification.body1", request.getRequestCode());
+        
+        List<User> userList = (isLapsed) ? this.getReportingUsersToNotify(task) : this.getAssignedUsersToNotify(task);
+        
+    	return this.populateMailForUsers(request, mailBody, userList);
+	}//populateMail
 
-	private MailDTO getMailTemplate(Requests request, String mailBody, User user) {
+	/**
+	 * @param task
+	 * @param isLapsed
+	 * @return
+	 */
+	private List<User> getAssignedUsersToNotify(Task task) {
+		List<User> userList = task.getUserList();
+		List<InternalRole> internalRoleList = task.getInternalRoleList();
+		if(!CollectionUtils.isEmpty(internalRoleList)) {
+			for(InternalRole internalRole : internalRoleList) {
+				userList.addAll(userService.getAllInternalUsersByInternalRoleCode(internalRole.getInternalRoleCode()));
+			}
+			//Remove duplicates
+			userList = userList.stream().distinct().collect(Collectors.toList());
+		}
+		return userList;
+	}//getAssignedUsersToNotify
+
+	private List<User> getReportingUsersToNotify(Task task) {
+		List<User> userList = new ArrayList<>();
+		if(task != null && task.getTaskDoneUserCode() != null) {
+			User user = userService.findByUserCode(task.getTaskDoneUserCode());
+			if(user != null)
+				userList.add(user);
+		}
+		return userList;
+	}//getReportingUsersToNotify
+
+	private MailDTO populateMailForUsers(Requests request, String mailBody1, List<User> userList) {
 		
-        Map<String, Object> model = new HashMap<String, Object>();
         MailDTO mailDTO = new MailDTO();
         mailDTO.setMailSubject("Lapse request updated");
 
-        model.put("body1", "Request ");
-        model.put("body2", "");
-        model.put("body3", "");
-        model.put("body4", "");
-        model.put("firstName", user.getFirstName() + ",");
-        model.put("FOOTER","CIS ADMIN");
-        mailDTO.setMailFrom("dataworldproject@gmail.com");
-        mailDTO.setMailTo(user.getEmail());
-        mailDTO.setModel(model);
+        mailDTO.getModel().put("body1", mailBody1);
+        mailDTO.getModel().put("body2", "");
+        mailDTO.getModel().put("body3", "");
+        mailDTO.getModel().put("body4", "");
+        mailDTO.getModel().put("firstName", ",");
+        mailDTO.getModel().put("FOOTER","CIS ADMIN");
+        mailDTO.setMailFrom("dataworldproject@gmail.com");        
     
+        if(CollectionUtils.isEmpty(userList)) 
+        	throw new RuntimeException("No users found to send notification mail");
+        
+        userList.forEach(user -> {
+        	String email = user.getEmail();
+        	if(!mailDTO.getMailsTo().contains(email)) {
+        		mailDTO.getMailsTo().add(user.getEmail());        	
+        		mailDTO.getUserNameMap().put(user.getEmail(), user.getFirstName());
+        	}
+        });        
 		return mailDTO;
-	}//populateMailTemplate
+	}//populateMailForUsers
 	
 	private void updateAndPersistRequest(boolean isLapsed, Requests request) {
 		request.setLapseStatus(isLapsed ? LapseStatus.LAPSED : LapseStatus.PRELAPSE);
@@ -132,4 +169,8 @@ public class RequestService {
 		requestRepository.save(request);
 	}//updateAndPersistRequest
 
+	private String getPropertyValue(String propertyKey, String requestCode) {
+		String value = env.getRequiredProperty(propertyKey);		
+		return (!StringUtils.isEmpty(value) && value.contains("{0}")) ? value.replace("{0}", requestCode) : value;
+	}//getPropertyValue
 }
