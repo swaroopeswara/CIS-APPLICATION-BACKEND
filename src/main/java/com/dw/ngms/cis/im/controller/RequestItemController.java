@@ -61,6 +61,7 @@ public class RequestItemController extends MessageController {
             Long requestItemCode = this.requestItemService.getRequestItemId();
             System.out.println("requestItemCode is "+requestItemCode);
             requestItems.setRequestItemCode("REQITEM" + Long.toString(requestItemCode));
+            requestItems.setRequestId(requestItems.getRequestId());
             RequestItems requestItemsSave = this.requestItemService.saveRequestItem(requestItems);
             return ResponseEntity.status(HttpStatus.OK).body(requestItemsSave);
         } catch (Exception exception) {

@@ -100,8 +100,8 @@ public class UserController extends MessageController {
                 userList = userService.getAllUsersByUserTypeName(INTERNAL_USER_TYPE_NAME);
 
                 for (User userInfo : userList) {
-                    ArrayList<InternalUserRoles> interUserRolesList = new ArrayList<>();
-                    ArrayList<InternalUserRoles> internalUserRoles = this.internalUserRoleService.getChildElementsInternalWithProvinceCodeNotNull(userInfo.getUserCode());
+                    List<InternalUserRoles> interUserRolesList = new ArrayList<>();
+                    List<InternalUserRoles> internalUserRoles = this.internalUserRoleService.getChildElementsInternalWithProvinceCodeNotNull(userInfo.getUserCode());
                     if (!isEmpty(internalUserRoles) && internalUserRoles != null) {
                         for (InternalUserRoles in : internalUserRoles) {
                             System.out.println("Internal user roles" + in.getInternalRoleCode());
@@ -130,7 +130,7 @@ public class UserController extends MessageController {
 
                 for (User userInfo : userList) {
                     ArrayList<InternalUserRoles> interUserRolesList = new ArrayList<>();
-                    ArrayList<InternalUserRoles> internalUserRoles = this.internalUserRoleService.getChildElementsInternal(userInfo.getUserCode());
+                    List<InternalUserRoles> internalUserRoles = this.internalUserRoleService.getChildElementsInternal(userInfo.getUserCode());
                     if (!isEmpty(internalUserRoles) && internalUserRoles != null) {
                         for (InternalUserRoles in : internalUserRoles) {
                             System.out.println("Internal user roles" + in.getInternalRoleCode());
