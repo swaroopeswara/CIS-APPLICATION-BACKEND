@@ -178,6 +178,17 @@
 		    <version>1.9.3</version>
 		</dependency> -->
 		<dependency>
+		    <groupId>commons-net</groupId>
+		    <artifactId>commons-net</artifactId>
+		    <version>3.6</version>
+		</dependency>
+		<dependency> 
+		    <groupId>org.mockftpserver</groupId> 
+		    <artifactId>MockFtpServer</artifactId> 
+		    <version>2.7.1</version> 
+		    <scope>test</scope> 
+		</dependency>
+		<dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
         </dependency>
