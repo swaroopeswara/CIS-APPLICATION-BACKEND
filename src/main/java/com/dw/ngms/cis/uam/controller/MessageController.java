@@ -225,7 +225,7 @@ public class MessageController implements ExceptionConstants {
     	if(!CollectionUtils.isEmpty(mail.getMailsTo())) {
     		mail.getMailsTo().forEach(mailTo -> {
     			try {    				
-    				model.put("firstName", mail.getUserNameMap().get(mailTo) + ",");
+    				model.put("firstName", mail.getUserNameMap().get(mailTo));
 					this.sendEmail(model, mailTo, mail.getMailSubject());
 				} catch (Exception e) {
 					Log.error("Failed to send email "+e.getMessage());

@@ -150,6 +150,7 @@ public class RequestController extends MessageController {
     public ResponseEntity<?> updateRequestOnLapse(HttpServletRequest request,
                                                   @RequestParam @Valid String reuestcode, @RequestParam @Valid Integer lapsetime,
                                                   @RequestParam @Valid boolean islapsed) {
+    	log.info("Start processing updateRequestOnLapse");
         if (StringUtils.isEmpty(reuestcode)) {
             return generateFailureResponse(request, new Exception("Invalid request code"));
         }

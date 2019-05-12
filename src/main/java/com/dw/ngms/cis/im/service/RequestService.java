@@ -146,7 +146,7 @@ public class RequestService {
         mailDTO.getModel().put("body2", "");
         mailDTO.getModel().put("body3", "");
         mailDTO.getModel().put("body4", "");
-        mailDTO.getModel().put("firstName", ",");
+        mailDTO.getModel().put("firstName", "");
         mailDTO.getModel().put("FOOTER","CIS ADMIN");
         mailDTO.setMailFrom("dataworldproject@gmail.com");        
     
