@@ -149,12 +149,12 @@ public class RequestController extends MessageController {
     @GetMapping("/updateRequestOnLapse")
     public ResponseEntity<?> updateRequestOnLapse(HttpServletRequest request,
                                                   @RequestParam @Valid String reuestcode, @RequestParam @Valid Integer lapsetime,
-                                                  @RequestParam @Valid boolean isLapsed) {
+                                                  @RequestParam @Valid boolean islapsed) {
         if (StringUtils.isEmpty(reuestcode)) {
             return generateFailureResponse(request, new Exception("Invalid request code"));
         }
         try {
-            boolean isProcessed = requestService.updateRequestOnLapse(reuestcode, lapsetime, isLapsed);
+            boolean isProcessed = requestService.updateRequestOnLapse(reuestcode, lapsetime, islapsed);
             return (!isProcessed) ? generateFailureResponse(request, new Exception("Failed to update request")) :
                     ResponseEntity.status(HttpStatus.OK).body("Request succesfully processed");
         } catch (Exception exception) {
