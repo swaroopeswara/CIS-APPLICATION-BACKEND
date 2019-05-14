@@ -9,29 +9,38 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLConnection;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
+import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import com.dw.ngms.cis.uam.dto.FilePathsDTO;
+import com.dw.ngms.cis.uam.dto.InternalUserRoleDTO;
+import com.dw.ngms.cis.uam.dto.MailDTO;
+import com.dw.ngms.cis.uam.entity.ExternalUser;
+import com.dw.ngms.cis.uam.entity.InternalUserRoles;
+import com.dw.ngms.cis.uam.entity.User;
+import com.google.gson.Gson;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.dw.ngms.cis.im.dto.InvoiceDTO;
@@ -68,6 +77,9 @@ public class RequestController extends MessageController {
     private StorageService testService;
     @Autowired
     private TaskService taskService;
+
+    @Autowired
+    private JavaMailSender mailSender;
 
     @GetMapping("/getTaskTargetFlows")
     public ResponseEntity<?> getTaskTargetFlows(HttpServletRequest request, @RequestParam Long taskid) {
@@ -351,6 +363,70 @@ public class RequestController extends MessageController {
                     FileCopyUtils.copy(inputStream, response.getOutputStream());
                     req.setInvoiceFilePath(Constants.invoiceDirectory + "/" + filename);
                     Requests updatedRequest = requestService.saveRequest(req);
+                    return ResponseEntity.status(HttpStatus.OK).body("Generated Invoice Successfully");
+                }
+            } else {
+                return generateEmptyResponse(request, "No Request found with requestCode " + requestCode);
+            }
+
+        } catch (Exception exception) {
+            return generateFailureResponse(request, exception);
+        }
+        return generateEmptyResponse(request, "No Request found with requestCode " + requestCode);
+    }
+
+
+    @SuppressWarnings("unused")
+    @PostMapping("/sendEmailWithInvoice")
+    public ResponseEntity<?> sendEmailWithInvoice(HttpServletRequest request, HttpServletResponse response,
+                                                  @RequestParam("requestCode") String requestCode,
+                                                  @RequestBody @Valid InvoiceDTO invoiceDTO) throws IOException {
+        try {
+            Requests req = requestService.getRequestsByRequestCode(requestCode);
+            if (req != null) {
+                ClassPathResource template = new ClassPathResource(Constants.pdfTemplate);
+                String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
+                String filename = Constants.fileNamePDF;
+                filename = timeStamp + "_" + filename;
+                File file = new File(Constants.invoiceDirectory + filename);
+                if (template.exists()) {
+                    try {
+                        PdfReader reader = new PdfReader(template.getFilename());
+                        PdfStamper stamper = new PdfStamper(reader, new FileOutputStream(file));
+                        AcroFields form = stamper.getAcroFields();
+                        System.out.println("");
+                        form.setField("FULL_NAME", invoiceDTO.getFullName());
+                        SimpleDateFormat fmt = new SimpleDateFormat("dd MMMM yyyy");
+                        form.setField("DATE", fmt.format(new Date()));
+                        form.setField("ORGANIZATION", invoiceDTO.getOrgnization());
+                        form.setField("REQUEST_NUMBER", invoiceDTO.getRequestNumber());
+                        form.setField("REQUEST_TYPE", invoiceDTO.getRequestType());
+                        form.setField("TELEPHONE", invoiceDTO.getTelephone());
+                        form.setField("POSTAL_ADDRESS", invoiceDTO.getPostalAddress());
+                        form.setField("EMAIL", invoiceDTO.getEmail());
+                        form.setField("MOBILE", invoiceDTO.getMoible());
+                        form.setField("DEPOSIT", invoiceDTO.getAmount());
+                        stamper.setFormFlattening(true);
+                        stamper.close();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    String mimeType = URLConnection.guessContentTypeFromName(file.getName());
+                    if (mimeType == null) {
+                        mimeType = "application/octet-stream";
+                    }
+                    response.setContentType(mimeType);
+                    response.setHeader("Content-Disposition", String.format("inline; filename=\"" + file.getName() + "\""));
+                    response.setContentLength((int) file.length());
+                    InputStream inputStream = new BufferedInputStream(new FileInputStream(file));
+                    FileCopyUtils.copy(inputStream, response.getOutputStream());
+                    req.setInvoiceFilePath(Constants.invoiceDirectory + "/" + filename);
+                    Requests updatedRequest = requestService.saveRequest(req);
+                    Requests requests = this.requestService.getRequestsByRequestCode(updatedRequest.getRequestCode());
+                    String fileName = requests.getInvoiceFilePath();
+                    File fileLater = new File(req.getInvoiceFilePath());
+                    MailDTO mailDTO = new MailDTO();
+                    sendMailInvoiceUser(mailDTO, fileName, fileLater);
                     ProcessAdditionalInfo processAdditionalInfo = getProcessAdditionalInfo(invoiceDTO);
                     processUserState(request, processAdditionalInfo);
                     return ResponseEntity.status(HttpStatus.OK).body("Generated Invoice Successfully");
@@ -363,6 +439,29 @@ public class RequestController extends MessageController {
             return generateFailureResponse(request, exception);
         }
         return generateEmptyResponse(request, "No Request found with requestCode " + requestCode);
+    }
+
+
+    private void sendMailInvoiceUser(MailDTO mailDTO, String fileName, File fileLater) throws Exception {
+
+        Map<String, Object> model = new HashMap<String, Object>();
+
+        model.put("firstName", "swaroop eswara");
+        model.put("body1", "Generated Invoice ");
+        model.put("body2", "");
+        model.put("body3", "");
+        model.put("body4", "");
+
+        mailDTO.setMailSubject("Welcome to CIS");
+        model.put("FOOTER", "CIS ADMIN");
+        //mailDTO.setFooter("CIS ADMIN");
+        mailDTO.setMailFrom("dataworldproject@gmail.com");
+        mailDTO.setMailTo("swaroopeswara@gmail.com");
+
+        mailDTO.setModel(model);
+        sendEmail(mailDTO, fileName, fileLater);
+
+
     }
 
     private ProcessAdditionalInfo getProcessAdditionalInfo(@RequestBody @Valid InvoiceDTO invoiceDTO) {
@@ -379,4 +478,34 @@ public class RequestController extends MessageController {
         }
         return processAdditionalInfo;
     }
+
+
+    @RequestMapping(value = "/downloadInvoice", method = RequestMethod.POST)
+    public ResponseEntity<ByteArrayResource> downloadInvoice(HttpServletRequest request,
+                                                             @RequestBody @Valid Requests requests) throws IOException {
+
+        Requests ir = requestService.getRequestsByRequestCode(requests.getRequestCode());
+        System.out.println("Internal User Roles one " + ir.getInvoiceFilePath());
+        int index = ir.getInvoiceFilePath().lastIndexOf("/");
+        String fileName = ir.getInvoiceFilePath().substring(index + 1);
+        System.out.println("File Name is " + fileName);
+        File file = new File(ir.getInvoiceFilePath());
+
+        HttpHeaders header = new HttpHeaders();
+        header.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + file.getName());
+        header.add("Cache-Control", "no-cache, no-store, must-revalidate");
+        header.add("Pragma", "no-cache");
+        header.add("Expires", "0");
+
+        Path path = Paths.get(file.getAbsolutePath());
+        ByteArrayResource resource = new ByteArrayResource(Files.readAllBytes(path));
+
+        return ResponseEntity.ok()
+                .headers(header)
+                .contentLength(file.length())
+                .contentType(MediaType.parseMediaType("application/octet-stream"))
+                .body(resource);
+    }
+
+
 }

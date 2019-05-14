@@ -2,6 +2,7 @@ package com.dw.ngms.cis.im.entity;
 
 import com.dw.ngms.cis.uam.entity.User;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -20,7 +21,7 @@ import java.util.Date;
 @Table(name = "IMREQUESTITEMS")
 public class RequestItems implements Serializable {
 
-    @Column(name = "REQUESTID", nullable = false, length = 50, insertable = false, updatable = false)
+    @Column(name = "REQUESTID",length = 50)
     private Long requestId;
 
     @Id
@@ -76,9 +77,13 @@ public class RequestItems implements Serializable {
     @Column(name = "RESULTJSON", length = 2000)
     private String resultJson;
 
-    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    /*@ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     @JoinColumn(name="REQUESTID", nullable=false)
+    @JsonBackReference*/
+
     @JsonBackReference
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "REQUESTID",updatable =false, insertable = false, referencedColumnName="REQUESTID", nullable = false)
     private Requests requestItems;
 
 }

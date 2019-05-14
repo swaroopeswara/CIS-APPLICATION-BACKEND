@@ -1,6 +1,5 @@
 package com.dw.ngms.cis.uam.controller;
 
-import com.dw.ngms.cis.exception.ExceptionConstants;
 import com.dw.ngms.cis.uam.configuration.MailConfiguration;
 import com.dw.ngms.cis.uam.dto.*;
 import com.dw.ngms.cis.uam.entity.*;
@@ -513,7 +512,6 @@ public class UserController extends MessageController {
     public ResponseEntity<?> mailTest(HttpServletRequest request) throws Exception {
 
 
-
         MailDTO mail = new MailDTO();
         mail.setMailFrom("javabycod@gmail.com");
         mail.setMailTo("swaroopeswara@gmail.com");
@@ -537,6 +535,30 @@ public class UserController extends MessageController {
         return ResponseEntity.status(HttpStatus.OK).body("mail sent sucessfully");
 
     }//createExternalUser
+
+
+    @GetMapping("/getUserInfoLite")
+    public ResponseEntity<?> getUserInfoLite(HttpServletRequest request, @RequestParam String email) {
+        System.out.println("email is " + email);
+        try {
+
+            User userInfo = this.userService.findByEmail(email);
+            if (!isEmpty(userInfo) && userInfo != null) {
+                UserLiteDTO userLiteDTO = new UserLiteDTO();
+                userLiteDTO.setFirstName(userInfo.getFirstName());
+                userLiteDTO.setUserName(userInfo.getUserName());
+                userLiteDTO.setSurName(userInfo.getSurname());
+                userLiteDTO.setMobileNumber(userInfo.getMobileNo());
+                userLiteDTO.setUserCode(userInfo.getUserCode());
+                userLiteDTO.setEmail(userInfo.getEmail());
+                return ResponseEntity.status(HttpStatus.OK).body(userLiteDTO);
+            }
+            return (isEmpty(userInfo)) ? generateEmptyWithOKResponse(request, "Users not found")
+                    : ResponseEntity.status(HttpStatus.OK).body(userInfo);
+        } catch (Exception exception) {
+            return generateFailureResponse(request, exception);
+        }
+    }//getUserInfoLite
 
 
     @PostMapping("/registerInternalUser")
@@ -641,7 +663,7 @@ public class UserController extends MessageController {
             model.put("body3", "");
             model.put("body4", "");
             model.put("firstName", user.getFirstName() + ",");
-            model.put("FOOTER","CIS ADMIN");
+            model.put("FOOTER", "CIS ADMIN");
             mailDTO.setMailFrom("dataworldproject@gmail.com");
             mailDTO.setMailTo(user.getEmail());
             mailDTO.setModel(model);
@@ -712,7 +734,6 @@ public class UserController extends MessageController {
     }
 
 
-
     private void sendMailToUser(@RequestBody @Valid User user, MailDTO mailDTO) throws Exception {
 
         Map<String, Object> model = new HashMap<String, Object>();
@@ -735,7 +756,7 @@ public class UserController extends MessageController {
         }
 
         mailDTO.setMailSubject("Welcome to CIS");
-        model.put("FOOTER","CIS ADMIN");
+        model.put("FOOTER", "CIS ADMIN");
         //mailDTO.setFooter("CIS ADMIN");
         mailDTO.setMailFrom("dataworldproject@gmail.com");
         mailDTO.setMailTo(user.getEmail());
@@ -747,24 +768,23 @@ public class UserController extends MessageController {
     }
 
 
-
     private void sendMailToInternalUser(@RequestBody @Valid User user, MailDTO mailDTO) throws Exception {
         Map<String, Object> model = new HashMap<String, Object>();
         if (user.getIsApproved().getDisplayString().equalsIgnoreCase("YES")) {
-            model.put("body1","Thank you for registering with us. Your account is approved.");
-            model.put("body2","");
-            model.put("body3","");
-            model.put("body4","");
+            model.put("body1", "Thank you for registering with us. Your account is approved.");
+            model.put("body2", "");
+            model.put("body3", "");
+            model.put("body4", "");
         } else {
-            model.put("body1","Thank you for registering with us. Your account is pending approval.");
-            model.put("body2","");
-            model.put("body3","");
-            model.put("body4","");
+            model.put("body1", "Thank you for registering with us. Your account is pending approval.");
+            model.put("body2", "");
+            model.put("body3", "");
+            model.put("body4", "");
         }
 
         mailDTO.setMailSubject("Welcome to CIS");
         model.put("firstName", " " + user.getFirstName() + ",");
-        model.put("FOOTER","CIS ADMIN");
+        model.put("FOOTER", "CIS ADMIN");
         mailDTO.setMailFrom("dataworldproject@gmail.com");
         mailDTO.setMailTo(user.getEmail());
         mailDTO.setModel(model);
@@ -777,11 +797,11 @@ public class UserController extends MessageController {
         Map<String, Object> model = new HashMap<String, Object>();
         mailDTO.setMailSubject("New " + user.getUserTypeName().toLowerCase() + " User Registration");
         model.put("firstName", " " + "Admin Name" + ",");
-        model.put("FOOTER","CIS ADMIN");
-        model.put("body1","New user registered with email " + user.getEmail() + " in province " + user.getExternalUserRoles().get(0).getUserProvinceName());
-        model.put("body2","New task created for approval by provincial administrator");
-        model.put("body3","");
-        model.put("body4","");
+        model.put("FOOTER", "CIS ADMIN");
+        model.put("body1", "New user registered with email " + user.getEmail() + " in province " + user.getExternalUserRoles().get(0).getUserProvinceName());
+        model.put("body2", "New task created for approval by provincial administrator");
+        model.put("body3", "");
+        model.put("body4", "");
         mailDTO.setMailFrom("dataworldproject@gmail.com");
         mailDTO.setMailTo(mailConfiguration.getAdminUserMail());
         mailDTO.setModel(model);
@@ -793,12 +813,12 @@ public class UserController extends MessageController {
         Map<String, Object> model = new HashMap<String, Object>();
         mailDTO.setMailSubject("New " + user.getUserTypeName().toLowerCase() + " User Registration");
         model.put("firstName", " " + "Admin Name" + ",");
-        model.put("FOOTER","CIS ADMIN");
+        model.put("FOOTER", "CIS ADMIN");
         // mailDTO.setBody1("New user registered with email " +user.getEmail()+  " in province "+user.getInternalUserRoles().get(0).getProvinceName());
-        model.put("body1","New user registered with email " + user.getEmail());
-        model.put("body2","New task created for approval by provincial administrator");
-        model.put("body3","");
-        model.put("body4","");
+        model.put("body1", "New user registered with email " + user.getEmail());
+        model.put("body2", "New task created for approval by provincial administrator");
+        model.put("body3", "");
+        model.put("body4", "");
         mailDTO.setMailFrom("dataworldproject@gmail.com");
         mailDTO.setMailTo(mailConfiguration.getAdminUserMail());
         mailDTO.setModel(model);
@@ -810,12 +830,12 @@ public class UserController extends MessageController {
         Map<String, Object> model = new HashMap<String, Object>();
         mailDTO.setMailSubject("New " + user.getUserTypeName().toLowerCase() + " User Registration");
         model.put("firstName", " " + "Province Administrator" + ",");
-        model.put("FOOTER","CIS ADMIN");
+        model.put("FOOTER", "CIS ADMIN");
 
-        model.put("body1","New user registered with email " + user.getEmail() + " in province " + user.getExternalUserRoles().get(0).getUserProvinceName());
-        model.put("body2","New task created for approval by you");
-        model.put("body3","");
-        model.put("body4","");
+        model.put("body1", "New user registered with email " + user.getEmail() + " in province " + user.getExternalUserRoles().get(0).getUserProvinceName());
+        model.put("body2", "New task created for approval by you");
+        model.put("body3", "");
+        model.put("body4", "");
 
         mailDTO.setMailFrom("dataworldproject@gmail.com");
         mailDTO.setMailTo(mailConfiguration.getProvinceAdminMail());
@@ -827,13 +847,13 @@ public class UserController extends MessageController {
         Map<String, Object> model = new HashMap<String, Object>();
         mailDTO.setMailSubject("New " + user.getUserTypeName().toLowerCase() + " User Registration");
         model.put("firstName", " " + "Province Administrator" + ",");
-        model.put("FOOTER","CIS ADMIN");
+        model.put("FOOTER", "CIS ADMIN");
         //mailDTO.setBody1("New user registered with email " +user.getEmail()+  " in province " +user.getInternalUserRoles().get(0).getProvinceName());
 
-        model.put("body1","New user registered with email " + user.getEmail());
-        model.put("body2","New task created for approval by you");
-        model.put("body3","");
-        model.put("body4","");
+        model.put("body1", "New user registered with email " + user.getEmail());
+        model.put("body2", "New task created for approval by you");
+        model.put("body3", "");
+        model.put("body4", "");
 
 
         mailDTO.setMailFrom("dataworldproject@gmail.com");

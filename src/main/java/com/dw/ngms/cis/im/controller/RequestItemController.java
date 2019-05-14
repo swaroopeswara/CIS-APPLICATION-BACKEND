@@ -1,5 +1,6 @@
 package com.dw.ngms.cis.im.controller;
 
+import com.dw.ngms.cis.im.dto.RequestItemsDTO;
 import com.dw.ngms.cis.im.entity.RequestItems;
 import com.dw.ngms.cis.im.entity.RequestKinds;
 import com.dw.ngms.cis.im.entity.RequestTypes;
@@ -8,7 +9,10 @@ import com.dw.ngms.cis.im.service.RequestItemService;
 import com.dw.ngms.cis.im.service.RequestService;
 import com.dw.ngms.cis.uam.controller.MessageController;
 import com.dw.ngms.cis.uam.entity.ExternalUser;
+import com.google.gson.Gson;
+import jdk.nashorn.internal.parser.JSONParser;
 import org.apache.commons.collections.CollectionUtils;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,6 +38,9 @@ public class RequestItemController extends MessageController {
     @Autowired
     private RequestItemService requestItemService;
 
+    @Autowired
+    private RequestService requestsService;
+
 
    /*@GetMapping("/getRequestsOfUser")
     public ResponseEntity<?> getRequestsOfUser(HttpServletRequest request,
@@ -56,13 +63,35 @@ public class RequestItemController extends MessageController {
 
     @PostMapping("/createRequestItem")
     public ResponseEntity<?> createRequestType(HttpServletRequest request, @RequestBody @Valid RequestItems requestItems) {
-
+        Gson gson = new Gson();
         try {
             Long requestItemCode = this.requestItemService.getRequestItemId();
-            System.out.println("requestItemCode is "+requestItemCode);
+            System.out.println("requestItemCode is " + requestItemCode);
             requestItems.setRequestItemCode("REQITEM" + Long.toString(requestItemCode));
-            requestItems.setRequestId(requestItems.getRequestId());
+            RequestItemsDTO requestItemsDTO = new RequestItemsDTO();
+            requestItemsDTO.setGazetteType1(requestItems.getGazetteType1());
+            requestItemsDTO.setGazetteType2(requestItems.getGazetteType2());
+            requestItemsDTO.setRequestCost(requestItems.getRequestCost());
+            requestItemsDTO.setRequestHours(requestItems.getRequestHours());
+            String requestJson = gson.toJson(requestItemsDTO);
+            requestItems.setResultJson(requestJson);
             RequestItems requestItemsSave = this.requestItemService.saveRequestItem(requestItems);
+
+            List<RequestItems> getAllRequestItems = this.requestItemService.getRequestsByRequestItemCode(requestItemsSave.getRequestCode());
+
+            RequestItems[] itemsArray = new RequestItems[getAllRequestItems.size()];
+            itemsArray = getAllRequestItems.toArray(itemsArray);
+
+            Double totalSum = 0.00;
+            for (int i = 0; i < itemsArray.length; i++) {
+                totalSum = totalSum + Double.parseDouble(itemsArray[i].getRequestCost());
+            }
+            System.out.println("Total is" + totalSum);
+
+            Requests requests = this.requestsService.getRequestsByRequestCode(requestItemsSave.getRequestCode());
+            requests.setTotalAmount(String.valueOf(totalSum));
+            this.requestsService.saveRequest(requests);
+
             return ResponseEntity.status(HttpStatus.OK).body(requestItemsSave);
         } catch (Exception exception) {
             return generateFailureResponse(request, exception);
@@ -83,14 +112,11 @@ public class RequestItemController extends MessageController {
     }//getRequestItemsOfRequest
 
 
-
-
-
     @RequestMapping(value = "/deleteRequestItem", method = RequestMethod.POST)
     public ResponseEntity<?> deleteRequestItem(HttpServletRequest request,
                                                @RequestBody @Valid RequestItems items) throws IOException {
         try {
-            RequestItems requestItems = this.requestItemService.getRequestsByRequestCodeAndItemCode(items.getRequestCode(),items.getRequestItemCode());
+            RequestItems requestItems = this.requestItemService.getRequestsByRequestCodeAndItemCode(items.getRequestCode(), items.getRequestItemCode());
             if (isEmpty(requestItems)) {
                 return generateEmptyResponse(request, "RequestItems are  not found");
             }
@@ -99,12 +125,11 @@ public class RequestItemController extends MessageController {
                 return ResponseEntity.status(HttpStatus.OK).body("Request Item Deleted Successfully");
             }
 
-             return generateEmptyResponse(request, "RequestItems are  not found");
+            return generateEmptyResponse(request, "RequestItems are  not found");
         } catch (Exception exception) {
             return generateFailureResponse(request, exception);
         }
     }
-
 
 
 }

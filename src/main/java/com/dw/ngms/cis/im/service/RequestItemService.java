@@ -47,6 +47,10 @@ public class RequestItemService {
     } //getRequestsByRequestCode
 
 
+    public List<RequestItems>  getRequestsByRequestItemCode(String requestCode) {
+        return this.requestItemRepository.getRequestsByRequestItemCode(requestCode);
+    } //getRequestsByRequestCode
+
     public void deleteRequestItem(RequestItems requestItems) {
          this.requestItemRepository.delete(requestItems);
     } //deleteRequestItem

@@ -30,6 +30,8 @@ public interface RequestItemRepository extends JpaRepository<RequestItems, UUID>
     List<RequestItems>  getRequestsByRequestCode(@Param("requestCode") String requestCode);
 
 
+    @Query("SELECT u FROM RequestItems u WHERE u.requestCode = :requestCode ")
+    List<RequestItems>  getRequestsByRequestItemCode(@Param("requestCode") String requestCode);
 
 
 

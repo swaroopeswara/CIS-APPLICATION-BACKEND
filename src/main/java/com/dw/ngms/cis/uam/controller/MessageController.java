@@ -119,32 +119,7 @@ public class MessageController implements ExceptionConstants {
                 url.getPath().replace("/images/Logo_App.jpg", "") : null;
     }//getResourcePath
 
-    /*protected String sendMail(MailDTO mailDTO) {
-        SendBlueMailService http = new SendBlueMailService(mailConfiguration.getSendBlueMailLinkURL(), mailConfiguration.getSendBlueMailPassword());
-        //SendBlueMailService http = new SendBlueMailService("https://api.sendinblue.com/v2.0", "MGzZOdpQ9wLBfnb3");
-        Map<String, String> attr = new HashMap<>();
-        attr.put("HEADER",mailDTO.getHeader());
-        attr.put("SUBJECT",mailDTO.getSubject());
-        attr.put("BODY1", mailDTO.getBody1());
-        attr.put("BODY2", mailDTO.getBody2());
-        attr.put("BODY3", mailDTO.getBody3());
-        attr.put("BODY4", mailDTO.getBody4());
-        attr.put("FOOTER", mailDTO.getFooter());
 
-        Map<String, String> headers = new HashMap<>();
-        headers.put("Content-Type", "text/html; charset=iso-8859-1");
-        Map<String, Object> data = new HashMap<>();
-        data.put("id", ExceptionConstants.mailTemplateID);
-        data.put("to", mailDTO.getToAddress());
-        data.put("attr", attr);
-        data.put("headers", headers);
-        System.out.println(http);
-        String mailResponse = http.send_transactional_template(data);
-
-        return mailResponse;
-    }//sendMail
-
-*/
     protected String sendSMS(String cellNumber, String message) throws IOException {
 
 
@@ -218,6 +193,25 @@ public class MessageController implements ExceptionConstants {
 
     public void sendEmail(MailDTO mailDTO) throws Exception {
         this.sendEmail(mailDTO.getModel(), mailDTO.getMailTo(), mailDTO.getMailSubject());
+    }//sendEmail
+
+
+    public void sendEmail(MailDTO mailDTO,String fileName, File file) throws Exception {
+        this.sendEmail(mailDTO.getModel(), mailDTO.getMailTo(), mailDTO.getMailSubject(),fileName,file);
+    }//sendEmail
+
+
+    public void sendEmail(Map<String, Object> model, String mailTo, String mailSubject, String fileName, File file) throws Exception {
+        MimeMessage message = sender.createMimeMessage();
+
+        MimeMessageHelper helper = new MimeMessageHelper(message,true);
+
+        helper.setTo(mailTo);
+        helper.setText(getProcessedTemplate(model), true);
+        helper.setSubject(mailSubject);
+        helper.addAttachment(fileName, file);
+
+        sender.send(message);
     }//sendEmail
 
     public void sendEmails(MailDTO mail) {
