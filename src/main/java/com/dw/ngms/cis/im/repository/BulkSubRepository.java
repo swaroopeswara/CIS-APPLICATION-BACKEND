@@ -23,7 +23,7 @@ public interface BulkSubRepository extends JpaRepository<BulkSubTypes, UUID> {
             true)
     Long getSubBulkID();
 
-    @Query("SELECT u FROM BulkTypes u WHERE u.bulkTypeCode = :bulkTypeCode and isActive = 'Y'")
+    @Query("SELECT u FROM BulkSubTypes u WHERE u.bulkTypeCode = :bulkTypeCode and isActive = 'Y'")
     List<BulkSubTypes> getBulkRequestSubTypesByTypeCode(@Param("bulkTypeCode") String bulkTypeCode);
 
 

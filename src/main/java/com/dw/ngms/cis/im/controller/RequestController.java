@@ -234,18 +234,18 @@ public class RequestController extends MessageController {
             Long requestId = this.requestService.getRequestId();
             log.info("requestTypeId is " + requestId);
             requests.setRequestId(requestId);
-            requests.setRequestCode("REQ" + Long.toString(requestId));
-            requests.setReferenceNumber("REQ" + Long.toString(requestId));
+            requests.setRequestCode("REQ" + Long.toString(requests.getRequestId()));
+            requests.setReferenceNumber("REQ" + Long.toString(requests.getRequestId()));
             requests.setPaymentStatus("PENDING");
             //String processId = requests.getProcessId();
             String processId = "infoRequest";
             List<RequestItems> req = new ArrayList<>();
-            if (!requests.getRequestItems().isEmpty()) {
+            if (requests.getRequestItems() != null) {
                 for (RequestItems requestItems : requests.getRequestItems()) {
                     Long requestItemCode = this.requestItemService.getRequestItemId();
                     requestItems.setRequestItemId(requestItemCode);
-                    requestItems.setRequestId(requestId);
-                    requestItems.setRequestItemCode("REQITEM" + Long.toString(requestItemCode));
+                    requestItems.setRequestId(requests.getRequestId());
+                    requestItems.setRequestItemCode("REQITEM" + Long.toString(requestItems.getRequestItemId()));
                     requestItems.setRequestCode(requests.getRequestCode());
                     req.add(requestItems);
                 }

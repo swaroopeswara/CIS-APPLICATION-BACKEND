@@ -34,8 +34,8 @@ public class BulkTypeController extends MessageController {
     private BulkSubService bulkSubService;
 
 
- @GetMapping("/getActiveBulkTypes")
-    public ResponseEntity<?> getAllBulkTypes(HttpServletRequest request) {
+ @GetMapping("/getBulkRequestTypes")
+    public ResponseEntity<?> getBulkRequestTypes(HttpServletRequest request) {
         try {
             List<BulkTypes> bulkTypesList = bulkTypeService.getActiveBulkTypes();
             return (CollectionUtils.isEmpty(bulkTypesList)) ? generateEmptyResponse(request, "Bulk Type(s) not found")

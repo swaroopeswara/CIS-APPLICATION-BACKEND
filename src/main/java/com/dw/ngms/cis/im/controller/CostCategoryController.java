@@ -72,7 +72,7 @@ public class CostCategoryController extends MessageController {
             costCategories.setCategoryCode("COST" + Long.toString(categoryId));
 
             List<CostSubCategories> req = new ArrayList<>();
-            if (!costCategories.getSubCategoriesItems().isEmpty()) {
+            if (costCategories.getSubCategoriesItems() != null) {
                 for (CostSubCategories costSubCategoriesItems : costCategories.getSubCategoriesItems()) {
                     Long subCategoryCode = this.costSubService.getCostSubCategoryId();
                     costSubCategoriesItems.setCostSubCategoryCode("SUBCOST" + Long.toString(subCategoryCode));
@@ -88,6 +88,7 @@ public class CostCategoryController extends MessageController {
             CostCategories costCategoriesSave = this.costCategoryService.saveCostCategory(costCategories);
             return ResponseEntity.status(HttpStatus.OK).body(costCategoriesSave);
         } catch (Exception exception) {
+            System.out.println("exception is "+exception.getMessage());
             return generateFailureResponse(request, exception);
         }
     }//createCategory
