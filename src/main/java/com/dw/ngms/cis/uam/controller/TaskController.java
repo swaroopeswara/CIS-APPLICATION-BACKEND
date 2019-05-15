@@ -1,15 +1,19 @@
 package com.dw.ngms.cis.uam.controller;
 
 import com.dw.ngms.cis.exception.ExceptionConstants;
+import com.dw.ngms.cis.im.entity.Requests;
+import com.dw.ngms.cis.uam.dto.FilePathsDTO;
 import com.dw.ngms.cis.uam.dto.MailDTO;
 import com.dw.ngms.cis.uam.dto.TaskDTO;
 import com.dw.ngms.cis.uam.entity.InternalUserRoles;
 import com.dw.ngms.cis.uam.entity.Task;
+import com.dw.ngms.cis.uam.entity.TaskLifeCycle;
 import com.dw.ngms.cis.uam.jsonresponse.UserControllerResponse;
 import com.dw.ngms.cis.uam.service.InternalUserRoleService;
 import com.dw.ngms.cis.uam.service.TaskService;
 import com.dw.ngms.cis.uam.service.UserService;
 import com.google.gson.Gson;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +22,10 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+
+import static org.springframework.util.StringUtils.isEmpty;
 
 /**
  * Created by swaroop on 2019/04/06.
@@ -37,6 +44,8 @@ public class TaskController extends MessageController {
 
     @Autowired
     private UserService userService;
+
+
 
     @PostMapping("/createTask")
     public ResponseEntity<?> createTask(HttpServletRequest request, @RequestBody @Valid Task task) {
@@ -118,4 +127,21 @@ public class TaskController extends MessageController {
 
         return  this.taskService.findByCriteria(taskStatus,taskType,taskAllProvinceCode,taskAllOCSectionCode,taskAllOCRoleCode,omitTaskStatus);
     }
+
+
+    @RequestMapping(value = "/getTasksLifeCycle", method = RequestMethod.GET)
+    public ResponseEntity<?> getTasksLifeCycle(HttpServletRequest request,
+                                                 @RequestParam String taskReferenceCode) throws IOException {
+        try {
+            List<TaskLifeCycle> taskLifeCycleList = this.taskService.getTasksLifeCycleByTaskReferenceCode(taskReferenceCode);
+            return (CollectionUtils.isEmpty(taskLifeCycleList)) ? ResponseEntity.status(HttpStatus.OK).body(taskLifeCycleList)
+                    : ResponseEntity.status(HttpStatus.OK).body(taskLifeCycleList);
+        } catch(Exception exception)
+        {
+            return generateFailureResponse(request, exception);
+        }
+    }//getTasksLifeCycle
+
+
+
 }

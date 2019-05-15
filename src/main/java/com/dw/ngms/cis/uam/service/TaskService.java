@@ -9,6 +9,8 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import com.dw.ngms.cis.uam.entity.TaskLifeCycle;
+import com.dw.ngms.cis.uam.repository.TaskLifeCycleRepository;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
@@ -38,6 +40,9 @@ public class TaskService {
 	private UserService userService;
     @Autowired
 	private ProcessEngine<Task> processEngine;
+
+    @Autowired
+    private TaskLifeCycleRepository taskLifeCycleRepository;
 
     public Task saveTask(Task task) {
         return this.taskRepository.save(task);
@@ -158,5 +163,13 @@ public class TaskService {
 		
 		return task.getTaskStatus();
 	}//getTaskCurrentStatus
+
+
+    public  List<TaskLifeCycle> getTasksLifeCycleByTaskReferenceCode(String taskReferenceCode) {
+        return this.taskLifeCycleRepository.getTasksLifeCycleByTaskReferenceCode(taskReferenceCode);
+    }//getTasksLifeCycleByTaskReferenceCode
+
+
+
 
 }

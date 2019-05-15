@@ -9,6 +9,7 @@ import com.dw.ngms.cis.uam.controller.MessageController;
 import com.dw.ngms.cis.uam.dto.FilePathsDTO;
 import com.dw.ngms.cis.uam.dto.MailDTO;
 import com.dw.ngms.cis.uam.jsonresponse.UserControllerResponse;
+import com.dw.ngms.cis.uam.service.ProvinceService;
 import com.dw.ngms.cis.uam.service.TaskService;
 import com.dw.ngms.cis.uam.storage.StorageService;
 import com.dw.ngms.cis.uam.utilities.Constants;
@@ -63,6 +64,10 @@ public class RequestController extends MessageController {
     private StorageService testService;
     @Autowired
     private TaskService taskService;
+
+    @Autowired
+    private ProvinceService provinceService;
+
 
     @Autowired
     private JavaMailSender mailSender;
@@ -225,9 +230,10 @@ public class RequestController extends MessageController {
             log.info("requestTypeId is " + requestId);
             requests.setRequestId(requestId);
             requests.setRequestCode("REQ" + Long.toString(requests.getRequestId()));
-            requests.setReferenceNumber("REQ" + Long.toString(requests.getRequestId()));
+            //requests.setReferenceNumber("REQ" + Long.toString(requests.getRequestId()));
+            String provinceShortName = this.provinceService.getProvinceShortName(requests.getProvinceCode());
+            requests.setReferenceNumber("IN"+ Long.toString(requests.getRequestId()) +provinceShortName);
             requests.setPaymentStatus("PENDING");
-            //String processId = requests.getProcessId();
             String processId = "infoRequest";
             List<RequestItems> req = new ArrayList<>();
             if (requests.getRequestItems() != null) {
@@ -377,7 +383,7 @@ public class RequestController extends MessageController {
                 String fileName = req.getInvoiceFilePath();
                 File fileLater = new File(req.getInvoiceFilePath());
                 MailDTO mailDTO = new MailDTO();
-                sendMailInvoiceUser(req, mailDTO, fileName, fileLater);
+                //sendMailInvoiceUser(req, mailDTO, fileName, fileLater);
                 ProcessAdditionalInfo processAdditionalInfo = getProcessAdditionalInfo(invoiceDTO);
                 processUserState(request, processAdditionalInfo);
                 return ResponseEntity.status(HttpStatus.OK).body("Generated Invoice Successfully");
@@ -545,6 +551,6 @@ public class RequestController extends MessageController {
     {
         return generateFailureResponse(request, exception);
     }
-}//deleteDispatchDocument
+}//getDispatchDocsList
 
 }

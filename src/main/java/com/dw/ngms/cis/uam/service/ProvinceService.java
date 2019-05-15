@@ -26,6 +26,10 @@ public class ProvinceService {
         return this.provinceRepository.findById(id);
     }
 
+    public String getProvinceShortName(String provinceId) {
+        return this.provinceRepository.getProvinceShortName(provinceId);
+    }
+
     public Province updateProvince(Province Province) {
         return this.provinceRepository.save(Province);
     }
