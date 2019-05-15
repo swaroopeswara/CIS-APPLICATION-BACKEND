@@ -122,6 +122,22 @@ public class RequestItemController extends MessageController {
             }
             if (!isEmpty(requestItems)) {
                 this.requestItemService.deleteRequestItem(requestItems);
+                List<RequestItems> getAllRequestItems = this.requestItemService.getRequestsByRequestItemCode(requestItems.getRequestCode());
+
+                RequestItems[] itemsArray = new RequestItems[getAllRequestItems.size()];
+                itemsArray = getAllRequestItems.toArray(itemsArray);
+
+                Double totalSum = 0.00;
+                for (int i = 0; i < itemsArray.length; i++) {
+                    totalSum = totalSum + Double.parseDouble(itemsArray[i].getRequestCost());
+                }
+                System.out.println("Total sum after delete is" + totalSum);
+
+
+                Requests requests = this.requestsService.getRequestsByRequestCode(requestItems.getRequestCode());
+                requests.setTotalAmount(String.valueOf(totalSum));
+                this.requestsService.saveRequest(requests);
+
                 return ResponseEntity.status(HttpStatus.OK).body("Request Item Deleted Successfully");
             }
 
