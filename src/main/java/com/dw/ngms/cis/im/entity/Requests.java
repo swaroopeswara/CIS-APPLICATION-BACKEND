@@ -139,6 +139,10 @@ public class Requests implements Serializable {
     @Column(name = "MODIFIEDUSERCODE", length = 200)
     private String modifiedUserCode;
 
+    @Column(name = "DISPATCHDOCS", length = 200)
+    private String dispatchDocs;
+
+
 
     @Column(name = "ISACTIVE", length = 200)
     private String isActive;

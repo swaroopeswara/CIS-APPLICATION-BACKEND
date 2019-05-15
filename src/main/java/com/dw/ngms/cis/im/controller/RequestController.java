@@ -1,13 +1,42 @@
 package com.dw.ngms.cis.im.controller;
 
-import static org.springframework.util.StringUtils.isEmpty;
+import com.dw.ngms.cis.im.dto.InvoiceDTO;
+import com.dw.ngms.cis.im.entity.RequestItems;
+import com.dw.ngms.cis.im.entity.Requests;
+import com.dw.ngms.cis.im.service.RequestItemService;
+import com.dw.ngms.cis.im.service.RequestService;
+import com.dw.ngms.cis.uam.controller.MessageController;
+import com.dw.ngms.cis.uam.dto.FilePathsDTO;
+import com.dw.ngms.cis.uam.dto.MailDTO;
+import com.dw.ngms.cis.uam.jsonresponse.UserControllerResponse;
+import com.dw.ngms.cis.uam.service.TaskService;
+import com.dw.ngms.cis.uam.storage.StorageService;
+import com.dw.ngms.cis.uam.utilities.Constants;
+import com.dw.ngms.cis.workflow.api.ProcessAdditionalInfo;
+import com.dw.ngms.cis.workflow.model.Target;
+import com.google.gson.Gson;
+import com.itextpdf.text.pdf.AcroFields;
+import com.itextpdf.text.pdf.PdfReader;
+import com.itextpdf.text.pdf.PdfStamper;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.util.FileCopyUtils;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
+import java.io.*;
 import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -15,50 +44,7 @@ import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import javax.mail.internet.MimeMessage;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
-
-import com.dw.ngms.cis.uam.dto.FilePathsDTO;
-import com.dw.ngms.cis.uam.dto.InternalUserRoleDTO;
-import com.dw.ngms.cis.uam.dto.MailDTO;
-import com.dw.ngms.cis.uam.entity.ExternalUser;
-import com.dw.ngms.cis.uam.entity.InternalUserRoles;
-import com.dw.ngms.cis.uam.entity.User;
-import com.google.gson.Gson;
-import org.apache.commons.collections.CollectionUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.InputStreamResource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.util.FileCopyUtils;
-import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
-import com.dw.ngms.cis.im.dto.InvoiceDTO;
-import com.dw.ngms.cis.im.entity.RequestItems;
-import com.dw.ngms.cis.im.entity.Requests;
-import com.dw.ngms.cis.im.service.RequestItemService;
-import com.dw.ngms.cis.im.service.RequestService;
-import com.dw.ngms.cis.uam.controller.MessageController;
-import com.dw.ngms.cis.uam.service.TaskService;
-import com.dw.ngms.cis.uam.storage.StorageService;
-import com.dw.ngms.cis.uam.utilities.Constants;
-import com.dw.ngms.cis.workflow.api.ProcessAdditionalInfo;
-import com.dw.ngms.cis.workflow.model.Target;
-import com.itextpdf.text.pdf.AcroFields;
-import com.itextpdf.text.pdf.PdfReader;
-import com.itextpdf.text.pdf.PdfStamper;
-
-import lombok.extern.slf4j.Slf4j;
+import static org.springframework.util.StringUtils.isEmpty;
 
 /**
  * Created by swaroop on 2019/04/19.
@@ -150,6 +136,10 @@ public class RequestController extends MessageController {
         try {
 
             Requests requests = this.requestService.getRequestsByRequestCode(requestCode);
+            List<RequestItems> requestItemsList = this.requestItemService.getRequestsByRequestCode(requestCode);
+            if (!StringUtils.isEmpty(requestItemsList)) {
+                requests.setRequestItems(requestItemsList);
+            }
             return (requests != null) ? ResponseEntity.status(HttpStatus.OK).body(requests)
                     : generateEmptyResponse(request, "Request(s) not found");
         } catch (Exception exception) {
@@ -162,7 +152,7 @@ public class RequestController extends MessageController {
     public ResponseEntity<?> updateRequestOnLapse(HttpServletRequest request,
                                                   @RequestParam @Valid String reuestcode, @RequestParam @Valid Integer lapsetime,
                                                   @RequestParam @Valid boolean islapsed) {
-    	log.info("Start processing updateRequestOnLapse");
+        log.info("Start processing updateRequestOnLapse");
         if (StringUtils.isEmpty(reuestcode)) {
             return generateFailureResponse(request, new Exception("Invalid request code"));
         }
@@ -380,57 +370,17 @@ public class RequestController extends MessageController {
     @PostMapping("/sendEmailWithInvoice")
     public ResponseEntity<?> sendEmailWithInvoice(HttpServletRequest request, HttpServletResponse response,
                                                   @RequestParam("requestCode") String requestCode,
-                                                  @RequestBody @Valid InvoiceDTO invoiceDTO) throws IOException {
+                                                  @RequestBody @Valid InvoiceDTO invoiceDTO) throws Exception {
         try {
             Requests req = requestService.getRequestsByRequestCode(requestCode);
             if (req != null) {
-                ClassPathResource template = new ClassPathResource(Constants.pdfTemplate);
-                String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
-                String filename = Constants.fileNamePDF;
-                filename = timeStamp + "_" + filename;
-                File file = new File(Constants.invoiceDirectory + filename);
-                if (template.exists()) {
-                    try {
-                        PdfReader reader = new PdfReader(template.getFilename());
-                        PdfStamper stamper = new PdfStamper(reader, new FileOutputStream(file));
-                        AcroFields form = stamper.getAcroFields();
-                        System.out.println("");
-                        form.setField("FULL_NAME", invoiceDTO.getFullName());
-                        SimpleDateFormat fmt = new SimpleDateFormat("dd MMMM yyyy");
-                        form.setField("DATE", fmt.format(new Date()));
-                        form.setField("ORGANIZATION", invoiceDTO.getOrgnization());
-                        form.setField("REQUEST_NUMBER", invoiceDTO.getRequestNumber());
-                        form.setField("REQUEST_TYPE", invoiceDTO.getRequestType());
-                        form.setField("TELEPHONE", invoiceDTO.getTelephone());
-                        form.setField("POSTAL_ADDRESS", invoiceDTO.getPostalAddress());
-                        form.setField("EMAIL", invoiceDTO.getEmail());
-                        form.setField("MOBILE", invoiceDTO.getMoible());
-                        form.setField("DEPOSIT", invoiceDTO.getAmount());
-                        stamper.setFormFlattening(true);
-                        stamper.close();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    String mimeType = URLConnection.guessContentTypeFromName(file.getName());
-                    if (mimeType == null) {
-                        mimeType = "application/octet-stream";
-                    }
-                    response.setContentType(mimeType);
-                    response.setHeader("Content-Disposition", String.format("inline; filename=\"" + file.getName() + "\""));
-                    response.setContentLength((int) file.length());
-                    InputStream inputStream = new BufferedInputStream(new FileInputStream(file));
-                    FileCopyUtils.copy(inputStream, response.getOutputStream());
-                    req.setInvoiceFilePath(Constants.invoiceDirectory + "/" + filename);
-                    Requests updatedRequest = requestService.saveRequest(req);
-                    Requests requests = this.requestService.getRequestsByRequestCode(updatedRequest.getRequestCode());
-                    String fileName = requests.getInvoiceFilePath();
-                    File fileLater = new File(req.getInvoiceFilePath());
-                    MailDTO mailDTO = new MailDTO();
-                    sendMailInvoiceUser(mailDTO, fileName, fileLater);
-                    ProcessAdditionalInfo processAdditionalInfo = getProcessAdditionalInfo(invoiceDTO);
-                    processUserState(request, processAdditionalInfo);
-                    return ResponseEntity.status(HttpStatus.OK).body("Generated Invoice Successfully");
-                }
+                String fileName = req.getInvoiceFilePath();
+                File fileLater = new File(req.getInvoiceFilePath());
+                MailDTO mailDTO = new MailDTO();
+                sendMailInvoiceUser(req, mailDTO, fileName, fileLater);
+                ProcessAdditionalInfo processAdditionalInfo = getProcessAdditionalInfo(invoiceDTO);
+                processUserState(request, processAdditionalInfo);
+                return ResponseEntity.status(HttpStatus.OK).body("Generated Invoice Successfully");
             } else {
                 return generateEmptyResponse(request, "No Request found with requestCode " + requestCode);
             }
@@ -438,26 +388,23 @@ public class RequestController extends MessageController {
         } catch (Exception exception) {
             return generateFailureResponse(request, exception);
         }
-        return generateEmptyResponse(request, "No Request found with requestCode " + requestCode);
     }
 
 
-    private void sendMailInvoiceUser(MailDTO mailDTO, String fileName, File fileLater) throws Exception {
+    private void sendMailInvoiceUser(Requests requests, MailDTO mailDTO, String fileName, File fileLater) throws Exception {
 
         Map<String, Object> model = new HashMap<String, Object>();
 
-        model.put("firstName", "swaroop eswara");
-        model.put("body1", "Generated Invoice ");
+        model.put("firstName", requests.getUserName());
+        model.put("body1", "Invoice Generated Successfully");
         model.put("body2", "");
         model.put("body3", "");
         model.put("body4", "");
 
         mailDTO.setMailSubject("Welcome to CIS");
         model.put("FOOTER", "CIS ADMIN");
-        //mailDTO.setFooter("CIS ADMIN");
         mailDTO.setMailFrom("dataworldproject@gmail.com");
-        mailDTO.setMailTo("swaroopeswara@gmail.com");
-
+        mailDTO.setMailTo(requests.getUserName());
         mailDTO.setModel(model);
         sendEmail(mailDTO, fileName, fileLater);
 
@@ -507,5 +454,97 @@ public class RequestController extends MessageController {
                 .body(resource);
     }
 
+
+    @PostMapping("/uploadDispatchDocument")
+    public ResponseEntity<?> uploadDispatchDocument(HttpServletRequest request, @RequestParam MultipartFile[] multipleFiles,
+                                                    @RequestParam("requestCode") String requestCode
+    ) {
+        String message = "";
+        String json = null;
+        Gson gson = new Gson();
+        UserControllerResponse userControllerResponse = new UserControllerResponse();
+        try {
+            Requests requests = this.requestService.getRequestsByRequestCode(requestCode);
+            if (requests != null && !isEmpty(requests)) {
+                List<String> filesExist = new ArrayList<>();
+                for (MultipartFile f : multipleFiles) {
+                    List<String> files = new ArrayList<String>();
+                    String fileName = testService.store(f);
+                    files.add(f.getOriginalFilename());
+                    filesExist.add(Constants.uploadDirectoryPath + fileName);
+                    userControllerResponse.setFiles(filesExist);
+                    json = gson.toJson(userControllerResponse);
+                    requests.setDispatchDocs(json);
+                    this.requestService.saveRequest(requests);
+                }
+            }
+
+        } catch (Exception exception) {
+            return generateFailureResponse(request, exception);
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(json);
+    }//uploadDispatchDocument
+
+
+    @RequestMapping(value = "/deleteDispatchDocument", method = RequestMethod.POST)
+    public ResponseEntity<?> deleteDispatchDocument(HttpServletRequest request,
+                                                    @RequestBody @Valid Requests requestsBody,
+                                                    @RequestParam String documentPath) throws IOException {
+        try {
+            Requests requests = this.requestService.getRequestsByRequestCode(requestsBody.getRequestCode());
+            if (isEmpty(requests)) {
+                return generateEmptyResponse(request, "Requests are  not found");
+            }
+            if (!isEmpty(requests)) {
+                String pathFromDB = requests.getDispatchDocs();
+
+                Gson gson = new Gson();
+                FilePathsDTO filePath = gson.fromJson(pathFromDB, FilePathsDTO.class);
+                for (String str1 : filePath.getFiles()) {
+                    if (str1.contains(documentPath)) {
+                        Path fileToDeletePath = Paths.get(str1);
+                        Files.delete(fileToDeletePath);
+                    }
+                }
+
+                return ResponseEntity.status(HttpStatus.OK).body("Request Document Deleted Successfully");
+            }
+
+            return generateEmptyResponse(request, "Request Document are  not found");
+        } catch (Exception exception) {
+            return generateFailureResponse(request, exception);
+        }
+    }//deleteDispatchDocument
+
+
+    @RequestMapping(value = "/getDispatchDocsList", method = RequestMethod.GET)
+    public ResponseEntity<?> getDispatchDocsList(HttpServletRequest request,
+                                                 @RequestParam String requestCode) throws IOException {
+        try {
+            UserControllerResponse userControllerResponse = new UserControllerResponse();
+            String json = null;
+            Requests requests = this.requestService.getRequestsByRequestCode(requestCode);
+            if (isEmpty(requests)) {
+                return generateEmptyResponse(request, "Requests are  not found");
+            }
+            if (!isEmpty(requests)) {
+                String pathFromDB = requests.getDispatchDocs();
+                Gson gson = new Gson();
+                FilePathsDTO filePath = gson.fromJson(pathFromDB, FilePathsDTO.class);
+                System.out.println("filePath is " + filePath.getFiles().toString());
+                List<String> files = new ArrayList<String>();
+                for (String str1 : filePath.getFiles()) {
+                    files.add(str1);
+                    userControllerResponse.setFiles(files);
+                    json = gson.toJson(userControllerResponse);
+
+                }
+            }
+            return ResponseEntity.status(HttpStatus.OK).body(json);
+        } catch(Exception exception)
+    {
+        return generateFailureResponse(request, exception);
+    }
+}//deleteDispatchDocument
 
 }

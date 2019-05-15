@@ -23,6 +23,7 @@ public class UserControllerResponse {
 	private String message;
 	private String practiseName;
 	private List<String> files;
+	private String file;
     
 	public String getExists() {
 		return exists;
