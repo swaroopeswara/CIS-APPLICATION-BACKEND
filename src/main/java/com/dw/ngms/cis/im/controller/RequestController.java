@@ -8,7 +8,7 @@ import com.dw.ngms.cis.im.service.RequestService;
 import com.dw.ngms.cis.uam.controller.MessageController;
 import com.dw.ngms.cis.uam.dto.FilePathsDTO;
 import com.dw.ngms.cis.uam.dto.MailDTO;
-import com.dw.ngms.cis.uam.entity.ExternalUser;
+import com.dw.ngms.cis.uam.entity.TaskLifeCycle;
 import com.dw.ngms.cis.uam.jsonresponse.UserControllerResponse;
 import com.dw.ngms.cis.uam.service.ProvinceService;
 import com.dw.ngms.cis.uam.service.TaskService;
@@ -90,6 +90,20 @@ public class RequestController extends MessageController {
         }
     }//getTaskTargetFlows
 
+    @GetMapping("/getTaskHistory")
+    public ResponseEntity<?> getTaskHistory(HttpServletRequest request, @RequestParam @Valid String requestcode) {
+        if (StringUtils.isEmpty(requestcode)) {
+            return generateFailureResponse(request, new Exception("Invalid request code passed"));
+        }
+        try {
+            List<TaskLifeCycle> taskLifeCycle = taskService.getTasksLifeCycleByTaskReferenceCode(requestcode);
+            return (CollectionUtils.isEmpty(taskLifeCycle)) ? generateEmptyResponse(request, "Task history not found") :
+                    ResponseEntity.status(HttpStatus.OK).body(taskLifeCycle);
+        } catch (Exception exception) {
+            return generateFailureResponse(request, exception);
+        }
+    }//getTaskHistory
+    
     @GetMapping("/getRequestStatus")
     public ResponseEntity<?> getTaskCurrentStatus(HttpServletRequest request, @RequestParam String requestcode) {
         if (StringUtils.isEmpty(requestcode)) {

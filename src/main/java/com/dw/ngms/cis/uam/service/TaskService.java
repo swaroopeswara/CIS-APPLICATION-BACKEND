@@ -10,6 +10,7 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.validation.Valid;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -169,12 +170,8 @@ public class TaskService {
 		return task.getTaskStatus();
 	}//getTaskCurrentStatus
 
-
-    public  List<TaskLifeCycle> getTasksLifeCycleByTaskReferenceCode(String taskReferenceCode) {
+    public List<TaskLifeCycle> getTasksLifeCycleByTaskReferenceCode(String taskReferenceCode) {
         return this.taskLifeCycleRepository.getTasksLifeCycleByTaskReferenceCode(taskReferenceCode);
     }//getTasksLifeCycleByTaskReferenceCode
-
-
-
 
 }
