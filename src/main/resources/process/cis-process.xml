@@ -14,9 +14,21 @@
 		        		<assignee type="Role" name="Information Manager"/>
 		        	</assigneeList>
 		        	<targetList>
-		        		<target id="flow2" restRequest="restMove" description="move"/>
-			        	<target id="flow3" restRequest="restReassign" description="reassign"/>			        	
-			        	<target id="flow7" restRequest="processUserState" description="finalise"/>
+		        		<target id="flow2" restRequest="restMove" description="move">
+		        			<assignerList>
+		        				<assignee type="Role" name="Information Manager"/>
+				        	</assignerList>
+		        		</target>
+			        	<target id="flow3" restRequest="restReassign" description="reassign">
+		        			<assignerList>
+		        				<assignee type="Role" name="Information Manager"/>
+				        	</assignerList>
+		        		</target>			        	
+			        	<target id="flow7" restRequest="processUserState" description="finalise">
+		        			<assignerList>
+		        				<assignee type="Role" name="Information Manager"/>
+				        	</assignerList>
+		        		</target>
 		        	</targetList>		        	
 		        </sequenceFlow>		        
 		        <sequenceFlow id="flow3" name="usrState2" state="Reassigned" targetState="" restDependancy="">
@@ -25,10 +37,30 @@
 		        		<assignee type="User" name="?"/>
 		        	</assigneeList>
 		        	<targetList>
-		        		<target id="flow4" restRequest="generateInvoice" description="Generate invoice"/>
-		        		<target id="flow5" restRequest="restUploadPOP" description="Upload proof of payment"/>
-		        		<target id="flow6" restRequest="restScrutinise" description="Scrutinise"/>
-		        		<target id="flow7" restRequest="processUserState" description="finalise"/>
+		        		<target id="flow4" restRequest="generateInvoice" description="Generate invoice">
+		        			<assignerList>
+		        				<assignee type="Role" name="Information Manager"/>
+				        		<!-- <assigner type="Role" name="Information Officer"/> -->
+				        	</assignerList>
+		        		</target>
+		        		<target id="flow5" restRequest="restUploadPOP" description="Upload proof of payment">
+		        			<assignerList>
+		        				<assignee type="Role" name="Information Manager"/>
+				        		<assigner type="Role" name="Information Officer"/>
+				        	</assignerList>
+		        		</target>
+		        		<target id="flow6" restRequest="restScrutinise" description="Scrutinise">
+		        			<assignerList>
+		        				<assignee type="Role" name="Information Manager"/>
+				        		<assigner type="Role" name="Information Officer"/>
+				        	</assignerList>
+		        		</target>
+		        		<target id="flow7" restRequest="processUserState" description="finalise">
+		        			<assignerList>
+		        				<assignee type="Role" name="Information Manager"/>
+				        		<!-- <assigner type="Role" name="Information Officer"/> -->
+				        	</assignerList>
+		        		</target>
 		        	</targetList>
 		        </sequenceFlow>
 		        <sequenceFlow id="flow4" name="usrState3" state="GenerateInvoice" targetState="Reassigned" restDependancy=""/>
@@ -39,8 +71,18 @@
 		        		<assignee type="User" name="?"/>
 		        	</assigneeList>
 		        	<targetList>
-		        		<target id="flow2" restRequest="restMove" description="move"/>
-		        		<target id="flow7" restRequest="restFinalise" description="finalise"/>
+		        		<target id="flow2" restRequest="restMove" description="move">
+		        			<assignerList>
+		        				<assignee type="Role" name="Information Manager"/>
+				        		<assigner type="Role" name="Information Officer"/>
+				        	</assignerList>
+		        		</target>
+		        		<target id="flow7" restRequest="restFinalise" description="finalise">
+		        			<assignerList>
+		        				<assignee type="Role" name="Information Manager"/>
+				        		<assigner type="Role" name="Information Officer"/>
+				        	</assignerList>
+		        		</target>
 		        	</targetList>
 		        </sequenceFlow>
 		        <sequenceFlow id="flow7" name="theEnd" state="Closed" targetState="" restDependancy=""/>

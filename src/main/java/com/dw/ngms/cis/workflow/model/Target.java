@@ -1,5 +1,7 @@
 package com.dw.ngms.cis.workflow.model;
 
+import java.util.List;
+
 import javax.xml.bind.annotation.XmlRootElement;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -24,5 +26,7 @@ public class Target {
 	private String restRequest;
 	@JsonProperty("description")
 	private String description;
+	@JsonProperty("assignerList")
+	private List<Assigner> assignerList;
 		
 }

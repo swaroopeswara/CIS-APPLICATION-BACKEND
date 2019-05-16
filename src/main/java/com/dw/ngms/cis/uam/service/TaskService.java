@@ -12,6 +12,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
@@ -21,10 +22,12 @@ import com.dw.ngms.cis.im.entity.Requests;
 import com.dw.ngms.cis.uam.entity.InternalRole;
 import com.dw.ngms.cis.uam.entity.Task;
 import com.dw.ngms.cis.uam.entity.TaskLifeCycle;
+import com.dw.ngms.cis.uam.repository.InternalRoleRepository;
 import com.dw.ngms.cis.uam.repository.TaskLifeCycleRepository;
 import com.dw.ngms.cis.uam.repository.TaskRepository;
 import com.dw.ngms.cis.workflow.api.ProcessAdditionalInfo;
 import com.dw.ngms.cis.workflow.api.ProcessEngine;
+import com.dw.ngms.cis.workflow.model.Assigner;
 import com.dw.ngms.cis.workflow.model.Process;
 import com.dw.ngms.cis.workflow.model.Target;
 
@@ -44,10 +47,11 @@ public class TaskService {
 	private UserService userService;
     @Autowired
 	private ProcessEngine<Task> processEngine;
-
     @Autowired
     private TaskLifeCycleRepository taskLifeCycleRepository;
-
+    @Autowired
+    private InternalRoleRepository internalRoleRepository;
+    
     public Task saveTask(Task task) {
         return this.taskRepository.save(task);
     } //FindUserByEmail
@@ -112,6 +116,29 @@ public class TaskService {
     	
     	return processEngine.getSequenceTargetFlows(task.getTaskType(), task.getTaskStatus());
     }//getTaskTargetFlows
+    
+    public List<Target> getTaskTargetFlows(Long taskId, String provinceCode, String sectionCode, String internalrolecode) {
+    	List<Target> filteredList = new ArrayList<>();
+    	List<Target> targetList = getTaskTargetFlows(taskId);
+    	if(!CollectionUtils.isEmpty(targetList)) {
+    		InternalRole role = internalRoleRepository.findByProvinceCodeAndSectionCodeAndRoleCode(provinceCode, sectionCode, internalrolecode);
+    		if(role != null) {
+    			for(Target target : targetList) {
+    				if(!CollectionUtils.isEmpty(target.getAssignerList())) {
+	    				for(Assigner assigner: target.getAssignerList()) {
+	    					if(assigner.getName().equals(role.getRoleName())) {
+	    						filteredList.add(target);
+	    						break;
+	    					}
+	    				}//inner
+    				}else {
+    					filteredList.add(target);
+    				}
+    			}//outer
+    		}
+    	}
+		return filteredList;
+	}//getTaskTargetFlows
     
     public Task getTask(ProcessAdditionalInfo additionalInfo) {
     	if(additionalInfo == null) return null;    	
