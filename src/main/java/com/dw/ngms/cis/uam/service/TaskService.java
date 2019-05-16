@@ -6,18 +6,21 @@ import java.util.List;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import com.dw.ngms.cis.uam.entity.TaskLifeCycle;
-import com.dw.ngms.cis.uam.repository.TaskLifeCycleRepository;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import com.dw.ngms.cis.im.entity.Requests;
+import com.dw.ngms.cis.uam.entity.InternalRole;
 import com.dw.ngms.cis.uam.entity.Task;
+import com.dw.ngms.cis.uam.entity.TaskLifeCycle;
+import com.dw.ngms.cis.uam.repository.TaskLifeCycleRepository;
 import com.dw.ngms.cis.uam.repository.TaskRepository;
 import com.dw.ngms.cis.workflow.api.ProcessAdditionalInfo;
 import com.dw.ngms.cis.workflow.api.ProcessEngine;
@@ -48,7 +51,8 @@ public class TaskService {
         return this.taskRepository.save(task);
     } //FindUserByEmail
     
-    public List<Task> findByCriteria(String taskStatus, String taskType, String taskAllProvinceCode, String taskAllOCSectionCode, String taskAllOCRoleCode,String omitTaskStatus) {
+    @SuppressWarnings({ "unchecked", "serial" })
+	public List<Task> findByCriteria(String taskStatus, String taskType, String taskAllProvinceCode, String taskAllOCSectionCode, String taskAllOCRoleCode,String omitTaskStatus) {
         return this.taskRepository.findAll(new Specification<Task>() {
             @Override
             public Predicate toPredicate(Root<Task> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
@@ -65,8 +69,9 @@ public class TaskService {
                 if (taskAllOCSectionCode != null && !StringUtils.isEmpty(taskAllOCSectionCode)) {
                     predicates.add(criteriaBuilder.and(criteriaBuilder.equal(root.get("taskAllOCSectionCode"), taskAllOCSectionCode)));
                 }
-                if (taskAllOCRoleCode != null && !StringUtils.isEmpty(taskAllOCRoleCode)) {
-                    predicates.add(criteriaBuilder.and(criteriaBuilder.equal(root.get("taskAllOCRoleCode"), taskAllOCRoleCode)));
+                if (taskAllOCRoleCode != null && !StringUtils.isEmpty(taskAllOCRoleCode)) {               	                	
+					Join<Task, InternalRole> internalRoleJoin = (Join<Task, InternalRole>) root.<Task, InternalRole>fetch("internalRoleList", JoinType.INNER);
+                    predicates.add(criteriaBuilder.and(criteriaBuilder.equal(internalRoleJoin.get("internalRoleCode"), taskAllOCRoleCode)));
                 }
 
                 if (omitTaskStatus != null && !StringUtils.isEmpty(omitTaskStatus)) {
