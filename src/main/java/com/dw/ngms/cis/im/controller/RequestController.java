@@ -8,6 +8,7 @@ import com.dw.ngms.cis.im.service.RequestService;
 import com.dw.ngms.cis.uam.controller.MessageController;
 import com.dw.ngms.cis.uam.dto.FilePathsDTO;
 import com.dw.ngms.cis.uam.dto.MailDTO;
+import com.dw.ngms.cis.uam.entity.ExternalUser;
 import com.dw.ngms.cis.uam.jsonresponse.UserControllerResponse;
 import com.dw.ngms.cis.uam.service.ProvinceService;
 import com.dw.ngms.cis.uam.service.TaskService;
@@ -24,6 +25,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -44,6 +46,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import static org.springframework.util.StringUtils.isEmpty;
 
@@ -232,7 +236,7 @@ public class RequestController extends MessageController {
             requests.setRequestCode("REQ" + Long.toString(requests.getRequestId()));
             //requests.setReferenceNumber("REQ" + Long.toString(requests.getRequestId()));
             String provinceShortName = this.provinceService.getProvinceShortName(requests.getProvinceCode());
-            requests.setReferenceNumber("IN"+ Long.toString(requests.getRequestId()) +provinceShortName);
+            requests.setReferenceNumber("IN" + Long.toString(requests.getRequestId()) + provinceShortName);
             requests.setPaymentStatus("PENDING");
             String processId = "infoRequest";
             List<RequestItems> req = new ArrayList<>();
@@ -497,6 +501,9 @@ public class RequestController extends MessageController {
                                                     @RequestBody @Valid Requests requestsBody,
                                                     @RequestParam String documentPath) throws IOException {
         try {
+            String json = null;
+            Gson gson = new Gson();
+            UserControllerResponse userControllerResponse = new UserControllerResponse();
             Requests requests = this.requestService.getRequestsByRequestCode(requestsBody.getRequestCode());
             if (isEmpty(requests)) {
                 return generateEmptyResponse(request, "Requests are  not found");
@@ -504,18 +511,33 @@ public class RequestController extends MessageController {
             if (!isEmpty(requests)) {
                 String pathFromDB = requests.getDispatchDocs();
 
-                Gson gson = new Gson();
                 FilePathsDTO filePath = gson.fromJson(pathFromDB, FilePathsDTO.class);
+                List<String> fileDeleted = new ArrayList<>();
                 for (String str1 : filePath.getFiles()) {
-                    if (str1.contains(documentPath)) {
-                        Path fileToDeletePath = Paths.get(str1);
-                        Files.delete(fileToDeletePath);
-                    }
+                    fileDeleted.add(str1);
+//                    System.out.println("Str1 is "+str1);
+//                    if (te.contains(documentPath)) {
+//                        Path fileToDeletePath = Paths.get(str1);
+//                        Files.delete(fileToDeletePath);
+//                        System.out.println("String values are "+str1);
+//                        te.remove(documentPath);
+//                    }
+//                    System.out.println("size is" +te.size());
+                }
+                System.out.println("size is " + fileDeleted.size());
+                if (fileDeleted.contains(documentPath)) {
+                    Path fileToDeletePath = Paths.get(documentPath);
+                    Files.delete(fileToDeletePath);
+                    fileDeleted.remove(documentPath);
                 }
 
+                userControllerResponse.setFiles(fileDeleted);
+                json = gson.toJson(userControllerResponse);
+                requests.setDispatchDocs(json);
+                this.requestService.saveRequest(requests);
+                System.out.println("size is after " + fileDeleted.size());
                 return ResponseEntity.status(HttpStatus.OK).body("Request Document Deleted Successfully");
             }
-
             return generateEmptyResponse(request, "Request Document are  not found");
         } catch (Exception exception) {
             return generateFailureResponse(request, exception);
@@ -527,12 +549,9 @@ public class RequestController extends MessageController {
     public ResponseEntity<?> getDispatchDocsList(HttpServletRequest request,
                                                  @RequestParam String requestCode) throws IOException {
         try {
-            UserControllerResponse userControllerResponse = new UserControllerResponse();
             String json = null;
+            List<String> test = new ArrayList<>();
             Requests requests = this.requestService.getRequestsByRequestCode(requestCode);
-            if (isEmpty(requests)) {
-                return generateEmptyResponse(request, "Requests are  not found");
-            }
             if (!isEmpty(requests)) {
                 String pathFromDB = requests.getDispatchDocs();
                 Gson gson = new Gson();
@@ -541,16 +560,85 @@ public class RequestController extends MessageController {
                 List<String> files = new ArrayList<String>();
                 for (String str1 : filePath.getFiles()) {
                     files.add(str1);
-                    userControllerResponse.setFiles(files);
-                    json = gson.toJson(userControllerResponse);
+                    json = gson.toJson(files);
 
                 }
+                return ResponseEntity.status(HttpStatus.OK).body(json);
+            } else {
+                return ResponseEntity.status(HttpStatus.OK).body(test);
             }
-            return ResponseEntity.status(HttpStatus.OK).body(json);
-        } catch(Exception exception)
-    {
-        return generateFailureResponse(request, exception);
-    }
-}//getDispatchDocsList
+
+        } catch (Exception exception) {
+            return generateFailureResponse(request, exception);
+        }
+    }//getDispatchDocsList
+
+
+
+    @RequestMapping(value = "/downloadDispatchDocuments", method = RequestMethod.POST)
+    public ResponseEntity<InputStreamResource> downloadDocumentation(HttpServletRequest request,
+                                                                     @RequestBody @Valid Requests requests) throws IOException {
+        Requests req = this.requestService.getRequestsByRequestCode(requests.getRequestCode());
+        System.out.println("req documents are one " + req.getDispatchDocs());
+        String pathFromDB = req.getDispatchDocs();
+
+        Gson gson = new Gson();
+        FilePathsDTO filePath = gson.fromJson(pathFromDB, FilePathsDTO.class);
+        System.out.println("filePath is " + filePath.getFiles().toString());
+        List<String> files = new ArrayList<String>();
+        for (String str1 : filePath.getFiles()) {
+            System.out.println(str1);
+            files.add(str1);
+            zipFiles(files);
+        }
+        File file = new File(Constants.downloadDirectoryPath + "DispatchDocumentsDownloadFiles.zip");
+
+        InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename= DispatchDocumentsDownloadFiles.zip")
+                .contentType(MediaType.parseMediaType("application/octet-stream"))
+                .contentLength(file.length()) //
+                .body(resource);
+    }//downloadDispatchDocuments
+
+
+
+    public void zipFiles(List<String> files) {
+
+        FileOutputStream fos = null;
+        ZipOutputStream zipOut = null;
+        FileInputStream fis = null;
+        try {
+            fos = new FileOutputStream(Constants.downloadDirectoryPath + "DispatchDocumentsDownloadFiles.zip");
+            zipOut = new ZipOutputStream(new BufferedOutputStream(fos));
+            for (String filePath : files) {
+                File input = new File(filePath);
+                fis = new FileInputStream(input);
+                ZipEntry ze = new ZipEntry(input.getName());
+                zipOut.putNextEntry(ze);
+                byte[] tmp = new byte[4 * 1024];
+                int size = 0;
+                while ((size = fis.read(tmp)) != -1) {
+                    zipOut.write(tmp, 0, size);
+                }
+                zipOut.flush();
+                fis.close();
+            }
+            zipOut.close();
+            System.out.println("Done... Zipped the files...");
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } finally {
+            try {
+                if (fos != null) fos.close();
+            } catch (Exception ex) {
+
+            }
+        }
+    }//zipFiles
 
 }
