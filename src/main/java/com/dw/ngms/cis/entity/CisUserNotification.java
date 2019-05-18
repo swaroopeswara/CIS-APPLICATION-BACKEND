@@ -1,0 +1,31 @@
+package com.dw.ngms.cis.entity;
+
+import java.io.Serializable;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Entity
+@Getter
+@Setter
+@NoArgsConstructor
+@Table(name = "CISNOTIFICATION")
+public class CisUserNotification implements Serializable {
+	
+	private static final long serialVersionUID = 3209158392625197416L;
+
+	@Id
+	@Column(name="USERID")
+	private Integer userId;
+	
+	@Id
+	@Column(name="NOTIFICATIONID")
+	private Integer notificationId;
+	
+}
