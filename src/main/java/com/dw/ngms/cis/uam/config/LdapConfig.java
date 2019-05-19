@@ -10,6 +10,9 @@ import org.springframework.ldap.core.support.LdapContextSource;
 
 import com.dw.ngms.cis.uam.ldap.LdapClient;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Configuration
 @PropertySource("classpath:ldap-config.properties")
 public class LdapConfig {
@@ -29,13 +32,21 @@ public class LdapConfig {
 		contextSource.setBase(env.getRequiredProperty("ldap.base.dn"));
 		contextSource.setUserDn(env.getRequiredProperty("ldap.principal"));
 		contextSource.setPassword(env.getRequiredProperty("ldap.password"));
+		contextSource.afterPropertiesSet();
 		return contextSource;
 	}//contextSourceOne
 	
 	@Bean
 	@SuppressWarnings("unused")
-	public LdapTemplate ldapTemplate() {
-		return new LdapTemplate(contextSource());
+	public LdapTemplate ldapTemplate() {		
+		try {
+			LdapTemplate ldapTemplate = new LdapTemplate(contextSource());
+			ldapTemplate.afterPropertiesSet();
+			return ldapTemplate;
+		} catch (Exception e) {
+			log.error("Failed to create ldap template, "+e.getMessage(), e);
+			return null;
+		}		
 	}//ldapTemplate
 
 	@Bean
