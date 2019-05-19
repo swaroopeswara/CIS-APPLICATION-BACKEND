@@ -22,10 +22,10 @@ public class CisUserNotification implements Serializable {
 
 	@Id
 	@Column(name="USERID")
-	private Integer userId;
+	private Long userId;
 	
 	@Id
 	@Column(name="NOTIFICATIONID")
-	private Integer notificationId;
+	private Long notificationId;
 	
 }

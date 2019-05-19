@@ -21,7 +21,7 @@ public class CisConfig implements Serializable {
 	private static final long serialVersionUID = 4305001328371603564L;
 
 	@Id
-	private Integer id;
+	private Long id;
 	
 	@Column(name="NAME", length = 60)
 	private String name;

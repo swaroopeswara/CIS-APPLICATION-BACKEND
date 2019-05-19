@@ -21,7 +21,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @Table(name = "TASKLIFECYCLE")
-public class TaskLifeCycle implements Serializable {
+public class TaskLifeCycle implements Serializable { 
 
 	private static final long serialVersionUID = -1159573371875203609L;
 

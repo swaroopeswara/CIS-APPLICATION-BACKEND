@@ -5,7 +5,10 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -24,7 +27,9 @@ public class CisNotification implements Serializable {
 	private static final long serialVersionUID = -6207972210204835351L;
 
 	@Id
-	private Integer id;
+	@SequenceGenerator(name = "generator", sequenceName = "CISNOTIFICATION_ID_SEQ", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "generator")
+	private Long id;
 	
 	@Column(name="PAYLOAD", length = 2000)
 	private String payload;
