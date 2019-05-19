@@ -5,18 +5,20 @@ package com.dw.ngms.cis.uam.utilities;
  */
 public class Constants {
 
-    //public static final String uploadDirectoryPath = "/Users/swaroop/Documents/test-upload/";
-    //public static final String downloadDirectoryPath = "/Users/swaroop/Documents/test-download/";
-    //public static final String REPORT_RESOURCE_PATH = "/Users/swaroop/Documents/test-download/reports";
-    //public static final String invoiceDirectory = "/Users/swaroop/Documents/CIS-FOLDER/";
+ public static final String uploadDirectoryPath = "/Users/swaroop/Documents/test-upload/";
+    public static final String downloadDirectoryPath = "/Users/swaroop/Documents/test-download/";
+    public static final String REPORT_RESOURCE_PATH = "/Users/swaroop/Documents/test-download/reports";
+    public static final String invoiceDirectory = "/Users/swaroop/Documents/CIS-FOLDER/";
+    public static final String uploadDirectoryPathFTP = "/Users/swaroop/Documents/ftp-upload/";
 
     public static final String fileNamePDF = "NLC_MonitoringForm.pdf";
     public static final String pdfTemplate = "NLC_MonitoringForm_Templete.pdf";
 
-   public static final String uploadDirectoryPath = "C:/Users/Administrator/Documents/signed/";
+/*  public static final String uploadDirectoryPath = "C:/Users/Administrator/Documents/signed/";
    public static final String downloadDirectoryPath = "C:/Users/Administrator/Documents/filesDownload";
    public static final String REPORT_RESOURCE_PATH = "C:/Users/Administrator/Documents/reports";
    public static final String invoiceDirectory = "C:/Users/Administrator/Documents/CIS-FOLDER/";
+    public static final String uploadDirectoryPathFTP = "C:/Users/Administrator/Documents/ftp-upload/";*/
 
 
 }
