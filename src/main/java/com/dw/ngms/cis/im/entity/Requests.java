@@ -142,6 +142,9 @@ public class Requests implements Serializable {
     @Column(name = "DISPATCHDOCS", length = 200)
     private String dispatchDocs;
 
+    @Column(name = "EXTERNALUSERDISPATCHDOCS", length = 200)
+    private String externalUserDispatchDocs;
+
 
 
     @Column(name = "ISACTIVE", length = 200)

@@ -148,7 +148,7 @@ public class RequestService {
         mailDTO.getModel().put("body4", "");
         mailDTO.getModel().put("firstName", "");
         mailDTO.getModel().put("FOOTER","CIS ADMIN");
-        mailDTO.setMailFrom("dataworldproject@gmail.com");        
+        mailDTO.setMailFrom("cheifsurveyorgeneral@gmail.com");
     
         if(CollectionUtils.isEmpty(userList)) 
         	throw new RuntimeException("No users found to send notification mail");

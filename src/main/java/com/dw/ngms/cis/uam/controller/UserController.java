@@ -664,7 +664,7 @@ public class UserController extends MessageController {
             model.put("body4", "");
             model.put("firstName", user.getFirstName() + ",");
             model.put("FOOTER", "CIS ADMIN");
-            mailDTO.setMailFrom("dataworldproject@gmail.com");
+            mailDTO.setMailFrom("cheifsurveyorgeneral@gmail.com");
             mailDTO.setMailTo(user.getEmail());
             mailDTO.setModel(model);
             sendEmail(mailDTO);
@@ -758,7 +758,7 @@ public class UserController extends MessageController {
         mailDTO.setMailSubject("Welcome to CIS");
         model.put("FOOTER", "CIS ADMIN");
         //mailDTO.setFooter("CIS ADMIN");
-        mailDTO.setMailFrom("dataworldproject@gmail.com");
+        mailDTO.setMailFrom("cheifsurveyorgeneral@gmail.com");
         mailDTO.setMailTo(user.getEmail());
 
         mailDTO.setModel(model);
@@ -785,7 +785,7 @@ public class UserController extends MessageController {
         mailDTO.setMailSubject("Welcome to CIS");
         model.put("firstName", " " + user.getFirstName() + ",");
         model.put("FOOTER", "CIS ADMIN");
-        mailDTO.setMailFrom("dataworldproject@gmail.com");
+        mailDTO.setMailFrom("cheifsurveyorgeneral@gmail.com");
         mailDTO.setMailTo(user.getEmail());
         mailDTO.setModel(model);
         sendEmail(mailDTO);
@@ -802,7 +802,7 @@ public class UserController extends MessageController {
         model.put("body2", "New task created for approval by provincial administrator");
         model.put("body3", "");
         model.put("body4", "");
-        mailDTO.setMailFrom("dataworldproject@gmail.com");
+        mailDTO.setMailFrom("cheifsurveyorgeneral@gmail.com");
         mailDTO.setMailTo(mailConfiguration.getAdminUserMail());
         mailDTO.setModel(model);
         sendEmail(mailDTO);
@@ -819,7 +819,7 @@ public class UserController extends MessageController {
         model.put("body2", "New task created for approval by provincial administrator");
         model.put("body3", "");
         model.put("body4", "");
-        mailDTO.setMailFrom("dataworldproject@gmail.com");
+        mailDTO.setMailFrom("cheifsurveyorgeneral@gmail.com");
         mailDTO.setMailTo(mailConfiguration.getAdminUserMail());
         mailDTO.setModel(model);
         sendEmail(mailDTO);
@@ -837,7 +837,7 @@ public class UserController extends MessageController {
         model.put("body3", "");
         model.put("body4", "");
 
-        mailDTO.setMailFrom("dataworldproject@gmail.com");
+        mailDTO.setMailFrom("cheifsurveyorgeneral@gmail.com");
         mailDTO.setMailTo(mailConfiguration.getProvinceAdminMail());
         mailDTO.setModel(model);
         sendEmail(mailDTO);
@@ -856,7 +856,7 @@ public class UserController extends MessageController {
         model.put("body4", "");
 
 
-        mailDTO.setMailFrom("dataworldproject@gmail.com");
+        mailDTO.setMailFrom("cheifsurveyorgeneral@gmail.com");
         mailDTO.setMailTo(mailConfiguration.getProvinceAdminMail());
         mailDTO.setModel(model);
         sendEmail(mailDTO);

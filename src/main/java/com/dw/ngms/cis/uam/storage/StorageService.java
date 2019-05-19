@@ -22,6 +22,7 @@ public class StorageService {
 
 	Logger log = LoggerFactory.getLogger(this.getClass().getName());
 	private final Path rootLocation = Paths.get(Constants.uploadDirectoryPath);
+	private final Path rootLocationFTP = Paths.get(Constants.uploadDirectoryPathFTP);
 
 	public String store(MultipartFile file) {
 		String fileName  = null;
@@ -34,6 +35,25 @@ public class StorageService {
 				fileName = fileName.substring(0, fileName.lastIndexOf("."));
 			 fileNameWithPdf = fileName+"_" +timeStamp +".pdf";
 			Files.copy(file.getInputStream(), this.rootLocation.resolve(fileName+"_" +timeStamp +".pdf"));
+		} catch (Exception e) {
+			throw new RuntimeException("FAIL!");
+		}
+
+		return fileNameWithPdf;
+	}
+
+
+	public String storeFtpFiles(MultipartFile file) {
+		String fileName  = null;
+		String fileNameWithPdf = null;
+		String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
+		try {
+			System.out.println("File name is "+file.getName());
+			fileName = file.getOriginalFilename();
+			if (fileName.indexOf(".") > 0)
+				fileName = fileName.substring(0, fileName.lastIndexOf("."));
+			fileNameWithPdf = fileName+"_" +timeStamp +".pdf";
+			Files.copy(file.getInputStream(), this.rootLocationFTP.resolve(fileName+"_" +timeStamp +".pdf"));
 		} catch (Exception e) {
 			throw new RuntimeException("FAIL!");
 		}

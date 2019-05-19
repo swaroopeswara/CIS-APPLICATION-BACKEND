@@ -135,7 +135,7 @@ public class IssueLogController extends MessageController {
         mailDTO.setSubject("Welcome to CIS");
         model.put("firstName", issueLog.getFullName());
         model.put("FOOTER", "CIS ADMIN");
-        mailDTO.setMailFrom("dataworldproject@gmail.com");
+        mailDTO.setMailFrom("cheifsurveyorgeneral@gmail.com");
         mailDTO.setMailTo(issueLog.getEmail());
         mailDTO.setModel(model);
         try {

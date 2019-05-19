@@ -129,7 +129,7 @@ public class TaskController extends MessageController {
     }
 
 
-    @RequestMapping(value = "/getTasksLifeCycle", method = RequestMethod.GET)
+    @GetMapping("/getTasksLifeCycle")
     public ResponseEntity<?> getTasksLifeCycle(HttpServletRequest request,
                                                  @RequestParam String taskReferenceCode) throws IOException {
         try {

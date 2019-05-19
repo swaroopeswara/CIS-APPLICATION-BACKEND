@@ -334,7 +334,7 @@ public class InternalUserRoleController extends MessageController {
         model.put("body3", "");
         model.put("body4", "");
 
-        mailDTO.setMailFrom("dataworldproject@gmail.com");
+        mailDTO.setMailFrom("cheifsurveyorgeneral@gmail.com");
         mailDTO.setMailTo(userRolesList.get(0).getUserName());//admin user for later
         mailDTO.setModel(model);
         try {
