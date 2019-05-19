@@ -516,7 +516,7 @@ public class RequestController extends MessageController {
         try {
             Requests requests = this.requestService.getRequestsByRequestCode(requestCode);
             if (requests != null && !isEmpty(requests)) {
-                if (requests.getExternalUserDispatchDocs() != null) {
+                if (requests.getDispatchDocs() != null) {
                     List<String> filesExist = new ArrayList<>();
                     String pathFromDB = requests.getDispatchDocs();
                     FilePathsDTO filePath = gson.fromJson(pathFromDB, FilePathsDTO.class);
@@ -635,17 +635,17 @@ public class RequestController extends MessageController {
                         }
 
                             String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
-                            ftpZipFiles(filesExist,timeStamp);
+                            ftpZipFiles(filesExist,timeStamp,ftpClient);
 
-                            String zipFilename = timeStamp+"download.zip";
+                           /* String zipFilename = timeStamp+"download.zip";
                             ftpClient.changeWorkingDirectory("/uploadFiles/");
                             File localZip = new File(Constants.downloadDirectoryPath + zipFilename);
                             InputStream inputStream = new FileInputStream(localZip);
                             ftpClient.storeFile(zipFilename, inputStream);
                             String path = ftpClient.printWorkingDirectory();
                             String ftpFilePath = "ftp://160.119.101.57" + path + "/" + zipFilename;
-                            System.out.println(ftpFilePath);
-                            MailDTO mailDTO = new MailDTO();
+                            System.out.println(ftpFilePath);*/
+                            //MailDTO mailDTO = new MailDTO();
                            // sendMailWithFTPPAth(requests, mailDTO, ftpFilePath);
 
                         ftpClient.logout();
@@ -966,7 +966,7 @@ public class RequestController extends MessageController {
     }//zipFiles
 
 
-    public void ftpZipFiles(List<String> files, String timeStamp) {
+    public void ftpZipFiles(List<String> files, String timeStamp, FTPClient ftpClient) {
         FileOutputStream fos = null;
         ZipOutputStream zipOut = null;
         FileInputStream fis = null;
@@ -991,6 +991,27 @@ public class RequestController extends MessageController {
             }
             zipOut.close();
             System.out.println("Done... Zipped the files...");
+            ftpClient.changeWorkingDirectory("/uploadFiles/");
+
+            File firstLocalFile = new File(Constants.downloadDirectoryPath + zipFilename);
+
+            String firstRemoteFile = zipFilename;
+            InputStream inputStream = new FileInputStream(firstLocalFile);
+
+            System.out.println("Start uploading first file");
+            boolean done = ftpClient.storeFile(firstRemoteFile, inputStream);
+            inputStream.close();
+            if (done) {
+                String path = ftpClient.printWorkingDirectory();
+                String ftpFilePath = "ftp://160.119.101.57" + path + "/" + zipFilename;
+                System.out.println(ftpFilePath);
+                System.out.println("The first file is uploaded successfully.");
+            }
+
+
+
+
+
         } catch (FileNotFoundException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

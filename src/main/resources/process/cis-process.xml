@@ -67,7 +67,7 @@
 				<sequenceFlow id="flow5" name="usrState4" state="UploadPOP" targetState="Reassigned" restDependancy=""/>
 		        <sequenceFlow id="flow6" name="usrState5" state="Scrutinise" targetState="" restDependancy="">
 		        	<assigneeList>
-		        		<assignee type="Role" name="Information Scrtinizer"/>
+		        		<assignee type="Role" name="Information Scrutinizer"/>
 		        		<assignee type="User" name="?"/>
 		        	</assigneeList>
 		        	<targetList>
