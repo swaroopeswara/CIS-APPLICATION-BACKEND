@@ -1,13 +1,12 @@
 package com.dw.ngms.cis.im.service;
 
-import com.dw.ngms.cis.im.entity.ApplicationProperties;
-import com.dw.ngms.cis.im.entity.CostSubCategories;
-import com.dw.ngms.cis.im.repository.ApplicationPropertiesRepository;
-import com.dw.ngms.cis.uam.entity.Task;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import com.dw.ngms.cis.im.entity.ApplicationProperties;
+import com.dw.ngms.cis.im.repository.ApplicationPropertiesRepository;
 
 /**
  * Created by swaroop on 2019/04/16.
@@ -22,7 +21,10 @@ public class ApplicationPropertiesService {
         return this.applicationPropertiesRepository.getPropertyValueByName(name);
     }//getPropertyValueByName
 
-
+    public ApplicationProperties getProperty(String key) {
+        return this.applicationPropertiesRepository.getProperty(key);
+    }//getPropertyValueByName
+    
     public ApplicationProperties saveProperties(ApplicationProperties applicationProperties) {
         return this.applicationPropertiesRepository.save(applicationProperties);
     } //saveProperties

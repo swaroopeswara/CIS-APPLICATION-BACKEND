@@ -30,11 +30,14 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
 import com.dw.ngms.cis.exception.ExceptionConstants;
 import com.dw.ngms.cis.exception.ResponseBuilderAgent;
 import com.dw.ngms.cis.exception.RestResponse;
+import com.dw.ngms.cis.im.entity.ApplicationProperties;
+import com.dw.ngms.cis.im.service.ApplicationPropertiesService;
 import com.dw.ngms.cis.uam.configuration.MailConfiguration;
 import com.dw.ngms.cis.uam.dto.MailDTO;
 
@@ -44,8 +47,9 @@ import freemarker.template.MalformedTemplateNameException;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import freemarker.template.TemplateNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 
-
+@Slf4j
 @CrossOrigin(origins = "*")
 @Controller
 public class MessageController implements ExceptionConstants {
@@ -56,7 +60,9 @@ public class MessageController implements ExceptionConstants {
     @Autowired
     private MailConfiguration mailConfiguration;
 
-
+    @Autowired
+    private ApplicationPropertiesService appPropertiesService;
+    
     @Autowired
     private JavaMailSender sender;
 
@@ -211,7 +217,7 @@ public class MessageController implements ExceptionConstants {
         helper.setSubject(mailSubject);
         helper.addAttachment(fileName, file);
 
-        sender.send(message);
+        sendMailMessage(message);
     }//sendEmail
 
     public void sendEmails(MailDTO mail) {
@@ -237,8 +243,18 @@ public class MessageController implements ExceptionConstants {
         helper.setText(getProcessedTemplate(model), true);
         helper.setSubject(mailSubject);
 
-        sender.send(message);
+        sendMailMessage(message);
     }//sendEmail
+
+	private void sendMailMessage(MimeMessage message) {
+		ApplicationProperties property = appPropertiesService.getProperty("SEND_MAIL");
+		if(property == null || property.getKeyValue() == null || 
+				property.getKeyValue().equalsIgnoreCase("false")) {
+			log.warn("Mail configuration disabled, no mail sent");
+			return;
+		}
+		sender.send(message);
+	}//sendMailMessage
     
 	private String getProcessedTemplate(Map<String, Object> model) throws TemplateNotFoundException,
 			MalformedTemplateNameException, ParseException, IOException, TemplateException {
