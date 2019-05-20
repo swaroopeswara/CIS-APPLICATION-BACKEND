@@ -14,11 +14,20 @@ public class Constants {
     public static final String fileNamePDF = "NLC_MonitoringForm.pdf";
     public static final String pdfTemplate = "NLC_MonitoringForm_Templete.pdf";
 
+/*
   public static final String uploadDirectoryPath = "C:/Users/Administrator/Documents/signed/";
    public static final String downloadDirectoryPath = "C:/Users/Administrator/Documents/filesDownload";
    public static final String REPORT_RESOURCE_PATH = "C:/Users/Administrator/Documents/reports";
    public static final String invoiceDirectory = "C:/Users/Administrator/Documents/CIS-FOLDER/";
     public static final String uploadDirectoryPathFTP = "C:/Users/Administrator/Documents/ftp-upload/";
+*/
+
+
+    public static final String uploadDirectoryPath = "/cisroot/signed/";
+    public static final String downloadDirectoryPath = "/cisroot/filesDownload";
+    public static final String REPORT_RESOURCE_PATH = "/cisroot/reports";
+    public static final String invoiceDirectory = "/cisroot/CIS-FOLDER/";
+    public static final String uploadDirectoryPathFTP = "/cisroot/ftp-upload/";
 
 
 }
