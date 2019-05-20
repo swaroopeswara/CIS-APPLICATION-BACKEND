@@ -34,8 +34,11 @@ public class BusinessRuleHistory implements Serializable {
 	@Column(name="REFERENCENUMBER", length = 200)
 	private String referenceNumber;
 	
-	@Column(name="JOBDESCRIPTION", length = 500)
-	private String jobDescription;
+	@Column(name="CATEGORY", length = 500)
+	private String category;
+	
+	@Column(name="SUBCATEGORY", length = 500)
+	private String subCategory;
 	
 	@Column(name="PROVINCE", length = 100)
 	private String province;
@@ -43,14 +46,17 @@ public class BusinessRuleHistory implements Serializable {
 	@Column(name="OFFICER", length = 255)
 	private String officer;
 	
+	@Column(name="BUSINESSRULE", length = 255)
+	private String businessRule;
+	
 	@Column(name="USERNAME", length = 255)
 	private String userName;
 		
-	@Temporal(TemporalType.TIMESTAMP)
+	@Temporal(TemporalType.DATE)
 	@Column(name="DATERECEIVED")
 	private Date dateReceived;
 	
-	@Temporal(TemporalType.TIMESTAMP)
+	@Temporal(TemporalType.DATE)
 	@Column(name="OVERRIDEDATE")
 	private Date overrideDate;
 	

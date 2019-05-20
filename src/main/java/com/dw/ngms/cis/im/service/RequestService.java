@@ -10,9 +10,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import com.dw.ngms.cis.controller.MessageController;
 import com.dw.ngms.cis.im.entity.Requests;
 import com.dw.ngms.cis.im.repository.RequestRepository;
-import com.dw.ngms.cis.uam.controller.MessageController;
 import com.dw.ngms.cis.uam.dto.MailDTO;
 import com.dw.ngms.cis.uam.entity.InternalRole;
 import com.dw.ngms.cis.uam.entity.Task;

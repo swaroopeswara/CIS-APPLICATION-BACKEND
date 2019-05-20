@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.dw.ngms.cis.entity.BusinessRuleHistory;
 import com.dw.ngms.cis.service.BusinessRuleService;
-import com.dw.ngms.cis.uam.controller.MessageController;
 
 @RestController
 @RequestMapping("/cisorigin.cis/api/v1")

@@ -1,9 +1,9 @@
 package com.dw.ngms.cis.im.controller;
 
+import com.dw.ngms.cis.controller.MessageController;
 import com.dw.ngms.cis.im.entity.ApplicationProperties;
 import com.dw.ngms.cis.im.entity.CostSubCategories;
 import com.dw.ngms.cis.im.service.ApplicationPropertiesService;
-import com.dw.ngms.cis.uam.controller.MessageController;
 import com.dw.ngms.cis.uam.entity.Task;
 import com.dw.ngms.cis.uam.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;

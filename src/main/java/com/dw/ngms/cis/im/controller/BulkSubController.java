@@ -1,10 +1,10 @@
 package com.dw.ngms.cis.im.controller;
 
+import com.dw.ngms.cis.controller.MessageController;
 import com.dw.ngms.cis.im.entity.BulkSubTypes;
 import com.dw.ngms.cis.im.entity.CostSubCategories;
 import com.dw.ngms.cis.im.service.BulkSubService;
 import com.dw.ngms.cis.im.service.CostSubService;
-import com.dw.ngms.cis.uam.controller.MessageController;
 import com.dw.ngms.cis.uam.jsonresponse.UserControllerResponse;
 import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;

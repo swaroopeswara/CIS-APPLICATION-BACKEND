@@ -1,5 +1,6 @@
 package com.dw.ngms.cis.uam.controller;
 
+import com.dw.ngms.cis.controller.MessageController;
 import com.dw.ngms.cis.uam.entity.NotificationTypes;
 import com.dw.ngms.cis.uam.entity.Notifications;
 import com.dw.ngms.cis.uam.service.NotificationService;

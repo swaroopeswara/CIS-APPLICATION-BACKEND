@@ -1,4 +1,4 @@
-package com.dw.ngms.cis.uam.report;
+package com.dw.ngms.cis.report;
 
 import org.springframework.stereotype.Service;
 

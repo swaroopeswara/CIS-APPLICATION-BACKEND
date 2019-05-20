@@ -1,5 +1,6 @@
 package com.dw.ngms.cis.uam.controller;
 
+import com.dw.ngms.cis.controller.MessageController;
 import com.dw.ngms.cis.uam.entity.LoggedUser;
 import com.dw.ngms.cis.uam.entity.User;
 import com.dw.ngms.cis.uam.jsonresponse.UserControllerResponse;

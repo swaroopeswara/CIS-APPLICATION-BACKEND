@@ -1,11 +1,12 @@
 package com.dw.ngms.cis.im.controller;
 
+import com.dw.ngms.cis.controller.MessageController;
 import com.dw.ngms.cis.im.entity.BulkSubTypes;
 import com.dw.ngms.cis.im.entity.BulkTypes;
 import com.dw.ngms.cis.im.service.BulkSubService;
 import com.dw.ngms.cis.im.service.BulkTypeService;
 import com.dw.ngms.cis.im.service.CostSubService;
-import com.dw.ngms.cis.uam.controller.MessageController;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

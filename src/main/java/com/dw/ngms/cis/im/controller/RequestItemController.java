@@ -1,5 +1,6 @@
 package com.dw.ngms.cis.im.controller;
 
+import com.dw.ngms.cis.controller.MessageController;
 import com.dw.ngms.cis.im.dto.RequestItemsDTO;
 import com.dw.ngms.cis.im.entity.RequestItems;
 import com.dw.ngms.cis.im.entity.RequestKinds;
@@ -7,7 +8,6 @@ import com.dw.ngms.cis.im.entity.RequestTypes;
 import com.dw.ngms.cis.im.entity.Requests;
 import com.dw.ngms.cis.im.service.RequestItemService;
 import com.dw.ngms.cis.im.service.RequestService;
-import com.dw.ngms.cis.uam.controller.MessageController;
 import com.dw.ngms.cis.uam.entity.ExternalUser;
 import com.google.gson.Gson;
 import jdk.nashorn.internal.parser.JSONParser;

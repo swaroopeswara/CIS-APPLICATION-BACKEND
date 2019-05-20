@@ -1,5 +1,6 @@
 package com.dw.ngms.cis.uam.controller;
 
+import com.dw.ngms.cis.controller.MessageController;
 import com.dw.ngms.cis.exception.ExceptionConstants;
 import com.dw.ngms.cis.im.entity.Requests;
 import com.dw.ngms.cis.uam.dto.FilePathsDTO;

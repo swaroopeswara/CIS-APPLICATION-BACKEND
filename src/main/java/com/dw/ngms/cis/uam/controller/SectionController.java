@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.dw.ngms.cis.controller.MessageController;
 import com.dw.ngms.cis.uam.entity.Section;
 import com.dw.ngms.cis.uam.service.SectionService;
 

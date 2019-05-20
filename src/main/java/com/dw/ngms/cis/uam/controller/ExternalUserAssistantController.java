@@ -1,5 +1,6 @@
 package com.dw.ngms.cis.uam.controller;
 
+import com.dw.ngms.cis.controller.MessageController;
 import com.dw.ngms.cis.uam.dto.ExternalUserAssistantDTO;
 import com.dw.ngms.cis.uam.entity.ExternalUserAssistant;
 import com.dw.ngms.cis.uam.jsonresponse.UserControllerResponse;

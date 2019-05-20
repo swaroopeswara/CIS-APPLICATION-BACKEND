@@ -1,5 +1,6 @@
 package com.dw.ngms.cis.uam.controller;
 
+import com.dw.ngms.cis.controller.MessageController;
 import com.dw.ngms.cis.uam.configuration.MailConfiguration;
 import com.dw.ngms.cis.uam.dto.*;
 import com.dw.ngms.cis.uam.entity.*;

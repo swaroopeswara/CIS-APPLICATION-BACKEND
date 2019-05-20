@@ -16,7 +16,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.dw.ngms.cis.uam.controller.MessageController;
+import com.dw.ngms.cis.controller.MessageController;
+import com.dw.ngms.cis.report.ReportGenerator;
 import com.dw.ngms.cis.uam.dto.UserLogReportDto;
 import com.dw.ngms.cis.uam.dto.UserMaintainReportDto;
 import com.dw.ngms.cis.uam.dto.UserSummaryReportDto;
@@ -28,7 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/cisorigin.uam/api/v1")
 @CrossOrigin(origins = "*")
-public class ReportController extends MessageController {
+public class UamReportController extends MessageController {
 
 	@Autowired
 	private ReportGenerator reportGenerator;

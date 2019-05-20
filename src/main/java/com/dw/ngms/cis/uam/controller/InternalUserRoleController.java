@@ -11,6 +11,7 @@ import java.util.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import com.dw.ngms.cis.controller.MessageController;
 import com.dw.ngms.cis.exception.ExceptionConstants;
 import com.dw.ngms.cis.uam.dto.MailDTO;
 import com.dw.ngms.cis.uam.dto.UserDTO;

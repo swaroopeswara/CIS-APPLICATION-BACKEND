@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
+import com.dw.ngms.cis.controller.MessageController;
 import com.dw.ngms.cis.uam.entity.CommunicationType;
 import com.dw.ngms.cis.uam.service.CommunicationTypeService;
 

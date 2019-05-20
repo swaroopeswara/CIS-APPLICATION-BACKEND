@@ -1,4 +1,4 @@
-package com.dw.ngms.cis.uam.controller;
+package com.dw.ngms.cis.controller;
 
 import java.io.BufferedReader;
 import java.io.File;
