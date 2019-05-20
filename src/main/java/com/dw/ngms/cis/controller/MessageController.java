@@ -248,7 +248,7 @@ public class MessageController implements ExceptionConstants {
 
 	private void sendMailMessage(MimeMessage message) {
 		ApplicationProperties property = appPropertiesService.getProperty("SEND_MAIL");
-		if(property == null || property.getKeyValue() == null || 
+		if(property != null && property.getKeyValue() != null && 
 				property.getKeyValue().equalsIgnoreCase("false")) {
 			log.warn("Mail configuration disabled, no mail sent");
 			return;
