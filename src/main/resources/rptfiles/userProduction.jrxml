@@ -362,9 +362,9 @@
 					</datasetRun>
 					<jr:column width="70" uuid="42c83b36-b3bf-49df-88e8-cd4eb53078eb">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column1"/>
-						<jr:columnHeader style="Table 1_CH" height="30" rowSpan="1">
+						<jr:columnHeader style="Table 1_CH" height="50" rowSpan="1">
 							<staticText>
-								<reportElement key="" mode="Transparent" x="0" y="0" width="70" height="30" uuid="a3beecae-940a-40f6-908c-fa7c4b05ffcd"/>
+								<reportElement key="" mode="Transparent" x="0" y="0" width="70" height="50" uuid="a3beecae-940a-40f6-908c-fa7c4b05ffcd"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font size="11" isBold="true"/>
 								</textElement>
@@ -382,9 +382,9 @@
 					</jr:column>
 					<jr:column width="62" uuid="3fe6cc06-9b2f-416a-a518-fb714940a3d2">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column2"/>
-						<jr:columnHeader style="Table 1_CH" height="30" rowSpan="1">
+						<jr:columnHeader style="Table 1_CH" height="50" rowSpan="1">
 							<staticText>
-								<reportElement mode="Transparent" x="0" y="0" width="62" height="30" uuid="23035d13-ca32-4548-8f1a-5f1e1a52d47d"/>
+								<reportElement mode="Transparent" x="0" y="0" width="62" height="50" uuid="23035d13-ca32-4548-8f1a-5f1e1a52d47d"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font size="11" isBold="true"/>
 								</textElement>
@@ -402,9 +402,9 @@
 					</jr:column>
 					<jr:column width="90" uuid="9d25c59b-1e9f-4b17-907b-cfd27f829ba4">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column3"/>
-						<jr:columnHeader style="Table 1_CH" height="30" rowSpan="1">
+						<jr:columnHeader style="Table 1_CH" height="50" rowSpan="1">
 							<staticText>
-								<reportElement mode="Transparent" x="0" y="0" width="90" height="30" uuid="55f05fda-8304-4002-a096-e66315e5c2bc"/>
+								<reportElement mode="Transparent" x="0" y="0" width="90" height="50" uuid="55f05fda-8304-4002-a096-e66315e5c2bc"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font size="11" isBold="true"/>
 								</textElement>
@@ -422,9 +422,9 @@
 					</jr:column>
 					<jr:column width="87" uuid="8357bb6d-8f8b-426a-9e46-aa096150ab21">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column4"/>
-						<jr:columnHeader style="Table 1_CH" height="30" rowSpan="1">
+						<jr:columnHeader style="Table 1_CH" height="50" rowSpan="1">
 							<staticText>
-								<reportElement mode="Transparent" x="0" y="0" width="87" height="30" uuid="e2750bf2-146a-4bc6-b720-69e898cbd154"/>
+								<reportElement mode="Transparent" x="0" y="0" width="87" height="50" uuid="e2750bf2-146a-4bc6-b720-69e898cbd154"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font size="11" isBold="true"/>
 								</textElement>
@@ -442,9 +442,9 @@
 					</jr:column>
 					<jr:column width="62" uuid="fd5e9a60-f7d5-4a42-8014-2848b2f60cc9">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column5"/>
-						<jr:columnHeader style="Table 1_CH" height="30" rowSpan="1">
+						<jr:columnHeader style="Table 1_CH" height="50" rowSpan="1">
 							<staticText>
-								<reportElement mode="Transparent" x="0" y="0" width="62" height="30" uuid="393c2d38-7c30-4e20-b764-8ace6a981f2f"/>
+								<reportElement mode="Transparent" x="0" y="0" width="62" height="50" uuid="393c2d38-7c30-4e20-b764-8ace6a981f2f"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font size="11" isBold="true"/>
 								</textElement>
@@ -462,9 +462,9 @@
 					</jr:column>
 					<jr:column width="63" uuid="0034c475-2359-4a8b-a9d9-7ae055483233">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column6"/>
-						<jr:columnHeader style="Table 1_CH" height="30" rowSpan="1">
+						<jr:columnHeader style="Table 1_CH" height="50" rowSpan="1">
 							<staticText>
-								<reportElement mode="Transparent" x="0" y="0" width="63" height="30" uuid="f7f1e15b-d2b8-4d6a-b904-5157ee2ad16c"/>
+								<reportElement mode="Transparent" x="0" y="0" width="63" height="50" uuid="f7f1e15b-d2b8-4d6a-b904-5157ee2ad16c"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font size="11" isBold="true"/>
 								</textElement>
@@ -482,9 +482,9 @@
 					</jr:column>
 					<jr:column width="69" uuid="8b2b4cae-70d8-443b-aee8-a5daddf54c6b">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column7"/>
-						<jr:columnHeader style="Table 1_CH" height="30" rowSpan="1">
+						<jr:columnHeader style="Table 1_CH" height="50" rowSpan="1">
 							<staticText>
-								<reportElement mode="Transparent" x="0" y="0" width="69" height="30" uuid="de0dd6ff-67ac-4020-9aa5-bd1d3c62224e"/>
+								<reportElement mode="Transparent" x="0" y="0" width="69" height="50" uuid="de0dd6ff-67ac-4020-9aa5-bd1d3c62224e"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font size="11" isBold="true"/>
 								</textElement>
@@ -502,9 +502,9 @@
 					</jr:column>
 					<jr:column width="71" uuid="c98289e3-d348-460d-a1be-b93e2ac16522">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column8"/>
-						<jr:columnHeader style="Table 1_CH" height="30" rowSpan="1">
+						<jr:columnHeader style="Table 1_CH" height="50" rowSpan="1">
 							<staticText>
-								<reportElement mode="Transparent" x="0" y="0" width="71" height="30" uuid="374e8192-183e-4ba4-831c-00c40ad393fc"/>
+								<reportElement mode="Transparent" x="0" y="0" width="71" height="50" uuid="374e8192-183e-4ba4-831c-00c40ad393fc"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font size="11" isBold="true"/>
 								</textElement>
@@ -522,9 +522,9 @@
 					</jr:column>
 					<jr:column width="71" uuid="a168b9c9-ab6a-468c-827b-3fe53ac44771">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column9"/>
-						<jr:columnHeader style="Table 1_CH" height="30" rowSpan="1">
+						<jr:columnHeader style="Table 1_CH" height="50" rowSpan="1">
 							<staticText>
-								<reportElement mode="Transparent" x="0" y="0" width="71" height="30" uuid="6560a0f6-156f-44f8-8d05-87701758a827"/>
+								<reportElement mode="Transparent" x="0" y="0" width="71" height="50" uuid="6560a0f6-156f-44f8-8d05-87701758a827"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font size="11" isBold="true"/>
 								</textElement>
@@ -542,9 +542,9 @@
 					</jr:column>
 					<jr:column width="69" uuid="c132d0cb-ad51-42fe-996b-1a8ecd5e23e7">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column10"/>
-						<jr:columnHeader style="Table 1_CH" height="30" rowSpan="1">
+						<jr:columnHeader style="Table 1_CH" height="50" rowSpan="1">
 							<staticText>
-								<reportElement mode="Transparent" x="0" y="0" width="69" height="30" uuid="e51804ab-07a6-4045-ab60-c4f0c5098e8f"/>
+								<reportElement mode="Transparent" x="0" y="0" width="69" height="50" uuid="e51804ab-07a6-4045-ab60-c4f0c5098e8f"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font size="11" isBold="true"/>
 								</textElement>
@@ -562,9 +562,9 @@
 					</jr:column>
 					<jr:column width="68" uuid="e6726bba-7898-4291-a87d-bdb13d26cbb1">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column11"/>
-						<jr:columnHeader style="Table 1_CH" height="30" rowSpan="1">
+						<jr:columnHeader style="Table 1_CH" height="50" rowSpan="1">
 							<staticText>
-								<reportElement mode="Transparent" x="0" y="0" width="68" height="30" uuid="2f9049d9-1fde-404f-999f-5b17bcf84a87"/>
+								<reportElement mode="Transparent" x="0" y="0" width="68" height="50" uuid="2f9049d9-1fde-404f-999f-5b17bcf84a87"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font size="11" isBold="true"/>
 								</textElement>
@@ -582,9 +582,9 @@
 					</jr:column>
 					<jr:column width="71" uuid="b66d1bec-a726-490f-93f1-bb15d80778c1">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column12"/>
-						<jr:columnHeader style="Table 1_CH" height="30" rowSpan="1">
+						<jr:columnHeader style="Table 1_CH" height="50" rowSpan="1">
 							<staticText>
-								<reportElement mode="Transparent" x="0" y="0" width="71" height="30" uuid="64d44336-9dcd-4075-884c-cea63b722105"/>
+								<reportElement mode="Transparent" x="0" y="0" width="71" height="50" uuid="64d44336-9dcd-4075-884c-cea63b722105"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font size="11" isBold="true"/>
 								</textElement>
@@ -602,9 +602,9 @@
 					</jr:column>
 					<jr:column width="66" uuid="943cacb1-515e-422a-bf3b-05322e553f3d">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column13"/>
-						<jr:columnHeader style="Table 1_CH" height="30" rowSpan="1">
+						<jr:columnHeader style="Table 1_CH" height="50" rowSpan="1">
 							<staticText>
-								<reportElement mode="Transparent" x="0" y="0" width="66" height="30" uuid="75cf6ce6-73a2-4e29-b926-d7fa87621063"/>
+								<reportElement mode="Transparent" x="0" y="0" width="66" height="50" uuid="75cf6ce6-73a2-4e29-b926-d7fa87621063"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font size="11" isBold="true"/>
 								</textElement>
@@ -622,9 +622,9 @@
 					</jr:column>
 					<jr:column width="67" uuid="4c0bb9d8-7f6e-46ac-b0df-b69b158fccbb">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column14"/>
-						<jr:columnHeader style="Table 1_CH" height="30" rowSpan="1">
+						<jr:columnHeader style="Table 1_CH" height="50" rowSpan="1">
 							<staticText>
-								<reportElement mode="Transparent" x="0" y="0" width="67" height="30" uuid="5c909da5-e99c-4ccf-9e10-45b0008a965b"/>
+								<reportElement mode="Transparent" x="0" y="0" width="67" height="50" uuid="5c909da5-e99c-4ccf-9e10-45b0008a965b"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font size="11" isBold="true"/>
 								</textElement>
@@ -642,9 +642,9 @@
 					</jr:column>
 					<jr:column width="66" uuid="755d1c10-46e2-4709-9be8-951cad52be27">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column15"/>
-						<jr:columnHeader style="Table 1_CH" height="30" rowSpan="1">
+						<jr:columnHeader style="Table 1_CH" height="50" rowSpan="1">
 							<staticText>
-								<reportElement mode="Transparent" x="0" y="0" width="66" height="30" uuid="d75568fc-af6c-4edb-90ee-6bdf865f6bec"/>
+								<reportElement mode="Transparent" x="0" y="0" width="66" height="50" uuid="d75568fc-af6c-4edb-90ee-6bdf865f6bec"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font size="11" isBold="true"/>
 								</textElement>
@@ -662,9 +662,9 @@
 					</jr:column>
 					<jr:column width="66" uuid="b583594e-3f94-43b4-a813-2680035e8723">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column16"/>
-						<jr:columnHeader style="Table 1_CH" height="30" rowSpan="1">
+						<jr:columnHeader style="Table 1_CH" height="50" rowSpan="1">
 							<staticText>
-								<reportElement mode="Transparent" x="0" y="0" width="66" height="30" uuid="56c55e29-4560-4ce6-9e8f-ee9c17aa1af1"/>
+								<reportElement mode="Transparent" x="0" y="0" width="66" height="50" uuid="56c55e29-4560-4ce6-9e8f-ee9c17aa1af1"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font size="11" isBold="true"/>
 								</textElement>
@@ -682,9 +682,9 @@
 					</jr:column>
 					<jr:column width="63" uuid="5e69d90a-c593-4a8c-af32-f663a8a377de">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column17"/>
-						<jr:columnHeader style="Table 1_CH" height="30" rowSpan="1">
+						<jr:columnHeader style="Table 1_CH" height="50" rowSpan="1">
 							<staticText>
-								<reportElement mode="Transparent" x="0" y="0" width="63" height="30" uuid="22526aa8-9db3-4b6d-98b5-e806a6639d2d"/>
+								<reportElement mode="Transparent" x="0" y="0" width="63" height="50" uuid="22526aa8-9db3-4b6d-98b5-e806a6639d2d"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font size="11" isBold="true"/>
 								</textElement>
