@@ -21,6 +21,24 @@ public interface RequestRepository extends JpaRepository<Requests, UUID>  {
     @Query("SELECT u FROM Requests u WHERE u.userCode = :userCode and u.provinceCode =:provinceCode")
     List<Requests> getRequestByUserCodeProvinceCode(@Param("userCode") String userCode, @Param("provinceCode") String provinceCode);
 
+    @Query("SELECT u FROM Requests u WHERE u.provinceCode =:provinceCode")
+    List<Requests> getRequestsPaidInfoByProvince(@Param("provinceCode") String provinceCode);
+
+
+    @Query("SELECT u FROM Requests u where createddate between sysdate-7 and sysdate and u.provinceCode =:provinceCode")
+    List<Requests> getRequestsPaidInfoByProvinceWeek(@Param("provinceCode") String provinceCode);
+
+    @Query("SELECT u FROM Requests u where createddate between sysdate-31 and sysdate and u.provinceCode =:provinceCode")
+    List<Requests> getRequestsPaidInfoByProvinceMonth(@Param("provinceCode") String provinceCod);
+
+    @Query("SELECT u FROM Requests u where createddate between sysdate-7 and sysdate")
+    List<Requests> getAllRequestsPaidInfoByProvinceWeek();
+
+    @Query("SELECT u FROM Requests u where createddate between sysdate-31 and sysdate")
+    List<Requests> getAllRequestsPaidInfoByProvinceMonth();
+
+
+
 
 
     @Query(value = "SELECT REQUESTS_SEQ.nextval FROM dual", nativeQuery =

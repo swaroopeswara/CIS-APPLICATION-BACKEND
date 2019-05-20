@@ -159,6 +159,77 @@ public class RequestController extends MessageController {
     }//getRequestsOfUser
 
 
+    @GetMapping("/getRequestsPaidInfoByProvince")
+    public ResponseEntity<?> getRequestsPaidInfoByProvince(HttpServletRequest request,
+                                                           @RequestParam(required = false) String provinceCode,
+                                                           @RequestParam(required = false) String period) {
+        try {
+            Double totalSum = 0.00;
+            List<Requests> requestList = new ArrayList<>();
+            if (StringUtils.isEmpty(provinceCode) || "all".equalsIgnoreCase(provinceCode.trim()) && period!= null) {
+                if (period.equalsIgnoreCase("Week")) {
+                    requestList = requestService.getAllRequestsPaidInfoByProvinceWeek();
+                    Requests[] itemsArray = new Requests[requestList.size()];
+                    itemsArray = requestList.toArray(itemsArray);
+                    for (int i = 0; i < itemsArray.length; i++) {
+                        totalSum = totalSum + Double.parseDouble(itemsArray[i].getTotalAmount());
+                    }
+                    System.out.println("Total Week is" + totalSum);
+                } else if (period.equalsIgnoreCase("Month")) {
+                    requestList = requestService.getAllRequestsPaidInfoByProvinceMonth();
+                    Requests[] itemsArray = new Requests[requestList.size()];
+                    itemsArray = requestList.toArray(itemsArray);
+                    for (int i = 0; i < itemsArray.length; i++) {
+                        totalSum = totalSum + Double.parseDouble(itemsArray[i].getTotalAmount());
+                    }
+                    System.out.println("Total Month is" + totalSum);
+                }
+
+            } else if (StringUtils.isEmpty(provinceCode) || "all".equalsIgnoreCase(provinceCode.trim())) {
+                requestList = requestService.getAllRequestsPaidInfoByProvince();
+                Requests[] itemsArray = new Requests[requestList.size()];
+                itemsArray = requestList.toArray(itemsArray);
+                for (int i = 0; i < itemsArray.length; i++) {
+                    totalSum = totalSum + Double.parseDouble(itemsArray[i].getTotalAmount());
+                }
+                System.out.println("Total is" + totalSum);
+
+            } else if (!StringUtils.isEmpty(provinceCode.trim()) && period != null) {
+                if (period.equalsIgnoreCase("Week")) {
+                    requestList = requestService.getRequestsPaidInfoByProvinceWeek(provinceCode);
+                    Requests[] itemsArray = new Requests[requestList.size()];
+                    itemsArray = requestList.toArray(itemsArray);
+                    for (int i = 0; i < itemsArray.length; i++) {
+                        totalSum = totalSum + Double.parseDouble(itemsArray[i].getTotalAmount());
+                    }
+                    System.out.println("Total Week is" + totalSum);
+                } else if (period.equalsIgnoreCase("Month")) {
+                    requestList = requestService.getRequestsPaidInfoByProvinceMonth(provinceCode);
+                    Requests[] itemsArray = new Requests[requestList.size()];
+                    itemsArray = requestList.toArray(itemsArray);
+                    for (int i = 0; i < itemsArray.length; i++) {
+                        totalSum = totalSum + Double.parseDouble(itemsArray[i].getTotalAmount());
+                    }
+                    System.out.println("Total Month is" + totalSum);
+                }
+            } else if (!StringUtils.isEmpty(provinceCode.trim())) {
+                requestList = requestService.getRequestsPaidInfoByProvince(provinceCode);
+                Requests[] itemsArray = new Requests[requestList.size()];
+                itemsArray = requestList.toArray(itemsArray);
+                for (int i = 0; i < itemsArray.length; i++) {
+                    totalSum = totalSum + Double.parseDouble(itemsArray[i].getTotalAmount());
+                }
+                System.out.println("Total value  is" + totalSum);
+
+            }
+            return (CollectionUtils.isEmpty(requestList)) ? ResponseEntity.status(HttpStatus.OK).body(totalSum)
+                    : ResponseEntity.status(HttpStatus.OK).body(totalSum);
+        } catch (Exception exception) {
+            return generateFailureResponse(request, exception);
+        }
+    }//getRequestsPaidInfoByProvince
+
+
     @GetMapping("/getRequestByRequestCode")
     public ResponseEntity<?> getRequestByRequestCode(HttpServletRequest request,
                                                      @RequestParam String requestCode) {
@@ -213,13 +284,16 @@ public class RequestController extends MessageController {
                 return generateEmptyResponse(request, "File Not Found to upload, Please upload a file");
             } else if (requestCode != null && !isEmpty(requestCode)) {
                 Requests requests = this.requestService.getRequestsByRequestCode(requestCode);
-                if (requests != null && requests != null) {
+                if (requests != null) {
                     String fileName = testService.store(file);
                     files.add(file.getOriginalFilename());
                     requests.setInvoiceFilePath(Constants.uploadDirectoryPath + fileName);
                     message = "You successfully uploaded " + requests.getInvoiceFilePath() + "!";
-                    requestService.saveRequest(requests);
-
+                    Requests requests1 = requestService.saveRequest(requests);
+                    if (requests1 != null) {
+                        requests1.setPaymentStatus("PAID");
+                    }
+                    requestService.saveRequest(requests1);
                     ProcessAdditionalInfo processAdditionalInfo = new ProcessAdditionalInfo();
                     processAdditionalInfo.setTaskId(taskId);
                     processAdditionalInfo.setRequestCode(requestCode);
@@ -610,9 +684,9 @@ public class RequestController extends MessageController {
     }//uploadExternalUserRequestDocument
 
 
-    @PostMapping("/uploadFTPDispatchDocumentSendMail")
-    public ResponseEntity<?> uploadFTPDispatchDocumentSendMail(HttpServletRequest request, @RequestParam MultipartFile[] multipleFiles,
-                                                               @RequestParam("requestCode") String requestCode
+    @PostMapping("/dispatchDocumentSendMail")
+    public ResponseEntity<?> dispatchDocumentSendMail(HttpServletRequest request,
+                                                      @RequestBody Requests requestsParam
     ) {
         String message = "";
         String json = null;
@@ -620,10 +694,43 @@ public class RequestController extends MessageController {
         UserControllerResponse userControllerResponse = new UserControllerResponse();
         FTPClient ftpClient = new FTPClient();
         try {
-            Requests requests = this.requestService.getRequestsByRequestCode(requestCode);
+            Requests requests = this.requestService.getRequestsByRequestCode(requestsParam.getRequestCode());
             if (requests.getDeliveryMethod().equalsIgnoreCase("EMAIL")) {
                 if (requests != null && !isEmpty(requests)) {
+                    String pathFromDB = requests.getDispatchDocs();
+                    FilePathsDTO filePath = gson.fromJson(pathFromDB, FilePathsDTO.class);
+                    System.out.println("filePath is " + filePath.getFiles().toString());
+                    List<String> files = new ArrayList<String>();
+                    for (String str1 : filePath.getFiles()) {
+                        System.out.println(str1);
+                        files.add(str1);
+                        ftpZipFiles(files);
+                    }
+
+                    String zipFilename = "download.zip";
                     boolean loginExists = ftpLogin(ftpClient);
+                    if (loginExists) {
+                        ftpClient.changeWorkingDirectory("/uploadFiles/");
+                        File firstLocalFile = new File(Constants.uploadDirectoryPathFTP + zipFilename);
+                        String firstRemoteFile = zipFilename;
+                        InputStream inputStream = new FileInputStream(firstLocalFile);
+                        System.out.println("Start uploading first file");
+                        boolean done = ftpClient.storeFile(firstRemoteFile, inputStream);
+                        inputStream.close();
+                        if (done) {
+                            String path = ftpClient.printWorkingDirectory();
+                            String ftpFilePath = "ftp://160.119.101.57" + path + "/" + zipFilename;
+                            System.out.println(ftpFilePath);
+                            System.out.println("The first file is uploaded successfully.");
+                        }
+                    }
+
+                    ftpClient.logout();
+                    //File file = new File(Constants.downloadDirectoryPath + "DispatchDocumentsDownloadFiles.zip");
+
+
+
+                /*    boolean loginExists = ftpLogin(ftpClient);
                     System.out.println("loginExists: " + loginExists);
                     if (loginExists) {
                         List<String> filesExist = new ArrayList<>();
@@ -637,19 +744,19 @@ public class RequestController extends MessageController {
                             String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
                             ftpZipFiles(filesExist,timeStamp,ftpClient);
 
-                           /* String zipFilename = timeStamp+"download.zip";
+                           *//* String zipFilename = timeStamp+"download.zip";
                             ftpClient.changeWorkingDirectory("/uploadFiles/");
                             File localZip = new File(Constants.downloadDirectoryPath + zipFilename);
                             InputStream inputStream = new FileInputStream(localZip);
                             ftpClient.storeFile(zipFilename, inputStream);
                             String path = ftpClient.printWorkingDirectory();
                             String ftpFilePath = "ftp://160.119.101.57" + path + "/" + zipFilename;
-                            System.out.println(ftpFilePath);*/
+                            System.out.println(ftpFilePath);*//*
                             //MailDTO mailDTO = new MailDTO();
                            // sendMailWithFTPPAth(requests, mailDTO, ftpFilePath);
 
                         ftpClient.logout();
-                    }
+                    }*/
 
 
                 }
@@ -720,7 +827,15 @@ public class RequestController extends MessageController {
                     Path fileToDeletePath = Paths.get(documentPath);
                     Files.delete(fileToDeletePath);
                     fileDeleted.remove(documentPath);
+                    if (fileDeleted.size() == 0) {
+                        System.out.println("Size of file is " + fileDeleted);
+                        requests.setDispatchDocs("");
+                        this.requestService.saveRequest(requests);
+                        return ResponseEntity.status(HttpStatus.OK).body("Request Document Deleted Successfully");
+                    }
+
                 }
+
 
                 userControllerResponse.setFiles(fileDeleted);
                 json = gson.toJson(userControllerResponse);
@@ -761,6 +876,13 @@ public class RequestController extends MessageController {
                     Path fileToDeletePath = Paths.get(documentPath);
                     Files.delete(fileToDeletePath);
                     fileDeleted.remove(documentPath);
+
+                    if (fileDeleted.size() == 0) {
+                        System.out.println("Size of external document file is " + fileDeleted);
+                        requests.setExternalUserDispatchDocs("");
+                        this.requestService.saveRequest(requests);
+                        return ResponseEntity.status(HttpStatus.OK).body("Request External Document Deleted Successfully");
+                    }
                 }
 
                 userControllerResponse.setFiles(fileDeleted);
@@ -966,17 +1088,17 @@ public class RequestController extends MessageController {
     }//zipFiles
 
 
-    public void ftpZipFiles(List<String> files, String timeStamp, FTPClient ftpClient) {
+    public void ftpZipFiles(List<String> files) {
         FileOutputStream fos = null;
         ZipOutputStream zipOut = null;
         FileInputStream fis = null;
 
-        String zipFilename = timeStamp+"download.zip";
+        String zipFilename = "download.zip";
         try {
-            fos = new FileOutputStream(Constants.downloadDirectoryPath + zipFilename);
+            fos = new FileOutputStream(Constants.uploadDirectoryPathFTP + zipFilename);
             zipOut = new ZipOutputStream(new BufferedOutputStream(fos));
             for (String filePath : files) {
-                System.out.println("filePath is "+filePath);
+                System.out.println("filePath is " + filePath);
                 File input = new File(filePath);
                 fis = new FileInputStream(input);
                 ZipEntry ze = new ZipEntry(input.getName());
@@ -991,25 +1113,6 @@ public class RequestController extends MessageController {
             }
             zipOut.close();
             System.out.println("Done... Zipped the files...");
-            ftpClient.changeWorkingDirectory("/uploadFiles/");
-
-            File firstLocalFile = new File(Constants.downloadDirectoryPath + zipFilename);
-
-            String firstRemoteFile = zipFilename;
-            InputStream inputStream = new FileInputStream(firstLocalFile);
-
-            System.out.println("Start uploading first file");
-            boolean done = ftpClient.storeFile(firstRemoteFile, inputStream);
-            inputStream.close();
-            if (done) {
-                String path = ftpClient.printWorkingDirectory();
-                String ftpFilePath = "ftp://160.119.101.57" + path + "/" + zipFilename;
-                System.out.println(ftpFilePath);
-                System.out.println("The first file is uploaded successfully.");
-            }
-
-
-
 
 
         } catch (FileNotFoundException e) {

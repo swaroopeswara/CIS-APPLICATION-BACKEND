@@ -45,7 +45,36 @@ public class RequestService {
         return this.requestRepository.findAll();
     }//getAllCostCategories
 
-    public List<Requests> getRequestByUserCodeProvinceCode(String userCode, String provinceCode) {
+	public List<Requests> getRequestsPaidInfoByProvince(String provinceCode) {
+		return this.requestRepository.getRequestsPaidInfoByProvince(provinceCode);
+	}//getRequestsPaidInfoByProvince
+
+
+	public List<Requests> getRequestsPaidInfoByProvinceWeek(String provinceCode) {
+		return this.requestRepository.getRequestsPaidInfoByProvinceWeek(provinceCode);
+	}//getRequestsPaidInfoByProvinceWeek
+
+	public List<Requests> getRequestsPaidInfoByProvinceMonth(String provinceCode) {
+		return this.requestRepository.getRequestsPaidInfoByProvinceMonth(provinceCode);
+	}//getRequestsPaidInfoByProvinceMonth
+
+	public List<Requests> getAllRequestsPaidInfoByProvinceWeek() {
+		return this.requestRepository.getAllRequestsPaidInfoByProvinceWeek();
+	}//getAllRequestsPaidInfoByProvinceWeek
+
+
+	public List<Requests> getAllRequestsPaidInfoByProvinceMonth() {
+		return this.requestRepository.getAllRequestsPaidInfoByProvinceMonth();
+	}//getAllRequestsPaidInfoByProvinceMonth
+
+
+
+	public List<Requests> getAllRequestsPaidInfoByProvince() {
+		return this.requestRepository.findAll();
+	}//getRequestsPaidInfoByProvince
+
+
+	public List<Requests> getRequestByUserCodeProvinceCode(String userCode, String provinceCode) {
         return this.requestRepository.getRequestByUserCodeProvinceCode(userCode,provinceCode);
     }//getRequestByUserCodeProvinceCode
 
