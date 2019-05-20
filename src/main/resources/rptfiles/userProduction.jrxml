@@ -89,7 +89,6 @@
 		<parameter name="tToDate" class="java.util.Date"/>
 		<parameter name="tProvince" class="java.lang.String"/>
 		<parameter name="tSection" class="java.lang.String"/>
-		<parameter name="tUserType" class="java.lang.String"/>
 		<parameter name="tOrganisation" class="java.lang.String"/>
 		<parameter name="tSector" class="java.lang.String"/>
 		<parameter name="tTaskStatus" class="java.lang.String"/>
@@ -101,10 +100,8 @@
 (SECTIONNAME = NVL($P{tSection},  SECTIONNAME) OR SECTIONNAME is null) AND 
 (SECTOR = NVL($P{tSector},  SECTOR) OR SECTOR is null) AND 
 (ORGANISATION =NVL($P{tOrganisation},  ORGANISATION) OR ORGANISATION is null) AND 
-(USERTYPENAME = NVL($P{tUserType}, USERTYPENAME) OR USERTYPENAME is null) AND 
 (CATEGORY = NVL($P{tCategory}, CATEGORY) OR CATEGORY is null) AND 
-(TASKSTATUS = NVL($P{tTaskStatus}, TASKSTATUS) OR TASKSTATUS is null) AND 
-(OFFICER = NVL($P{tOfficer}, OFFICER) OR OFFICER is null)]]>
+(TASKSTATUS = NVL($P{tTaskStatus}, TASKSTATUS) OR TASKSTATUS is null) AND  OFFICER = $P{tOfficer}]]>
 		</queryString>
 		<field name="TASKREFERENCECODE" class="java.lang.String">
 			<property name="com.jaspersoft.studio.field.label" value="TASKREFERENCECODE"/>
@@ -183,7 +180,6 @@
 	<parameter name="toDate" class="java.util.Date"/>
 	<parameter name="province" class="java.lang.String"/>
 	<parameter name="section" class="java.lang.String"/>
-	<parameter name="userType" class="java.lang.String"/>
 	<parameter name="organisation" class="java.lang.String"/>
 	<parameter name="resourcePath" class="java.lang.String"/>
 	<parameter name="sector" class="java.lang.String"/>
@@ -240,40 +236,29 @@
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="16" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA["Productivity/Production Report"]]></textFieldExpression>
+				<textFieldExpression><![CDATA["User Report"]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="5" y="90" width="65" height="15" uuid="5a1f519a-9e0c-4aca-bd3e-335ff17617d4"/>
+				<reportElement x="5" y="75" width="65" height="15" uuid="5a1f519a-9e0c-4aca-bd3e-335ff17617d4"/>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font isBold="true"/>
 				</textElement>
 				<text><![CDATA[Task Status:]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="70" y="90" width="100" height="15" uuid="02d28cd7-2937-4af4-bd74-5fa7c65f9656"/>
+				<reportElement x="70" y="75" width="100" height="15" uuid="02d28cd7-2937-4af4-bd74-5fa7c65f9656"/>
 				<textFieldExpression><![CDATA[$P{taskStatus} == null ? "(ALL)" : $P{taskStatus}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="5" y="75" width="65" height="15" uuid="00e2f77e-91be-4ecc-b654-9de316c7477c"/>
-				<textElement textAlignment="Left" verticalAlignment="Middle">
-					<font isBold="true"/>
-				</textElement>
-				<text><![CDATA[User Type:]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="5" y="105" width="65" height="15" uuid="82521af7-0005-4cac-9b39-9956eccfabd2"/>
+				<reportElement x="5" y="90" width="65" height="15" uuid="82521af7-0005-4cac-9b39-9956eccfabd2"/>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font isBold="true"/>
 				</textElement>
 				<text><![CDATA[Officer:]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="70" y="105" width="100" height="15" uuid="8323b4d0-f702-4815-9a0a-373abc11cb49"/>
+				<reportElement x="70" y="90" width="100" height="15" uuid="8323b4d0-f702-4815-9a0a-373abc11cb49"/>
 				<textFieldExpression><![CDATA[$P{officer} == null ? "(ALL)" :$P{officer}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="70" y="75" width="100" height="15" uuid="fa320aa1-e95a-48a9-8cd5-1ead95665781"/>
-				<textFieldExpression><![CDATA[$P{userType} == null ? "(ALL)" : $P{userType}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="5" y="30" width="65" height="15" uuid="07babcdf-e057-4fd9-be6f-0e2e2801b269"/>
@@ -298,14 +283,14 @@
 				<textFieldExpression><![CDATA[$P{organisation} == null ? "(ALL)" : $P{organisation}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="5" y="60" width="65" height="15" uuid="6a10c3d6-1ae9-4a0a-a1fb-2668d942f9fe"/>
+				<reportElement x="5" y="60" width="95" height="15" uuid="6a10c3d6-1ae9-4a0a-a1fb-2668d942f9fe"/>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font isBold="true"/>
 				</textElement>
-				<text><![CDATA[Category: ]]></text>
+				<text><![CDATA[Request Category: ]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="70" y="60" width="100" height="15" uuid="7ee27afa-c54c-4848-8c4f-8ba96a644f23"/>
+				<reportElement x="100" y="60" width="100" height="15" uuid="7ee27afa-c54c-4848-8c4f-8ba96a644f23"/>
 				<textFieldExpression><![CDATA[$P{category} == null ? "(ALL)" : $P{category}]]></textFieldExpression>
 			</textField>
 			<staticText>
@@ -345,7 +330,7 @@
 					<property name="com.jaspersoft.studio.components.autoresize.next" value="true"/>
 				</reportElement>
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" whenNoDataType="AllSectionsNoDetail">
-					<datasetRun subDataset="RequestSummaryDataset" uuid="9461bde9-38e9-4f1d-a643-5dcfe3cfe4e1">
+					<datasetRun subDataset="RequestSummaryDataset" uuid="358d0825-9cd2-41ab-b1ba-69810f786d0c">
 						<datasetParameter name="tFromDate">
 							<datasetParameterExpression><![CDATA[$P{fromDate}]]></datasetParameterExpression>
 						</datasetParameter>
@@ -360,9 +345,6 @@
 						</datasetParameter>
 						<datasetParameter name="tSection">
 							<datasetParameterExpression><![CDATA[$P{section}]]></datasetParameterExpression>
-						</datasetParameter>
-						<datasetParameter name="tUserType">
-							<datasetParameterExpression><![CDATA[$P{userType}]]></datasetParameterExpression>
 						</datasetParameter>
 						<datasetParameter name="tSector">
 							<datasetParameterExpression><![CDATA[$P{sector}]]></datasetParameterExpression>
@@ -431,7 +413,7 @@
 						</jr:columnHeader>
 						<jr:columnFooter style="Table 1_CH" height="30" rowSpan="1"/>
 						<jr:detailCell style="Table 1_TD" height="30">
-							<textField>
+							<textField isBlankWhenNull="true">
 								<reportElement x="0" y="0" width="90" height="30" uuid="3870bdff-5a60-4c27-8289-12ddb839bb5f"/>
 								<textElement verticalAlignment="Middle"/>
 								<textFieldExpression><![CDATA[$F{CATEGORY} == null ? "(All)" : $F{CATEGORY}]]></textFieldExpression>
@@ -451,7 +433,7 @@
 						</jr:columnHeader>
 						<jr:columnFooter style="Table 1_CH" height="30" rowSpan="1"/>
 						<jr:detailCell style="Table 1_TD" height="30">
-							<textField>
+							<textField isBlankWhenNull="true">
 								<reportElement x="0" y="0" width="87" height="30" uuid="ec17ea32-a1e0-43ec-a12a-9961f8766b57"/>
 								<textElement verticalAlignment="Middle"/>
 								<textFieldExpression><![CDATA[$F{SUBCATEGORY} == null ? "(All)" : $F{SUBCATEGORY}]]></textFieldExpression>
@@ -471,7 +453,7 @@
 						</jr:columnHeader>
 						<jr:columnFooter style="Table 1_CH" height="30" rowSpan="1"/>
 						<jr:detailCell style="Table 1_TD" height="30">
-							<textField>
+							<textField isBlankWhenNull="true">
 								<reportElement x="0" y="0" width="62" height="30" uuid="fd1588fe-8eaa-4e2a-a1f0-91d26aff800c"/>
 								<textElement verticalAlignment="Middle"/>
 								<textFieldExpression><![CDATA[$F{REQUESTEDUSER} == null ? "" : $F{REQUESTEDUSER}]]></textFieldExpression>
@@ -491,7 +473,7 @@
 						</jr:columnHeader>
 						<jr:columnFooter style="Table 1_CH" height="30" rowSpan="1"/>
 						<jr:detailCell style="Table 1_TD" height="30">
-							<textField>
+							<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 								<reportElement x="0" y="0" width="63" height="30" uuid="076d3885-a1ac-4ae0-8851-4bf3185f69aa"/>
 								<textElement verticalAlignment="Middle"/>
 								<textFieldExpression><![CDATA[$F{USERTYPENAME} == null ? "" : $F{USERTYPENAME}]]></textFieldExpression>
@@ -671,7 +653,7 @@
 						</jr:columnHeader>
 						<jr:columnFooter style="Table 1_CH" height="30" rowSpan="1"/>
 						<jr:detailCell style="Table 1_TD" height="30">
-							<textField>
+							<textField pattern="#,##0.###;(#,##0.###)" isBlankWhenNull="true">
 								<reportElement x="0" y="0" width="66" height="30" uuid="e67c36fb-1d77-4ee1-927c-24a2b008dcb8"/>
 								<textElement verticalAlignment="Middle"/>
 								<textFieldExpression><![CDATA[$F{REQUESTCOST} == null ? "" : $F{REQUESTCOST}]]></textFieldExpression>

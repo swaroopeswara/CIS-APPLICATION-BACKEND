@@ -35,7 +35,7 @@ public class CisReportController extends MessageController {
 	
 	@PostMapping("/productionReport")
 	public ResponseEntity<?> generateProductionReport(HttpServletRequest request, @RequestBody @Valid CisReportDto cisReportDto) {
-		String reportJrxml = "requestSummaryDetails.jrxml";
+		String reportJrxml = "production.jrxml";
 		String reportName = "ProductionReport.pdf";		
 		try {
 			cleanupUserSummary(reportJrxml, reportName);
@@ -68,6 +68,43 @@ public class CisReportController extends MessageController {
 		}
 	}//generateProductionReport
 
+	@PostMapping("/userProductionReport")
+	public ResponseEntity<?> generateUserProductionReport(HttpServletRequest request, @RequestBody @Valid CisReportDto cisReportDto) {
+		if(cisReportDto == null || cisReportDto.getOfficer() == null) {
+			return generateEmptyResponse(request, "Officer required to generate user report");
+		}
+		String reportJrxml = "userProduction.jrxml";
+		String reportName = "UserProductionReport.pdf";		
+		try {
+			cleanupUserSummary(reportJrxml, reportName);
+			
+			String resourcePath = Constants.REPORT_RESOURCE_PATH;
+			Map<String, Object> parameters = new HashMap<>();
+			parameters.put("fromDate", cisReportDto.getFromDate());
+			parameters.put("toDate", (cisReportDto.getToDate() == null) ? new Date() : 
+				cisReportDto.getToDate());
+			parameters.put("organisation", cisReportDto.getOrganisation());
+			parameters.put("section", cisReportDto.getSection());
+			parameters.put("sector", cisReportDto.getSector());
+			parameters.put("province", cisReportDto.getProvince());
+			parameters.put("category", cisReportDto.getCategory());
+			parameters.put("taskStatus", cisReportDto.getTaskStatus());
+			parameters.put("officer", cisReportDto.getOfficer());
+			parameters.put("resourcePath", resourcePath);
+			
+			boolean isReportGenerated = reportGenerator.generateAndExportReport(reportJrxml, reportName, parameters);
+			if(!isReportGenerated)
+				return generateEmptyResponse(request, "User report generation failed");
+			
+			File reportFile = new File(reportName);
+			return (reportFile.exists()) ? getResponseEntityStream(reportFile, reportName) : 
+				generateEmptyResponse(request, "User report generation failed");
+		}catch (Exception e) {
+			log.error("Report stream population failed {}", e.getMessage());
+			return generateFailureResponse(request, e);
+		}
+	}//generateUserProductionReport
+	
 	@PostMapping("/notificationReport")
 	public ResponseEntity<?> generateNotificationReport(HttpServletRequest request, 
 			@RequestBody @Valid CisReportDto cisReportDto) {
