@@ -1,5 +1,7 @@
 package com.dw.ngms.cis.report;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -10,6 +12,8 @@ import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+
+import com.dw.ngms.cis.uam.utilities.Constants;
 
 import lombok.extern.slf4j.Slf4j;
 import net.sf.jasperreports.engine.JasperCompileManager;
@@ -39,9 +43,9 @@ public class ReportGenerator {
 	private JasperReport preparReport(String reportJrxml) {
 		if(reportJrxml == null) return null;
 		try {
-            InputStream reportStream = this.getClass().getResourceAsStream("/rptfiles/".concat(reportJrxml));
-            JasperReport jasperReport = JasperCompileManager.compileReport(reportStream);
-			JRSaver.saveObject(jasperReport, reportJrxml.replace(".jrxml", ".jasper"));
+		    InputStream reportStream = new FileInputStream(reportJrxml);
+            JasperReport jasperReport = JasperCompileManager.compileReport(reportStream);          
+            JRSaver.saveObject(jasperReport, getJasperFilePath(reportJrxml));
 			return jasperReport;
 		} catch (Exception ex) {
 			log.error("Error while preparing the report {}", ex.getMessage());
@@ -69,4 +73,38 @@ public class ReportGenerator {
 		}
 		return jasperPrint;
 	}//fillReport
+	
+	public void cleanupExistingReport(String fileJrxml, String reportName) {
+		this.cleanupFileOnExists(fileJrxml.replace(".jrxml", ".jasper"));
+		this.cleanupFileOnExists(reportName);
+	}//cleanupExistingReport
+	
+	private void cleanupFileOnExists(String fileName) {
+		try {
+			log.info("cleanup of file: {}", fileName);
+			File reportFile = new File(Constants.REPORT_RESOURCE_PATH, fileName);
+			if (reportFile.exists()) {
+				reportFile.delete();
+				log.info("{} has been deleted", fileName);
+			}
+		}catch(Exception e) {
+			log.error("{} cleanup filed {}", fileName, e.getMessage());
+		}
+	}//cleanupFileOnExists
+	
+	public String getGenFileDir() {
+		return Constants.REPORT_RESOURCE_PATH.concat("/generated/");
+	}//getGenFileDir
+	
+	public String getRptFileDir() {
+		return Constants.REPORT_RESOURCE_PATH.concat("/rptfiles/");
+	}//getRptFileDir
+	
+	public String getJasperFilePath(String reportJrxml) {
+		String jasperName = reportJrxml.replace(".jrxml", ".jasper");
+		jasperName = jasperName.replace("/rptfiles/", "/generated/");
+//      new FileWriter(new File(jasperName)); 
+		return jasperName;
+	}//getJasperFilePath
+	
 }

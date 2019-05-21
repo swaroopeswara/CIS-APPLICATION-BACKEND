@@ -36,12 +36,11 @@ public class UamReportController extends MessageController {
 	
 	@PostMapping("/userSummaryReport")
 	public ResponseEntity<?> generateUserSummaryReport(HttpServletRequest request, @RequestBody @Valid UserSummaryReportDto userSummaryReportDto) {
-		String reportJrxml = "userSummary.jrxml";
-		String reportName = "UserSummaryReport.pdf";		
+		String reportJrxml = reportGenerator.getRptFileDir().concat("/userSummary.jrxml");
+		String reportName = reportGenerator.getGenFileDir().concat("/UserSummaryReport.pdf");		
 		try {
-			cleanupUserSummary(reportJrxml, reportName);
+			reportGenerator.cleanupExistingReport(reportJrxml, reportName);
 			
-			String resourcePath = Constants.REPORT_RESOURCE_PATH;
 			Map<String, Object> parameters = new HashMap<>();
 			parameters.put("fromDate", userSummaryReportDto.getFromDate());
 			parameters.put("toDate", (userSummaryReportDto.getToDate() == null) ? new Date() : 
@@ -51,7 +50,7 @@ public class UamReportController extends MessageController {
 			parameters.put("sector", userSummaryReportDto.getSector());
 			parameters.put("userType", userSummaryReportDto.getUserType());
 			parameters.put("province", userSummaryReportDto.getProvince());		
-			parameters.put("resourcePath", resourcePath);
+			parameters.put("resourcePath", Constants.REPORT_RESOURCE_PATH);
 			
 			boolean isReportGenerated = reportGenerator.generateAndExportReport(reportJrxml, reportName, parameters);
 			if(!isReportGenerated)
@@ -69,18 +68,17 @@ public class UamReportController extends MessageController {
 	@PostMapping("/userLogReport")
 	public ResponseEntity<?> generateUserLogReport(HttpServletRequest request, 
 			@RequestBody @Valid UserLogReportDto userLogReportDto) {
-		String reportJrxml = "userLog.jrxml";
-		String reportName = "UserLogReport.pdf";		
+		String reportJrxml = reportGenerator.getRptFileDir().concat("/userLog.jrxml");
+		String reportName = reportGenerator.getGenFileDir().concat("/UserLogReport.pdf");		
 		try {
-			cleanupUserSummary(reportJrxml, reportName);
+			reportGenerator.cleanupExistingReport(reportJrxml, reportName);
 			
-			String resourcePath = Constants.REPORT_RESOURCE_PATH;
 			Map<String, Object> parameters = new HashMap<>();
 			parameters.put("fromDate", userLogReportDto.getFromDate());
 			parameters.put("toDate", (userLogReportDto.getToDate() == null) ? new Date() : 
 				userLogReportDto.getToDate());
 			parameters.put("userType", userLogReportDto.getUserType());
-			parameters.put("resourcePath", resourcePath);
+			parameters.put("resourcePath", Constants.REPORT_RESOURCE_PATH);
 			
 			boolean isReportGenerated = reportGenerator.generateAndExportReport(reportJrxml, reportName, parameters);
 			if(!isReportGenerated)
@@ -98,18 +96,17 @@ public class UamReportController extends MessageController {
 	@PostMapping("/quarterlyUpdatedUserReport")
 	public ResponseEntity<?> generateQuarterlyUpdatedUserReport(HttpServletRequest request, 
 			@RequestBody @Valid UserMaintainReportDto userMaintainReportDto) {
-		String reportJrxml = "quarterlyUpdatedUser.jrxml";
-		String reportName = "QuarterlyUpdatedUserReport.pdf";		
+		String reportJrxml = reportGenerator.getRptFileDir().concat("/quarterlyUpdatedUser.jrxml");
+		String reportName = reportGenerator.getGenFileDir().concat("/QuarterlyUpdatedUserReport.pdf");		
 		try {
-			cleanupUserSummary(reportJrxml, reportName);
+			reportGenerator.cleanupExistingReport(reportJrxml, reportName);
 			
-			String resourcePath = Constants.REPORT_RESOURCE_PATH;
 			Map<String, Object> parameters = new HashMap<>();
 			parameters.put("fromDate", userMaintainReportDto.getFromDate());
 			parameters.put("toDate", (userMaintainReportDto.getToDate() == null) ? new Date() : 
 				userMaintainReportDto.getToDate());
 			parameters.put("userType", userMaintainReportDto.getUserType());
-			parameters.put("resourcePath", resourcePath);
+			parameters.put("resourcePath", Constants.REPORT_RESOURCE_PATH);
 			
 			boolean isReportGenerated = reportGenerator.generateAndExportReport(reportJrxml, reportName, parameters);
 			if(!isReportGenerated)
@@ -127,18 +124,17 @@ public class UamReportController extends MessageController {
 	@PostMapping("/quarterlyDeletedUserReport")
 	public ResponseEntity<?> generateQuarterlyDeletedUserReport(HttpServletRequest request, 
 			@RequestBody @Valid UserMaintainReportDto userMaintainReportDto) {
-		String reportJrxml = "quarterlyDeletedUser.jrxml";
-		String reportName = "QuarterlyDeletedUserReport.pdf";		
+		String reportJrxml = reportGenerator.getRptFileDir().concat("/quarterlyDeletedUser.jrxml");
+		String reportName = reportGenerator.getGenFileDir().concat("/QuarterlyDeletedUserReport.pdf");		
 		try {
-			cleanupUserSummary(reportJrxml, reportName);
+			reportGenerator.cleanupExistingReport(reportJrxml, reportName);
 			
-			String resourcePath = Constants.REPORT_RESOURCE_PATH;
 			Map<String, Object> parameters = new HashMap<>();
 			parameters.put("fromDate", userMaintainReportDto.getFromDate());
 			parameters.put("toDate", (userMaintainReportDto.getToDate() == null) ? new Date() : 
 				userMaintainReportDto.getToDate());
 			parameters.put("userType", userMaintainReportDto.getUserType());
-			parameters.put("resourcePath", resourcePath);
+			parameters.put("resourcePath", Constants.REPORT_RESOURCE_PATH);
 			
 			boolean isReportGenerated = reportGenerator.generateAndExportReport(reportJrxml, reportName, parameters);
 			if(!isReportGenerated)
@@ -152,23 +148,5 @@ public class UamReportController extends MessageController {
 			return generateFailureResponse(request, e);
 		}
 	}//generateQuarterlyDeletedUserReport
-	
-	public void cleanupUserSummary(String fileJrxml, String reportName) {
-		this.cleanupFileOnExists(fileJrxml.replace(".jrxml", ".jasper"));
-		this.cleanupFileOnExists(reportName);
-	}//cleanupUserSummary
-	
-	public void cleanupFileOnExists(String fileName) {
-		try {
-			log.info("cleanup of file: {}", fileName);
-			File reportFile = new File(fileName);
-			if (reportFile.exists()) {
-				reportFile.delete();
-				log.info("{} has been deleted", fileName);
-			}
-		}catch(Exception e) {
-			log.error("{} cleanup filed {}", fileName, e.getMessage());
-		}
-	}//cleanupFileOnExists
 	
 }

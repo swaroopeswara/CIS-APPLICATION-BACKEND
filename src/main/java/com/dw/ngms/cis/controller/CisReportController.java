@@ -18,8 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.dw.ngms.cis.dto.CisReportDto;
 import com.dw.ngms.cis.report.ReportGenerator;
-import com.dw.ngms.cis.uam.dto.UserLogReportDto;
-import com.dw.ngms.cis.uam.dto.UserMaintainReportDto;
 import com.dw.ngms.cis.uam.utilities.Constants;
 
 import lombok.extern.slf4j.Slf4j;
@@ -35,12 +33,11 @@ public class CisReportController extends MessageController {
 	
 	@PostMapping("/productionReport")
 	public ResponseEntity<?> generateProductionReport(HttpServletRequest request, @RequestBody @Valid CisReportDto cisReportDto) {
-		String reportJrxml = "production.jrxml";
-		String reportName = "ProductionReport.pdf";		
+		String reportJrxml = reportGenerator.getRptFileDir().concat("/production.jrxml");
+		String reportName = reportGenerator.getGenFileDir().concat("/ProductionReport.pdf");		
 		try {
-			cleanupUserSummary(reportJrxml, reportName);
+			reportGenerator.cleanupExistingReport(reportJrxml, reportName);
 			
-			String resourcePath = Constants.REPORT_RESOURCE_PATH;
 			Map<String, Object> parameters = new HashMap<>();
 			parameters.put("fromDate", cisReportDto.getFromDate());
 			parameters.put("toDate", (cisReportDto.getToDate() == null) ? new Date() : 
@@ -53,7 +50,7 @@ public class CisReportController extends MessageController {
 			parameters.put("category", cisReportDto.getCategory());
 			parameters.put("taskStatus", cisReportDto.getTaskStatus());
 			parameters.put("officer", cisReportDto.getOfficer());
-			parameters.put("resourcePath", resourcePath);
+			parameters.put("resourcePath", Constants.REPORT_RESOURCE_PATH);
 			
 			boolean isReportGenerated = reportGenerator.generateAndExportReport(reportJrxml, reportName, parameters);
 			if(!isReportGenerated)
@@ -73,12 +70,11 @@ public class CisReportController extends MessageController {
 		if(cisReportDto == null || cisReportDto.getOfficer() == null) {
 			return generateEmptyResponse(request, "Officer required to generate user report");
 		}
-		String reportJrxml = "userProduction.jrxml";
-		String reportName = "UserProductionReport.pdf";		
+		String reportJrxml = reportGenerator.getRptFileDir().concat("/userProduction.jrxml");
+		String reportName = reportGenerator.getGenFileDir().concat("/UserProductionReport.pdf");		
 		try {
-			cleanupUserSummary(reportJrxml, reportName);
+			reportGenerator.cleanupExistingReport(reportJrxml, reportName);
 			
-			String resourcePath = Constants.REPORT_RESOURCE_PATH;
 			Map<String, Object> parameters = new HashMap<>();
 			parameters.put("fromDate", cisReportDto.getFromDate());
 			parameters.put("toDate", (cisReportDto.getToDate() == null) ? new Date() : 
@@ -90,7 +86,7 @@ public class CisReportController extends MessageController {
 			parameters.put("category", cisReportDto.getCategory());
 			parameters.put("taskStatus", cisReportDto.getTaskStatus());
 			parameters.put("officer", cisReportDto.getOfficer());
-			parameters.put("resourcePath", resourcePath);
+			parameters.put("resourcePath", Constants.REPORT_RESOURCE_PATH);
 			
 			boolean isReportGenerated = reportGenerator.generateAndExportReport(reportJrxml, reportName, parameters);
 			if(!isReportGenerated)
@@ -108,12 +104,11 @@ public class CisReportController extends MessageController {
 	@PostMapping("/notificationReport")
 	public ResponseEntity<?> generateNotificationReport(HttpServletRequest request, 
 			@RequestBody @Valid CisReportDto cisReportDto) {
-		String reportJrxml = "notification.jrxml";
-		String reportName = "NotificationReport.pdf";		
+		String reportJrxml = reportGenerator.getRptFileDir().concat("/notification.jrxml");
+		String reportName = reportGenerator.getGenFileDir().concat("/NotificationReport.pdf");		
 		try {
-			cleanupUserSummary(reportJrxml, reportName);
+			reportGenerator.cleanupExistingReport(reportJrxml, reportName);
 			
-			String resourcePath = Constants.REPORT_RESOURCE_PATH;
 			Map<String, Object> parameters = new HashMap<>();
 			parameters.put("fromDate", cisReportDto.getFromDate());
 			parameters.put("toDate", (cisReportDto.getToDate() == null) ? new Date() : 
@@ -125,7 +120,7 @@ public class CisReportController extends MessageController {
 			parameters.put("provinceCode", cisReportDto.getProvinceCode());
 			parameters.put("category", cisReportDto.getProvince());
 			parameters.put("taskStatus", cisReportDto.getProvince());
-			parameters.put("resourcePath", resourcePath);
+			parameters.put("resourcePath", Constants.REPORT_RESOURCE_PATH);
 			
 			boolean isReportGenerated = reportGenerator.generateAndExportReport(reportJrxml, reportName, parameters);
 			if(!isReportGenerated)
@@ -143,19 +138,18 @@ public class CisReportController extends MessageController {
 	@PostMapping("/overriddenBusinessRulesReport")
 	public ResponseEntity<?> generateOverriddenBusinessRulesReport(HttpServletRequest request, 
 			@RequestBody @Valid CisReportDto cisReportDto) {
-		String reportJrxml = "overriddenBusinessRules.jrxml";
-		String reportName = "OverriddenBusinessRulesReport.pdf";		
+		String reportJrxml = reportGenerator.getRptFileDir().concat("/overriddenBusinessRules.jrxml");
+		String reportName = reportGenerator.getGenFileDir().concat("/OverriddenBusinessRulesReport.pdf");		
 		try {
-			cleanupUserSummary(reportJrxml, reportName);
+			reportGenerator.cleanupExistingReport(reportJrxml, reportName);
 			
-			String resourcePath = Constants.REPORT_RESOURCE_PATH;
 			Map<String, Object> parameters = new HashMap<>();
 			parameters.put("fromDate", cisReportDto.getFromDate());
 			parameters.put("toDate", (cisReportDto.getToDate() == null) ? new Date() : 
 				cisReportDto.getToDate());
 			parameters.put("province", cisReportDto.getProvince());
 			parameters.put("admin", cisReportDto.getAdmin());
-			parameters.put("resourcePath", resourcePath);
+			parameters.put("resourcePath", Constants.REPORT_RESOURCE_PATH);
 			
 			boolean isReportGenerated = reportGenerator.generateAndExportReport(reportJrxml, reportName, parameters);
 			if(!isReportGenerated)
@@ -169,23 +163,5 @@ public class CisReportController extends MessageController {
 			return generateFailureResponse(request, e);
 		}
 	}//generateOverriddenBusinessRulesReport
-	
-	public void cleanupUserSummary(String fileJrxml, String reportName) {
-		this.cleanupFileOnExists(fileJrxml.replace(".jrxml", ".jasper"));
-		this.cleanupFileOnExists(reportName);
-	}//cleanupUserSummary
-	
-	public void cleanupFileOnExists(String fileName) {
-		try {
-			log.info("cleanup of file: {}", fileName);
-			File reportFile = new File(fileName);
-			if (reportFile.exists()) {
-				reportFile.delete();
-				log.info("{} has been deleted", fileName);
-			}
-		}catch(Exception e) {
-			log.error("{} cleanup filed {}", fileName, e.getMessage());
-		}
-	}//cleanupFileOnExists
 	
 }
