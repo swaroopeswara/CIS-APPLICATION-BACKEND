@@ -91,8 +91,8 @@ public class ProcessEngineImpl implements ProcessEngine<Task>{
 		}
 		SequenceFlow targetSequence = process.getSequenceFlow(additionalInfo.getTargetSequenceId());		
 		if(targetSequence != null) {
-			updateTaskDetails(task, additionalInfo);			
 			task.setTaskStatus(targetSequence.getState());
+			updateTaskDetails(task, additionalInfo);
 			//check dependancy not required
 //			validateDependancy(task, targetSequence, additionalInfo.getUrl());
 			updateRoleAndUserAssociations(task, additionalInfo, targetSequence);
@@ -261,6 +261,9 @@ public class ProcessEngineImpl implements ProcessEngine<Task>{
 				task.setTaskDoneUserName(additionalInfo.getUserName());
 		}
 		task.setUpdatedDate(new Date());
+		if("Closed".equalsIgnoreCase(task.getTaskCode())) {
+			task.setTaskCloseDate(new Date());
+		}
 	}//updateTaskDetails
 
 	private void clearRoleAndUserAssociations(Task task) {
