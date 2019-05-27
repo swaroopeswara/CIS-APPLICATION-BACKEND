@@ -245,7 +245,7 @@ public class UserService {
 	private User getPopulatedUserWithUpdate(User user, UserUpdateDTO uiUser) {
 		if(uiUser.getFirstName() != null && uiUser.getFirstName() != "") user.setFirstName(uiUser.getFirstName());
 
-		if(uiUser.getUserTypeCode() != null && uiUser.getUserTypeCode() != "") user.setFirstName(uiUser.getUserTypeCode());
+		if(uiUser.getUserTypeCode() != null && uiUser.getUserTypeCode() != "") user.setUserTypeCode(uiUser.getUserTypeCode());
 		if(uiUser.getUserTypeName() != null && uiUser.getUserTypeName() != "") user.setUserTypeName(uiUser.getUserTypeName());
 		if(uiUser.getTitle() != null && uiUser.getTitle() != "") user.setTitle(uiUser.getTitle());
 		if(uiUser.getUserName() != null && uiUser.getUserName() != "") user.setUserName(uiUser.getUserName());
