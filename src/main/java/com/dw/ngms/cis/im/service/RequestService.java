@@ -43,7 +43,12 @@ public class RequestService {
     
     public List<Requests> getAllRequests() {
         return this.requestRepository.findAll();
-    }//getAllCostCategories
+    }//getAllRequests
+
+	public List<Requests> getRequestByUserCode(String userCode) {
+		return this.requestRepository.getRequestByUserCode(userCode);
+	}//getRequestByUserCode
+
 
 	public List<Requests> getRequestsPaidInfoByProvince(String provinceCode) {
 		return this.requestRepository.getRequestsPaidInfoByProvince(provinceCode);

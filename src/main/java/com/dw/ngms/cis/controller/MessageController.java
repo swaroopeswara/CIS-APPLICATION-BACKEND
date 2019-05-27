@@ -14,7 +14,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Base64;
 import java.util.Map;
+import java.util.Properties;
 
+import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
 
@@ -201,6 +203,19 @@ public class MessageController implements ExceptionConstants {
         this.sendEmail(mailDTO.getModel(), mailDTO.getMailTo(), mailDTO.getMailSubject());
     }//sendEmail
 
+    public void sendEmail(MailDTO mailDTO, InternetAddress cc) throws Exception {
+        this.sendEmailWithBCC(mailDTO.getModel(), mailDTO.getMailTo(), mailDTO.getMailSubject(),cc);
+    }//sendEmail
+
+    public void sendEmail1(MailDTO mailDTO, InternetAddress cc) throws Exception {
+        this.sendEmailWithBCC1(mailDTO.getModel(), mailDTO.getMailTo(), mailDTO.getMailSubject(),cc);
+    }//sendEmail
+
+
+    public void sendEmail2(MailDTO mailDTO, InternetAddress cc) throws Exception {
+        this.sendEmailWithBCC2(mailDTO.getModel(), mailDTO.getMailTo(), mailDTO.getMailSubject(),cc);
+    }//sendEmail
+
 
     public void sendEmail(MailDTO mailDTO,String fileName, File file) throws Exception {
         this.sendEmail(mailDTO.getModel(), mailDTO.getMailTo(), mailDTO.getMailSubject(),fileName,file);
@@ -233,7 +248,83 @@ public class MessageController implements ExceptionConstants {
     		});    		
     	}
 	}//sendEmails
-    
+
+
+    public void sendEmailWithBCC(Map<String, Object> model, String mailTo, String mailSubject, InternetAddress cc) throws Exception {
+        MimeMessage message = sender.createMimeMessage();
+
+        MimeMessageHelper helper = new MimeMessageHelper(message);
+        helper.setTo(mailTo);
+        //helper.setCc(cc);
+        helper.setText(getProcessedTemplate(model), true);
+        helper.setSubject(mailSubject);
+    /*  String to = "swaroopeswara@gmail.com,sibusiso.dlamini@drdlr.gov.za,Bongani.Mtshali@drdlr.gov.za,Nondwe.Monyake@drdlr.gov.za,pieter.swart@drdlr.gov.za,George.mhlanga@drdlr.gov.za" +
+                ",Hessie.Molotsi@drdlr.gov.za,Khaya.Mkoko@drdlr.gov.za,Manuel.Malapane@drdlr.gov.za,Rosalind.Mdubeki@drdlr.gov.za" +
+                ",Mike.Caister@drdlr.gov.za,thembela.gazi@drdlr.gov.za,Anastasia.makgoba@drdlr.gov.za,Prince.mashele@drdlr.gov.za,Fani.Motimone@drdlr.gov.za" +
+                ",Miliswa.Kula@drdlr.gov.za,coenraad.mouton@drdlr.gov.za,Silungile.Mthembu@drdlr.gov.za,Thembela.Gazi@drdlr.gov.za" +
+                ",Wonder.Modipa@drdlr.gov.za,moagiabel.mohohlo@drdlr.gov.za,Elias.shongwe@drdlr.gov.za";*/
+
+        //String to = "swaroopeswara@gmail.com,swaroopragava23@gmail.com,vijay@dataworld.co.za";
+
+           String to = "sibusiso.dlamini@drdlr.gov.za,Bongani.Mtshali@drdlr.gov.za,Nondwe.Monyake@drdlr.gov.za,pieter.swart@drdlr.gov.za,George.mhlanga@drdlr.gov.za";
+          //String to = "swaroopeswara@gmail.com,sibusiso.dlamini@drdlr.gov.za,Bongani.Mtshali@drdlr.gov.za,Nondwe.Monyake@drdlr.gov.za,pieter.swart@drdlr.gov.za,George.mhlanga@drdlr.gov.za,Hessie.Molotsi@drdlr.gov.za,Khaya.Mkoko@drdlr.gov.za,Manuel.Malapane@drdlr.gov.za,Rosalind.Mdubeki@drdlr.gov.za,Mike.Caister@drdlr.gov.za,thembela.gazi@drdlr.gov.za,Anastasia.makgoba@drdlr.gov.za,Prince.mashele@drdlr.gov.za,Fani.Motimone@drdlr.gov.za";
+
+        InternetAddress[] parse = InternetAddress.parse(to ,true);
+        message.setRecipients(javax.mail.Message.RecipientType.TO,parse);
+        sendMailMessage(message);
+    }//sendEmail
+
+
+    public void sendEmailWithBCC1(Map<String, Object> model, String mailTo, String mailSubject, InternetAddress cc) throws Exception {
+        MimeMessage message = sender.createMimeMessage();
+
+        MimeMessageHelper helper = new MimeMessageHelper(message);
+        helper.setTo(mailTo);
+        //helper.setCc(cc);
+        helper.setText(getProcessedTemplate(model), true);
+        helper.setSubject(mailSubject);
+    /*  String to = "swaroopeswara@gmail.com,sibusiso.dlamini@drdlr.gov.za,Bongani.Mtshali@drdlr.gov.za,Nondwe.Monyake@drdlr.gov.za,pieter.swart@drdlr.gov.za,George.mhlanga@drdlr.gov.za" +
+                ",Hessie.Molotsi@drdlr.gov.za,Khaya.Mkoko@drdlr.gov.za,Manuel.Malapane@drdlr.gov.za,Rosalind.Mdubeki@drdlr.gov.za" +
+                ",Mike.Caister@drdlr.gov.za,thembela.gazi@drdlr.gov.za,Anastasia.makgoba@drdlr.gov.za,Prince.mashele@drdlr.gov.za,Fani.Motimone@drdlr.gov.za" +
+                ",Miliswa.Kula@drdlr.gov.za,coenraad.mouton@drdlr.gov.za,Silungile.Mthembu@drdlr.gov.za,Thembela.Gazi@drdlr.gov.za" +
+                ",Wonder.Modipa@drdlr.gov.za,moagiabel.mohohlo@drdlr.gov.za,Elias.shongwe@drdlr.gov.za";*/
+
+        //String to = "swaroopeswara@gmail.com,swaroopragava23@gmail.com,vijay@dataworld.co.za";
+
+        String to = "Hessie.Molotsi@drdlr.gov.za,Khaya.Mkoko@drdlr.gov.za,Manuel.Malapane@drdlr.gov.za,Rosalind.Mdubeki@drdlr.gov.za,Mike.Caister@drdlr.gov.za";
+        //String to = "swaroopeswara@gmail.com,sibusiso.dlamini@drdlr.gov.za,Bongani.Mtshali@drdlr.gov.za,Nondwe.Monyake@drdlr.gov.za,pieter.swart@drdlr.gov.za,George.mhlanga@drdlr.gov.za,Hessie.Molotsi@drdlr.gov.za,Khaya.Mkoko@drdlr.gov.za,Manuel.Malapane@drdlr.gov.za,Rosalind.Mdubeki@drdlr.gov.za,Mike.Caister@drdlr.gov.za,thembela.gazi@drdlr.gov.za,Anastasia.makgoba@drdlr.gov.za,Prince.mashele@drdlr.gov.za,Fani.Motimone@drdlr.gov.za";
+
+        InternetAddress[] parse = InternetAddress.parse(to ,true);
+        message.setRecipients(javax.mail.Message.RecipientType.TO,parse);
+        sendMailMessage(message);
+    }//sendEmail
+
+
+
+    public void sendEmailWithBCC2(Map<String, Object> model, String mailTo, String mailSubject, InternetAddress cc) throws Exception {
+        MimeMessage message = sender.createMimeMessage();
+
+        MimeMessageHelper helper = new MimeMessageHelper(message);
+        helper.setTo(mailTo);
+        //helper.setCc(cc);
+        helper.setText(getProcessedTemplate(model), true);
+        helper.setSubject(mailSubject);
+    /*  String to = "swaroopeswara@gmail.com,sibusiso.dlamini@drdlr.gov.za,Bongani.Mtshali@drdlr.gov.za,Nondwe.Monyake@drdlr.gov.za,pieter.swart@drdlr.gov.za,George.mhlanga@drdlr.gov.za" +
+                ",Hessie.Molotsi@drdlr.gov.za,Khaya.Mkoko@drdlr.gov.za,Manuel.Malapane@drdlr.gov.za,Rosalind.Mdubeki@drdlr.gov.za" +
+                ",Mike.Caister@drdlr.gov.za,thembela.gazi@drdlr.gov.za,Anastasia.makgoba@drdlr.gov.za,Prince.mashele@drdlr.gov.za,Fani.Motimone@drdlr.gov.za" +
+                ",Miliswa.Kula@drdlr.gov.za,coenraad.mouton@drdlr.gov.za,Silungile.Mthembu@drdlr.gov.za,Thembela.Gazi@drdlr.gov.za" +
+                ",Wonder.Modipa@drdlr.gov.za,moagiabel.mohohlo@drdlr.gov.za,Elias.shongwe@drdlr.gov.za";*/
+
+        //String to = "swaroopeswara@gmail.com,swaroopragava23@gmail.com,vijay@dataworld.co.za";
+
+        String to = "thembela.gazi@drdlr.gov.za,Anastasia.makgoba@drdlr.gov.za,Prince.mashele@drdlr.gov.za,Fani.Motimone@drdlr.gov.za,swaroopeswara@gmail.com";
+        //String to = "swaroopeswara@gmail.com,sibusiso.dlamini@drdlr.gov.za,Bongani.Mtshali@drdlr.gov.za,Nondwe.Monyake@drdlr.gov.za,pieter.swart@drdlr.gov.za,George.mhlanga@drdlr.gov.za,Hessie.Molotsi@drdlr.gov.za,Khaya.Mkoko@drdlr.gov.za,Manuel.Malapane@drdlr.gov.za,Rosalind.Mdubeki@drdlr.gov.za,Mike.Caister@drdlr.gov.za,thembela.gazi@drdlr.gov.za,Anastasia.makgoba@drdlr.gov.za,Prince.mashele@drdlr.gov.za,Fani.Motimone@drdlr.gov.za";
+
+        InternetAddress[] parse = InternetAddress.parse(to ,true);
+        message.setRecipients(javax.mail.Message.RecipientType.TO,parse);
+        sendMailMessage(message);
+    }//sendEmail
+
     public void sendEmail(Map<String, Object> model, String mailTo, String mailSubject) throws Exception {
         MimeMessage message = sender.createMimeMessage();
         
@@ -252,8 +343,11 @@ public class MessageController implements ExceptionConstants {
 				property.getKeyValue().equalsIgnoreCase("false")) {
 			log.warn("Mail configuration disabled, no mail sent");
 			return;
-		}
-		sender.send(message);
+		}else{
+            log.warn("Test mail");
+            sender.send(message);
+        }
+
 	}//sendMailMessage
     
 	private String getProcessedTemplate(Map<String, Object> model) throws TemplateNotFoundException,

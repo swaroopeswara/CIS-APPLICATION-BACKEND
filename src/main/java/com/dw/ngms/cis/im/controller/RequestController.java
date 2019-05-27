@@ -10,6 +10,7 @@ import com.dw.ngms.cis.im.service.RequestService;
 import com.dw.ngms.cis.uam.dto.FilePathsDTO;
 import com.dw.ngms.cis.uam.dto.MailDTO;
 import com.dw.ngms.cis.uam.entity.TaskLifeCycle;
+import com.dw.ngms.cis.uam.entity.User;
 import com.dw.ngms.cis.uam.jsonresponse.UserControllerResponse;
 import com.dw.ngms.cis.uam.service.ProvinceService;
 import com.dw.ngms.cis.uam.service.TaskService;
@@ -146,8 +147,8 @@ public class RequestController extends MessageController {
                                                @RequestParam(required = false) String userCode) {
         try {
             List<Requests> requestList = new ArrayList<>();
-            if (StringUtils.isEmpty(provinceCode) || "all".equalsIgnoreCase(provinceCode.trim())) {
-                requestList = requestService.getAllRequests();
+            if (StringUtils.isEmpty(provinceCode) || "all".equalsIgnoreCase(provinceCode.trim()) && !StringUtils.isEmpty(userCode)) {
+                requestList = requestService.getRequestByUserCode(userCode);
             } else if (!StringUtils.isEmpty(userCode) && !StringUtils.isEmpty(provinceCode.trim())) {
                 requestList = requestService.getRequestByUserCodeProvinceCode(userCode, provinceCode);
             }
@@ -166,7 +167,7 @@ public class RequestController extends MessageController {
         try {
             Double totalSum = 0.00;
             List<Requests> requestList = new ArrayList<>();
-            if (StringUtils.isEmpty(provinceCode) || "all".equalsIgnoreCase(provinceCode.trim()) && period!= null) {
+            if (StringUtils.isEmpty(provinceCode) || "all".equalsIgnoreCase(provinceCode.trim()) && period != null) {
                 if (period.equalsIgnoreCase("Week")) {
                     requestList = requestService.getAllRequestsPaidInfoByProvinceWeek();
                     Requests[] itemsArray = new Requests[requestList.size()];
@@ -346,6 +347,8 @@ public class RequestController extends MessageController {
             }
             requests.setRequestItems(req);
             Requests requestToSave = this.requestService.saveRequest(requests);
+            MailDTO mailDTO = new MailDTO();
+            sendMailToCreateRequestUser(requests, mailDTO);
 
             taskService.startProcess(processId, requests);
 
@@ -695,7 +698,7 @@ public class RequestController extends MessageController {
         FTPClient ftpClient = new FTPClient();
         try {
             Requests requests = this.requestService.getRequestsByRequestCode(requestsParam.getRequestCode());
-            if (requests.getDeliveryMethod().equalsIgnoreCase("EMAIL")) {
+            if (requests.getDeliveryMethod().equalsIgnoreCase("Electronic(Email)") || requests.getDeliveryMethod().equalsIgnoreCase("Electronic(FTP)")) {
                 if (requests != null && !isEmpty(requests)) {
                     String pathFromDB = requests.getDispatchDocs();
                     FilePathsDTO filePath = gson.fromJson(pathFromDB, FilePathsDTO.class);
@@ -707,8 +710,9 @@ public class RequestController extends MessageController {
                         ftpZipFiles(files);
                     }
 
-                    String zipFilename = "download.zip";
-                    boolean loginExists = ftpLogin(ftpClient);
+                    String zipFilename = "ftpFilesDownload.zip";
+
+                   /* boolean loginExists = ftpLogin(ftpClient);
                     if (loginExists) {
                         ftpClient.changeWorkingDirectory("/uploadFiles/");
                         File firstLocalFile = new File(Constants.uploadDirectoryPathFTP + zipFilename);
@@ -725,7 +729,8 @@ public class RequestController extends MessageController {
                         }
                     }
 
-                    ftpClient.logout();
+
+                    ftpClient.logout();*/
                     //File file = new File(Constants.downloadDirectoryPath + "DispatchDocumentsDownloadFiles.zip");
 
 
@@ -757,7 +762,11 @@ public class RequestController extends MessageController {
 
                         ftpClient.logout();
                     }*/
+                    String path = "/ftpFileDownload/";
+                    String ftpFilePath = "ftp://160.119.101.57" + path + zipFilename;
 
+                    MailDTO mailDTO = new MailDTO();
+                    sendMailWithFTPPAth(requests, mailDTO, ftpFilePath);
 
                 }
             }
@@ -1129,6 +1138,25 @@ public class RequestController extends MessageController {
             }
         }
     }//zipFiles
+
+
+    private void sendMailToCreateRequestUser(@RequestBody @Valid Requests requests, MailDTO mailDTO) throws Exception {
+
+        Map<String, Object> model = new HashMap<String, Object>();
+        model.put("firstName", requests.getUserName());
+        model.put("body1", "Your request is created successfully");
+        model.put("body2", "");
+        model.put("body3", "");
+        model.put("body4", "");
+        mailDTO.setMailSubject("Create Request");
+        model.put("FOOTER", "CIS ADMIN");
+        mailDTO.setMailFrom("cheifsurveyorgeneral@gmail.com");
+        mailDTO.setMailTo(requests.getEmail());
+        mailDTO.setModel(model);
+        sendEmail(mailDTO);
+
+
+    }
 
 
     protected static void showServerReply(FTPClient ftpClient) {

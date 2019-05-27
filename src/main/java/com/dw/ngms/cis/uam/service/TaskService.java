@@ -82,6 +82,8 @@ public class TaskService {
                 if (omitTaskStatus != null && !StringUtils.isEmpty(omitTaskStatus)) {
                     predicates.add(criteriaBuilder.and(criteriaBuilder.notEqual(root.get("taskStatus"), omitTaskStatus)));
                 }
+
+                criteriaQuery.orderBy(criteriaBuilder.desc(root.get("createdDate")));
                 return criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()]));
             }
         });

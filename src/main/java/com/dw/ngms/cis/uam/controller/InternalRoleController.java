@@ -168,6 +168,29 @@ public class InternalRoleController extends MessageController {
     }
 
 
+    @GetMapping(value = "/deactivateInternalUserRole")
+    public ResponseEntity<?> deactivateInternalUserRole(HttpServletRequest request, @RequestParam String internalRoleCode) throws IOException {
+        try {
+            if(internalRoleCode!= null && !isEmpty(internalRoleCode)) {
+                InternalRole internalRole = this.internalRoleService.findByInternalRoleCode(internalRoleCode);
+                System.out.println("Intenal user code is " +internalRole.getInternalRoleCode());
+                if(!isEmpty(internalRole)){
+                    internalRole.setIsactive("N");
+                    this.internalRoleService.updateInternalRole(internalRole);
+                    return ResponseEntity.status(HttpStatus.OK).body("Internal Role deactivated successfully");
+                }
+            }
+            return ResponseEntity.status(HttpStatus.OK).body("No Internal Role found for given Internal code");
+
+        } catch (Exception exception) {
+            return generateFailureResponse(request, exception);
+        }
+    }
+
+
+
+
+
 
     @GetMapping("/getInternalRolesByRoleCode")
     public ResponseEntity<?> getInternalRolesByRoleCode(HttpServletRequest request,
