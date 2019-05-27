@@ -20,15 +20,15 @@ public interface IssueLogRepository extends JpaRepository<IssueLog, Long> {
 
 
 
-    @Query("SELECT issueStatus FROM IssueLog u WHERE u.issueId = :issueId")
+    @Query("SELECT issueStatus FROM IssueLog u WHERE u.issueId = :issueId order by createdDate desc")
     String findIssueStatus(@Param("issueId") Long issueId);
 
 
-     @Query("SELECT u  FROM IssueLog u WHERE u.issueId = :issueId")
+     @Query("SELECT u  FROM IssueLog u WHERE u.issueId = :issueId order by createdDate desc")
      IssueLog findIssueById(@Param("issueId") Long issueId);
 
 
-    @Query("SELECT u  FROM IssueLog u WHERE u.email = :email")
+    @Query("SELECT u  FROM IssueLog u WHERE u.email = :email order by createdDate desc")
     List<IssueLog> findIssueWithEmail(@Param("email") String email);
 
 

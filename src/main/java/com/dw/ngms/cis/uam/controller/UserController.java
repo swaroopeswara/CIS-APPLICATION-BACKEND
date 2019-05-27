@@ -351,7 +351,7 @@ public class UserController extends MessageController {
         Gson gson = new Gson();
         UserControllerResponse userControllerResponse = new UserControllerResponse();
         try {
-            userExists = this.userService.findByEmail(email);
+            userExists = this.userService.findByEmail(email.trim());
             if (userExists == null) {
                 userControllerResponse.setExists("false");
                 json = gson.toJson(userControllerResponse);
@@ -450,7 +450,7 @@ public class UserController extends MessageController {
         UserControllerResponse userControllerResponse = new UserControllerResponse();
         try {
             System.out.println("Email is " + user.getEmail());
-            User userExists = this.userService.findByEmail(user.getEmail());
+            User userExists = this.userService.findByEmail(user.getEmail().trim());
             if (userExists != null && userExists.getEmail() != null) {
                 userControllerResponse.setMessage("User Already Exist with this email ID");
                 json = gson.toJson(userControllerResponse);
@@ -578,6 +578,7 @@ public class UserController extends MessageController {
             Long userID = this.userService.getUserId();
             internalUser.setUserId(userID);
             internalUser.setUserCode("USR000" + Long.toString(internalUser.getUserId()));
+            internalUser.setEmail(internalUser.getEmail().trim());
             User response = userService.saveInternalUser(internalUser);
 
             MailDTO mailDTO = new MailDTO();
@@ -729,6 +730,8 @@ public class UserController extends MessageController {
         user.getExternaluser().setUserId(user.getUserId());
         user.getExternaluser().setUsercode(user.getUserCode());
         user.getExternaluser().setCreatedDate(new Date());
+        user.setEmail(user.getEmail().trim());
+        user.setUserName(user.getUserName().trim());
         final int SHORT_ID_LENGTH = 8;
         user.setPassword(RandomStringUtils.randomAlphanumeric(SHORT_ID_LENGTH));
         user.setFirstLogin("Y");

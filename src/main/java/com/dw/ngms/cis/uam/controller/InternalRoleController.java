@@ -173,7 +173,7 @@ public class InternalRoleController extends MessageController {
         try {
             if(internalRoleCode!= null && !isEmpty(internalRoleCode)) {
                 InternalRole internalRole = this.internalRoleService.findByInternalRoleCode(internalRoleCode);
-                System.out.println("Intenal user code is " +internalRole.getInternalRoleCode());
+                System.out.println("Internal user code is " +internalRole.getInternalRoleCode());
                 if(!isEmpty(internalRole)){
                     internalRole.setIsactive("N");
                     this.internalRoleService.updateInternalRole(internalRole);

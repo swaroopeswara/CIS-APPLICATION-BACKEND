@@ -18,10 +18,10 @@ import java.util.UUID;
 public interface RequestRepository extends JpaRepository<Requests, UUID>  {
 
 
-    @Query("SELECT u FROM Requests u WHERE u.userCode = :userCode and u.provinceCode =:provinceCode")
+    @Query("SELECT u FROM Requests u WHERE u.userCode = :userCode and u.provinceCode =:provinceCode order by createddate desc")
     List<Requests> getRequestByUserCodeProvinceCode(@Param("userCode") String userCode, @Param("provinceCode") String provinceCode);
 
-    @Query("SELECT u FROM Requests u WHERE u.userCode = :userCode")
+    @Query("SELECT u FROM Requests u WHERE u.userCode = :userCode order by createddate desc")
     List<Requests> getRequestByUserCode(@Param("userCode") String userCode);
 
 

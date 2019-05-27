@@ -20,7 +20,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
    @Query("SELECT u FROM User u WHERE u.email = :email")
    User findByEmail(@Param("email") String email);
 
-   @Query("SELECT u FROM User u WHERE u.userTypeName = :userTypeName")
+   @Query("SELECT u FROM User u WHERE u.userTypeName = :userTypeName order by createdDate desc")
    List<User> findByUserTypeName(@Param("userTypeName") String userTypeName);
 
    @Query("SELECT u FROM User u WHERE u.isApproved = :approvalStatus")
@@ -46,7 +46,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
    List<User> findSurveyorsByAssistantsUserCode(String assistantusercode);
    
    @Query(value = "SELECT U.* FROM USERS U INNER JOIN INTERNALUSERROLES IUR ON (IUR.USERCODE = u.USERCODE) "
-   		+ "WHERE U.USERTYPENAME = 'INTERNAL' AND IUR.USERPROVINCECODE = ?1", nativeQuery = true)
+   		+ "WHERE U.USERTYPENAME = 'INTERNAL' AND IUR.USERPROVINCECODE = ?1 order by createdDate desc", nativeQuery = true)
    List<User> findInternalUsersByProvinceCode(String provincecode);
    
    @Query(value = "SELECT U.* FROM USERS U INNER JOIN INTERNALUSERROLES IUR ON (IUR.USERCODE = u.USERCODE) "
@@ -54,7 +54,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
    List<User> findInternalUsersByInternalRoleCode(String internalRoleCode);
    
    @Query(value = "SELECT U.* FROM USERS U INNER JOIN EXTERNALUSERROLES EUR ON (EUR.USERCODE = u.USERCODE) "
-	   		+ "WHERE U.USERTYPENAME = 'EXTERNAL' AND EUR.USERPROVINCECODE = :provincecode", nativeQuery = true)
+	   		+ "WHERE U.USERTYPENAME = 'EXTERNAL' AND EUR.USERPROVINCECODE = :provincecode order by createdDate desc", nativeQuery = true)
    List<User> findExternalUsersByProvinceCode(@Param("provincecode") String provincecode);
    
    @Query("SELECT u FROM User u WHERE u.userCode = :usercode and u.userName = :username")

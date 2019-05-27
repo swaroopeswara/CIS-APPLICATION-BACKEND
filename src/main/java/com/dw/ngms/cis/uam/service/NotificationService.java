@@ -3,6 +3,7 @@ package com.dw.ngms.cis.uam.service;
 import com.dw.ngms.cis.uam.entity.Notifications;
 import com.dw.ngms.cis.uam.repository.NotificationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,8 +25,12 @@ public class NotificationService {
 
 
     public List<Notifications> getAllNotifications() {
-        return this.notificationRepository.findAll();
+        return this.notificationRepository.findAll(sortByIdDSC());
     }//getAllNotifications
 
+
+    private Sort sortByIdDSC() {
+        return new Sort(Sort.Direction.DESC, "createdDate");
+    }
 
 }

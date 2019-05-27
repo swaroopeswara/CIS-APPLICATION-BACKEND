@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.validation.Valid;
+import org.springframework.data.domain.Sort;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,8 +22,13 @@ public class PlsUserService {
 	private PlsUserRepository plsUserRepository;
 	
 	public List<PlsUser> getAllPlsUsers() {
-		return this.plsUserRepository.findAll();
+		return this.plsUserRepository.findAll(sortByIdDSC());
 	}//getAllPlsUsers
+
+
+	private Sort sortByIdDSC() {
+		return new Sort(Sort.Direction.DESC, "createddate");
+	}
 
 	public PlsUser findByEmail(String email) {
 		return this.plsUserRepository.findByEmail(email);

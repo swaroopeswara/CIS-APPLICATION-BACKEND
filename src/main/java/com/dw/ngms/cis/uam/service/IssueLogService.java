@@ -4,6 +4,7 @@ import com.dw.ngms.cis.uam.entity.InternalRole;
 import com.dw.ngms.cis.uam.entity.IssueLog;
 import com.dw.ngms.cis.uam.repository.IssueLogRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,9 +24,12 @@ public class IssueLogService {
     }
 
     public List<IssueLog> findAll() {
-        return this.issueLogRepository.findAll();
+        return this.issueLogRepository.findAll(sortByIdDsc());
     }
 
+    private Sort sortByIdDsc() {
+        return new Sort(Sort.Direction.DESC, "createdDate");
+    }
 
    public String  findIssueStatus(Long issueLogId){
        return this.issueLogRepository.findIssueStatus(issueLogId);
