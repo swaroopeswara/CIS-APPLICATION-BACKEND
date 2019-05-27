@@ -178,6 +178,7 @@ public class TaskService {
         if(!StringUtils.isEmpty(requests.getUserCode())) {
         	task.setTaskDoneUserCode(requests.getUserCode());
             task.setTaskDoneUserName(requests.getUserName());
+            task.setTaskDoneUserFullName(requests.getUserFullName());
         }
 		return task;
 	}//populateTask

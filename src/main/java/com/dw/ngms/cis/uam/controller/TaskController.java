@@ -106,6 +106,7 @@ public class TaskController extends MessageController {
                 task.setTaskCLoseDESC(taskDTO.getTaskCloseDesc());
                 task.setTaskDoneUserCode(taskDTO.getTaskDoneByUserCode());
                 task.setTaskDoneUserName(taskDTO.getTaskDoneByUserName());
+                task.setTaskDoneUserFullName(taskDTO.getTaskDoneByUserFullName());
                 task.setTaskStatus("Closed");
                 this.taskService.saveTask(task);
                 return ResponseEntity.status(HttpStatus.OK).body(task);

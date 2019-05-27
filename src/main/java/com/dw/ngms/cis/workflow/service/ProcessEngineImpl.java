@@ -259,6 +259,8 @@ public class ProcessEngineImpl implements ProcessEngine<Task>{
 				task.setTaskDoneUserCode(additionalInfo.getUserCode());
 			if(!StringUtils.isEmpty(additionalInfo.getUserName()))
 				task.setTaskDoneUserName(additionalInfo.getUserName());
+			if(!StringUtils.isEmpty(additionalInfo.getUserFullName()))
+				task.setTaskDoneUserFullName(additionalInfo.getUserFullName());
 		}
 		task.setUpdatedDate(new Date());
 		if("Closed".equalsIgnoreCase(task.getTaskCode())) {

@@ -21,7 +21,7 @@ public class TaskDTO {
     private String taskCloseDesc;
     private String taskDoneByUserCode;
     private String taskDoneByUserName;
-
+    private String taskDoneByUserFullName;
 
 
 }

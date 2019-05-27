@@ -90,6 +90,9 @@ public class Task implements Serializable {
     @Column(name = "TASKDONEUSERNAME", length = 100, unique=true)
     private String taskDoneUserName;
 
+    @Column(name = "TASKDONEUSERFULLNAME", length = 125)
+    private String taskDoneUserFullName;
+    
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "CREATEDDATE", nullable = true)
     private Date createdDate = new Date();
