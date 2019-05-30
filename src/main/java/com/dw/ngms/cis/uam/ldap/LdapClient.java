@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.naming.NamingException;
 import javax.naming.directory.Attributes;
+import javax.naming.directory.SearchControls;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,9 @@ import org.springframework.ldap.core.AttributesMapper;
 import org.springframework.ldap.core.ContextSource;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.core.support.LdapContextSource;
+import org.springframework.ldap.filter.AndFilter;
+import org.springframework.ldap.filter.EqualsFilter;
+import org.springframework.ldap.support.LdapUtils;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -23,30 +27,31 @@ public class LdapClient {
 	private Environment env;
 
 	@Autowired
-	private ContextSource contextSource;
-
-	@Autowired
 	private LdapTemplate ldapTemplate;
 
 	public boolean authenticate(String username, String password) {
-		boolean returnValue = getAuthenticateUser(contextSource, username, password);
+		boolean returnValue = getAuthenticateUser(ldapTemplate, username, password);
 		if(returnValue == false) 
-			returnValue = getAuthenticateUser(getContextSourceTwo(), username, password);
+			returnValue = getAuthenticateUser(getLdapTemplateTwo(), username, password);
 		if(returnValue == false) 
-			returnValue = getAuthenticateUser(getContextSourceThree(), username, password);
+			returnValue = getAuthenticateUser(getLdapTemplateThree(), username, password);
 		
 		return returnValue;
 	}//authenticate
 
-	private boolean getAuthenticateUser(ContextSource contextSource, String username, String password) {
+	private boolean getAuthenticateUser(LdapTemplate ldpTemplate, String username, String password) {
+		if(ldpTemplate == null || username == null || password == null) return false;
+		
 		try {
-			contextSource.getContext("uid=" + username + ",ou=people," + env.getRequiredProperty("ldap.base.dn"),
-				password);
+			AndFilter filter = new AndFilter();
+	        filter.and(new EqualsFilter("objectclass", env.getRequiredProperty("ldap.user.search.filter.class")));
+	        filter.and(new EqualsFilter(env.getRequiredProperty("ldap.user.search.attribute"), username));
+	        
+	        return ldpTemplate.authenticate(LdapUtils.emptyLdapName(), filter.encode(), password);
 		}catch(Exception e) {
 			log.error("User '{}' LDAP authentication failed", username);
 			return false;
 		}
-		return true;
 	}//getAuthenticateUser
 	
 	public List<UserProfile> searchUser(String username) {		
@@ -60,11 +65,15 @@ public class LdapClient {
 	}//searchUser
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private List<UserProfile> searchLdapUser(LdapTemplate ldapTemplate, String username) {
-		if(ldapTemplate == null || username == null)
+	private List<UserProfile> searchLdapUser(LdapTemplate ldpTemplate, String username) {
+		if(ldpTemplate == null || username == null)
 			return new ArrayList<UserProfile>();
 	
-		return ldapTemplate.search("ou=people", "uid=" + username, (new AttributesMapper() {
+		AndFilter filter = new AndFilter();
+		filter.and(new EqualsFilter("objectclass", env.getRequiredProperty("ldap.user.search.filter.class")));
+        filter.and(new EqualsFilter(env.getRequiredProperty("ldap.user.search.attribute"), username));
+        
+		return ldpTemplate.search(LdapUtils.emptyLdapName(), filter.encode(), SearchControls.SUBTREE_SCOPE, (new AttributesMapper() {
 			@Override
 			public Object mapFromAttributes(Attributes attrs) throws NamingException {
 				UserProfile profile = new UserProfile();				
@@ -98,11 +107,6 @@ public class LdapClient {
 				return profile;
 			}
 		}));
-
-		/*
-		 * return ldapTemplate.search( "ou=people", "uid=" + username,
-		 * (AttributesMapper<String>) attrs -> (String) attrs .get("cn").get());
-		 */
 	}//searchLdapUser
 	
 	public ContextSource getContextSourceTwo() {
