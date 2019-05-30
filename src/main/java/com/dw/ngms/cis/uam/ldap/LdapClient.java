@@ -68,10 +68,11 @@ public class LdapClient {
 	private List<UserProfile> searchLdapUser(LdapTemplate ldpTemplate, String username) {
 		if(ldpTemplate == null || username == null)
 			return new ArrayList<UserProfile>();
-	
+			
 		AndFilter filter = new AndFilter();
+		String uidAttribute = env.getRequiredProperty("ldap.user.search.attribute");
 		filter.and(new EqualsFilter("objectclass", env.getRequiredProperty("ldap.user.search.filter.class")));
-        filter.and(new EqualsFilter(env.getRequiredProperty("ldap.user.search.attribute"), username));
+        filter.and(new EqualsFilter(uidAttribute, username));
         
 		return ldpTemplate.search(LdapUtils.emptyLdapName(), filter.encode(), SearchControls.SUBTREE_SCOPE, (new AttributesMapper() {
 			@Override
@@ -79,8 +80,8 @@ public class LdapClient {
 				UserProfile profile = new UserProfile();				
 				profile.setExists(Boolean.TRUE);
 				
-				if (attrs.get("uid") != null)
-					profile.setUid((String) attrs.get("uid").get());				
+				if (attrs.get(uidAttribute) != null)
+					profile.setUid((String) attrs.get(uidAttribute).get());				
 				if (attrs.get("givenName") != null)
 					profile.setFirstName((String) attrs.get("givenName").get());
 				if (attrs.get("sn") != null)
