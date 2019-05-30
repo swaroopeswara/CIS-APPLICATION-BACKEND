@@ -71,5 +71,13 @@ public class DBConfiguration {
 		System.out.println(driverClassName);
 		System.out.println(url);
 		return "DB Connection to PROD Environment";
-	} 
+	}
+
+
+	@Profile("dataworld")
+	@Bean
+	public String prodDataWorldDatabaseConnection() {
+		System.out.println("DB Connection to to UAM_DATAWORLD");
+		return "DB Connection to UAM_DATAWORLD Environment";
+	}
 }

@@ -5,7 +5,9 @@ import com.dw.ngms.cis.im.entity.CostCategories;
 import com.dw.ngms.cis.im.entity.CostSubCategories;
 import com.dw.ngms.cis.im.entity.RequestItems;
 import com.dw.ngms.cis.im.service.CostSubService;
+import com.dw.ngms.cis.uam.dto.UserUpdateDTO;
 import com.dw.ngms.cis.uam.entity.PlsUser;
+import com.dw.ngms.cis.uam.entity.User;
 import com.dw.ngms.cis.uam.jsonresponse.UserControllerResponse;
 import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,6 +59,20 @@ public class CostSubCategoryController extends MessageController {
             return generateFailureResponse(request, exception);
         }
     }//createCategory
+
+    @PostMapping("/updateCostSubCategory")
+    public ResponseEntity<?> updateCostSubCategory(HttpServletRequest request, @RequestBody CostSubCategories costSubCategories) {
+        try {
+            CostSubCategories subCategories = this.costSubService.updateSUbCategories(costSubCategories);
+                return (subCategories == null) ? generateEmptyResponse(request, "Failed to update internal user") :
+                        ResponseEntity.status(HttpStatus.OK).body("Update Successful");
+
+        } catch (Exception exception) {
+            return generateFailureResponse(request, exception);
+        }
+    }//updateInternalUser
+
+
 
     @RequestMapping(value = "/deactivateSubCategory", method = RequestMethod.POST)
     public ResponseEntity<?> deactivateSubCategory(HttpServletRequest request, @RequestBody @Valid CostSubCategories costSubCategories) throws IOException {

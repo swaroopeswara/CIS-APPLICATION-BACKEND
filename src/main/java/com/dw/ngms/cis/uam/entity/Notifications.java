@@ -54,6 +54,10 @@ public class Notifications implements Serializable {
 	@Column(name = "CREATEDDATE")
 	private Date createdDate = new Date();
 
+	@Column(name = "NOTIFICATIONDOCS", length = 200)
+	private String notificationDocs;
+
+
 
 
 	

@@ -1,5 +1,6 @@
 package com.dw.ngms.cis.uam.service;
 
+import com.dw.ngms.cis.im.entity.Requests;
 import com.dw.ngms.cis.uam.entity.Notifications;
 import com.dw.ngms.cis.uam.repository.NotificationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,12 @@ public class NotificationService {
     public List<Notifications> getAllNotifications() {
         return this.notificationRepository.findAll(sortByIdDSC());
     }//getAllNotifications
+
+
+
+    public Notifications getNotificationByID(Long notificationId) {
+        return this.notificationRepository.getNotificationByID(notificationId);
+    } //saveRequest
 
 
     private Sort sortByIdDSC() {

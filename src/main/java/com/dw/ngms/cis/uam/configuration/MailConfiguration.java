@@ -41,4 +41,11 @@ public class MailConfiguration {
         System.out.println("Connection to UAM_PROD");
         return "DB Connection to PROD Environment";
     }
+
+    @Profile("dataworld")
+    @Bean
+    public String prodDataWorldDatabaseConnection() {
+        System.out.println("Connection to UAM_DATAWORLD");
+        return "DB Connection to UAM_DATAWORLD Environment";
+    }
 }

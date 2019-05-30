@@ -1,13 +1,11 @@
 package com.dw.ngms.cis.uam.controller;
 
 import com.dw.ngms.cis.controller.MessageController;
+import com.dw.ngms.cis.uam.dto.InternalUserRoleDTO;
 import com.dw.ngms.cis.uam.dto.RolesDTO;
 import com.dw.ngms.cis.uam.dto.UpdateAccessRightsDTO;
 import com.dw.ngms.cis.uam.dto.UserDTO;
-import com.dw.ngms.cis.uam.entity.ExternalRole;
-import com.dw.ngms.cis.uam.entity.ExternalUser;
-import com.dw.ngms.cis.uam.entity.InternalRole;
-import com.dw.ngms.cis.uam.entity.User;
+import com.dw.ngms.cis.uam.entity.*;
 import com.dw.ngms.cis.uam.jsonresponse.UserControllerResponse;
 import com.dw.ngms.cis.uam.service.InternalRoleService;
 import com.google.gson.Gson;
@@ -168,7 +166,7 @@ public class InternalRoleController extends MessageController {
     }
 
 
-    @GetMapping(value = "/deactivateInternalUserRole")
+  /*  @GetMapping(value = "/deactivateInternalUserRole")
     public ResponseEntity<?> deactivateInternalUserRole(HttpServletRequest request, @RequestParam String internalRoleCode) throws IOException {
         try {
             if(internalRoleCode!= null && !isEmpty(internalRoleCode)) {
@@ -186,9 +184,7 @@ public class InternalRoleController extends MessageController {
             return generateFailureResponse(request, exception);
         }
     }
-
-
-
+*/
 
 
 
