@@ -10,10 +10,12 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 import com.dw.ngms.cis.uam.storage.StorageService;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 @ServletComponentScan
 @SpringBootApplication
 @EnableJpaAuditing
+@EnableScheduling
 public class CisUamApplication extends SpringBootServletInitializer {
 
     @Resource
