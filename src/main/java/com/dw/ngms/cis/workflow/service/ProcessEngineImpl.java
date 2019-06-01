@@ -80,7 +80,7 @@ public class ProcessEngineImpl implements ProcessEngine<Task>{
 			return null;		
 		try {
 			return process.getStartSequenceFlow().getTargetList().stream().filter(t -> t.getRestRequest() != null && 
-				t.getRestRequest().contains(additionalInfo.getSequenceRequest())).findAny().get().getId();
+				t.getDescription().equalsIgnoreCase(additionalInfo.getSequenceRequest())).findAny().get().getId();
 		}catch(Exception e) {
 			log.error("Failed to determine the start process target sequence id ["+additionalInfo.getSequenceRequest()+"]", e);
 			return null;
