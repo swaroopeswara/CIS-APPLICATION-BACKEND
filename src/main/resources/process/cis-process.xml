@@ -7,58 +7,70 @@
 		        	<assigneeList/>
 		        	<targetList>
 		        		<target id="flow2" restRequest="restAssign" description="assign"/>
+		        		<target id="flow3" restRequest="restReassign" description="reassign"/>
 		        	</targetList>
 		        </sequenceFlow>
 		        <sequenceFlow id="flow2" name="usrState1" state="Assigned" targetState="" restDependancy="">
 		        	<assigneeList>
 		        		<assignee type="Role" name="Information Manager"/>
+		        		<assignee type="Role" name="?"/>
 		        	</assigneeList>
 		        	<targetList>
 		        		<target id="flow2" restRequest="restMove" description="move">
 		        			<assignerList>
-		        				<assignee type="Role" name="Information Manager"/>
+		        				<assigner type="Role" name="National System Administrator"/>
+		        				<assigner type="Role" name="Provincial System Administrator"/>
+		        				<assigner type="Role" name="Information Manager"/>
 				        	</assignerList>
 		        		</target>
 			        	<target id="flow3" restRequest="restReassign" description="reassign">
 		        			<assignerList>
-		        				<assignee type="Role" name="Information Manager"/>
+		        				<assigner type="Role" name="National System Administrator"/>
+		        				<assigner type="Role" name="Provincial System Administrator"/>
+		        				<assigner type="Role" name="Information Manager"/>
 				        	</assignerList>
 		        		</target>			        	
 			        	<target id="flow7" restRequest="processUserState" description="finalise">
 		        			<assignerList>
-		        				<assignee type="Role" name="Information Manager"/>
+		        				<assigner type="Role" name="National System Administrator"/>
+		        				<assigner type="Role" name="Provincial System Administrator"/>
+		        				<assigner type="Role" name="Information Manager"/>
 				        	</assignerList>
 		        		</target>
 		        	</targetList>		        	
 		        </sequenceFlow>		        
 		        <sequenceFlow id="flow3" name="usrState2" state="Reassigned" targetState="" restDependancy="">
 		        	<assigneeList>
-		        		<assignee type="Role" name="Information Officer"/>
 		        		<assignee type="User" name="?"/>
 		        	</assigneeList>
 		        	<targetList>
+		        		<target id="flow3" restRequest="restReassign" description="reassign">
+		        			<assignerList>
+		        				<assigner type="Role" name="Information Manager"/>
+				        	</assignerList>
+		        		</target>	
 		        		<target id="flow4" restRequest="generateInvoice" description="Generate invoice">
 		        			<assignerList>
-		        				<assignee type="Role" name="Information Manager"/>
-				        		<!-- <assigner type="Role" name="Information Officer"/> -->
+		        				<assigner type="Role" name="Information Manager"/>
+				        		<assigner type="Role" name="Information Officer"/>
 				        	</assignerList>
 		        		</target>
 		        		<target id="flow5" restRequest="restUploadPOP" description="Upload proof of payment">
 		        			<assignerList>
-		        				<assignee type="Role" name="Information Manager"/>
+		        				<assigner type="Role" name="Information Manager"/>
 				        		<assigner type="Role" name="Information Officer"/>
 				        	</assignerList>
 		        		</target>
 		        		<target id="flow6" restRequest="restScrutinise" description="Scrutinise">
 		        			<assignerList>
-		        				<assignee type="Role" name="Information Manager"/>
-				        		<assigner type="Role" name="Information Officer"/>
+		        				<assigner type="Role" name="Information Manager"/>
+				        		<assigner type="Role" name="Information Scrutinizer"/>
 				        	</assignerList>
 		        		</target>
 		        		<target id="flow7" restRequest="processUserState" description="finalise">
 		        			<assignerList>
-		        				<assignee type="Role" name="Information Manager"/>
-				        		<!-- <assigner type="Role" name="Information Officer"/> -->
+		        				<assigner type="Role" name="Information Manager"/>
+				        		<assigner type="Role" name="Information Officer"/>
 				        	</assignerList>
 		        		</target>
 		        	</targetList>
@@ -68,18 +80,17 @@
 		        <sequenceFlow id="flow6" name="usrState5" state="Scrutinise" targetState="" restDependancy="">
 		        	<assigneeList>
 		        		<assignee type="Role" name="Information Scrutinizer"/>
-		        		<assignee type="User" name="?"/>
 		        	</assigneeList>
 		        	<targetList>
 		        		<target id="flow2" restRequest="restMove" description="move">
 		        			<assignerList>
-		        				<assignee type="Role" name="Information Manager"/>
+		        				<assigner type="Role" name="Information Manager"/>
 				        		<assigner type="Role" name="Information Officer"/>
 				        	</assignerList>
 		        		</target>
 		        		<target id="flow7" restRequest="restFinalise" description="finalise">
 		        			<assignerList>
-		        				<assignee type="Role" name="Information Manager"/>
+		        				<assigner type="Role" name="Information Manager"/>
 				        		<assigner type="Role" name="Information Officer"/>
 				        	</assignerList>
 		        		</target>

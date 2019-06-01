@@ -82,14 +82,13 @@ public class RequestController extends MessageController {
 
     @GetMapping("/getTaskTargetFlows")
     public ResponseEntity<?> getTaskTargetFlows(HttpServletRequest request,
-                                                @RequestParam Long taskid, String provincecode, String sectioncode, String internalrolecode) {
+                                                @RequestParam Long taskid, String internalrolecode) {
         if (taskid == null) {
             return generateFailureResponse(request, new Exception("Invalid task details passed"));
         }
         try {
-            List<Target> targets = (StringUtils.isEmpty(internalrolecode) || StringUtils.isEmpty(provincecode) ||
-                    StringUtils.isEmpty(sectioncode)) ? taskService.getTaskTargetFlows(taskid) :
-                    taskService.getTaskTargetFlows(taskid, provincecode, sectioncode, internalrolecode);//FIXME confirm param taskid / request code?
+            List<Target> targets = (StringUtils.isEmpty(internalrolecode)) ? taskService.getTaskTargetFlows(taskid) :
+                    taskService.getTaskTargetFlows(taskid, internalrolecode);
             return (CollectionUtils.isEmpty(targets)) ? generateEmptyResponse(request, "Target(s) not found") :
                     ResponseEntity.status(HttpStatus.OK).body(targets);
         } catch (Exception exception) {

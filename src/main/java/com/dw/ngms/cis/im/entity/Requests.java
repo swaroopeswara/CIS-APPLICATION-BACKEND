@@ -178,4 +178,7 @@ public class Requests implements Serializable {
     
     @Transient
     private String userFullName;
+    
+    @Transient
+    private String sequenceRequest;
 }

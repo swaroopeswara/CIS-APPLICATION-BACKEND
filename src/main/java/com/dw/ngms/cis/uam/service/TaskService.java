@@ -10,7 +10,6 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import javax.validation.Valid;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -119,11 +118,11 @@ public class TaskService {
     	return processEngine.getSequenceTargetFlows(task.getTaskType(), task.getTaskStatus());
     }//getTaskTargetFlows
     
-    public List<Target> getTaskTargetFlows(Long taskId, String provinceCode, String sectionCode, String internalrolecode) {
+    public List<Target> getTaskTargetFlows(Long taskId, String internalrolecode) {
     	List<Target> filteredList = new ArrayList<>();
     	List<Target> targetList = getTaskTargetFlows(taskId);
     	if(!CollectionUtils.isEmpty(targetList)) {
-    		InternalRole role = internalRoleRepository.findByProvinceCodeAndSectionCodeAndRoleCode(provinceCode, sectionCode, internalrolecode);
+    		InternalRole role = internalRoleRepository.findByInternalRoleCode(internalrolecode);
     		if(role != null) {
     			for(Target target : targetList) {
     				if(!CollectionUtils.isEmpty(target.getAssignerList())) {
@@ -186,7 +185,8 @@ public class TaskService {
 	private ProcessAdditionalInfo populateAdditionalInfo(Requests requests) {
 		ProcessAdditionalInfo additionalInfo = new ProcessAdditionalInfo();
 		additionalInfo.setProvinceCode(requests.getProvinceCode());
-		additionalInfo.setSectionCode(requests.getSectionCode());  
+		additionalInfo.setSectionCode(requests.getSectionCode());
+		additionalInfo.setSequenceRequest(requests.getSequenceRequest());
 		return additionalInfo;
 	}//populateAdditionalInfo
 

@@ -60,11 +60,13 @@ public class ProcessEngineImpl implements ProcessEngine<Task>{
 			log.error("process not found");
 			return;
 		}		
-//		updateTaskDetails(task, additionalInfo);
 		task.setTaskOpenDesc(process.getDescription());
 		task.setTaskType(process.getId());
 		task.setTaskReferenceType(process.getId());
-		SequenceFlow targetSequence = process.getSequenceFlow(process.getStartSequenceFlow().getTargetList().get(0).getId());
+		String targetSequenceId = getStartProcessTargetSequenceId(additionalInfo, process);		
+		SequenceFlow targetSequence = (!StringUtils.isEmpty(targetSequenceId)) ? process.getSequenceFlow(targetSequenceId) :
+			process.getSequenceFlow(process.getStartSequenceFlow().getTargetList().get(0).getId());
+		
 		if(targetSequence != null) {
 			task.setTaskStatus(targetSequence.getState());
 			updateRoleAndUserAssociations(task, additionalInfo, targetSequence);
@@ -72,6 +74,18 @@ public class ProcessEngineImpl implements ProcessEngine<Task>{
 		taskRepository.save(task);
 		addLifeCycleEntry(task, additionalInfo);
 	}//startProcess
+
+	private String getStartProcessTargetSequenceId(ProcessAdditionalInfo additionalInfo, Process process) {
+		if(additionalInfo == null || process == null) 
+			return null;		
+		try {
+			return process.getStartSequenceFlow().getTargetList().stream().filter(t -> t.getRestRequest() != null && 
+				t.getRestRequest().contains(additionalInfo.getSequenceRequest())).findAny().get().getId();
+		}catch(Exception e) {
+			log.error("Failed to determine the start process target sequence id ["+additionalInfo.getSequenceRequest()+"]", e);
+			return null;
+		}
+	}//getStartProcessTargetSequenceId
 
 	@Override
 	public Target processUserState(Task task, ProcessAdditionalInfo additionalInfo) {
