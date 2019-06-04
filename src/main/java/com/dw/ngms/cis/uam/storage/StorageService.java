@@ -1,13 +1,14 @@
 package com.dw.ngms.cis.uam.storage;
 
+import com.dw.ngms.cis.uam.configuration.ApplicationPropertiesConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FileSystemUtils;
 import org.springframework.web.multipart.MultipartFile;
-import com.dw.ngms.cis.uam.utilities.Constants;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -20,9 +21,12 @@ import java.util.Date;
 @Service
 public class StorageService {
 
+	@Autowired
+	private ApplicationPropertiesConfiguration applicationPropertiesConfiguration;
+
 	Logger log = LoggerFactory.getLogger(this.getClass().getName());
-	private final Path rootLocation = Paths.get(Constants.uploadDirectoryPath);
-	private final Path rootLocationFTP = Paths.get(Constants.uploadDirectoryPathFTP);
+	private final Path rootLocation = Paths.get(applicationPropertiesConfiguration.getUploadDirectoryPath());
+	private final Path rootLocationFTP = Paths.get(applicationPropertiesConfiguration.getUploadDirectoryPathFTP());
 
 	public String store(MultipartFile file) {
 		String fileName  = null;

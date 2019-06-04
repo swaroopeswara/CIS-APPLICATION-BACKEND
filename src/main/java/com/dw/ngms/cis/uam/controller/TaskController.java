@@ -1,12 +1,7 @@
 package com.dw.ngms.cis.uam.controller;
 
 import com.dw.ngms.cis.controller.MessageController;
-import com.dw.ngms.cis.exception.ExceptionConstants;
-import com.dw.ngms.cis.im.entity.Requests;
-import com.dw.ngms.cis.uam.dto.FilePathsDTO;
-import com.dw.ngms.cis.uam.dto.MailDTO;
 import com.dw.ngms.cis.uam.dto.TaskDTO;
-import com.dw.ngms.cis.uam.entity.InternalUserRoles;
 import com.dw.ngms.cis.uam.entity.Task;
 import com.dw.ngms.cis.uam.entity.TaskLifeCycle;
 import com.dw.ngms.cis.uam.jsonresponse.UserControllerResponse;
@@ -23,10 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
-
-import static org.springframework.util.StringUtils.isEmpty;
 
 /**
  * Created by swaroop on 2019/04/06.

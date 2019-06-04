@@ -31,34 +31,34 @@ public class CostSubService {
 
 
 
-    public CostSubCategories updateSUbCategories(CostSubCategories costSubCategories) {
-        if(costSubCategories == null || costSubCategories.getCostSubCategoryCode() == null) return null;
-        CostSubCategories subCategories = this.costSubRepository.findBycostSubCategoryCode(costSubCategories.getCostSubCategoryCode());
-        System.out.println("Test update internal Update" +subCategories.getCostSubCategoryCode());
-        if(subCategories == null) return null;
-        return this.costSubRepository.save(getPopulatedCostSubCategoriesWithUpdate(subCategories, costSubCategories));
+    public CostSubCategories updateSUbCategories(CostSubCategories updateCostCategories) {
+        if(updateCostCategories == null || updateCostCategories.getCostSubCategoryCode() == null) return null;
+        CostSubCategories subCategoriesValues = this.costSubRepository.findBycostSubCategoryCode(updateCostCategories.getCostSubCategoryCode());
+        System.out.println("Test update internal Update" +subCategoriesValues.getCostSubCategoryCode());
+        if(subCategoriesValues == null) return null;
+        return this.costSubRepository.save(getPopulatedCostSubCategoriesWithUpdate(updateCostCategories,subCategoriesValues));
     }//updateSUbCategories
 
 
-    private CostSubCategories getPopulatedCostSubCategoriesWithUpdate(CostSubCategories subCategories, CostSubCategories costSubCategories) {
-        if(subCategories.getCostCategoryId() != null && subCategories.getCostCategoryId() != 0) costSubCategories.setCostCategoryId(subCategories.getCostCategoryId());
-        if(subCategories.getSubCategoryId() != null && subCategories.getSubCategoryId() != 0) costSubCategories.setSubCategoryId(subCategories.getSubCategoryId());
+    private CostSubCategories getPopulatedCostSubCategoriesWithUpdate(CostSubCategories updateCostCategories, CostSubCategories costSubCategories) {
+        if(updateCostCategories.getCostCategoryId() != null && updateCostCategories.getCostCategoryId() != 0) costSubCategories.setCostCategoryId(updateCostCategories.getCostCategoryId());
+        if(updateCostCategories.getSubCategoryId() != null && updateCostCategories.getSubCategoryId() != 0) costSubCategories.setSubCategoryId(updateCostCategories.getSubCategoryId());
 
-        if(subCategories.getCostSubCategoryCode() != null && subCategories.getCostSubCategoryCode() != "") costSubCategories.setCostCategoryCode(subCategories.getCostSubCategoryCode());
-        if(subCategories.getCostSubCategoryName() != null && subCategories.getCostSubCategoryName() != "") costSubCategories.setCostCategoryName(subCategories.getCostSubCategoryName());
-        if(subCategories.getCostCategoryCode() != null && subCategories.getCostCategoryCode() != "") costSubCategories.setCostCategoryCode(subCategories.getCostCategoryCode());
-        if(subCategories.getCostCategoryName() != null && subCategories.getCostCategoryName() != "") costSubCategories.setCostCategoryName(subCategories.getCostCategoryName());
+        if(updateCostCategories.getCostSubCategoryCode() != null && updateCostCategories.getCostSubCategoryCode() != "") costSubCategories.setCostSubCategoryCode(updateCostCategories.getCostSubCategoryCode());
+        if(updateCostCategories.getCostSubCategoryName() != null && updateCostCategories.getCostSubCategoryName() != "") costSubCategories.setCostSubCategoryName(updateCostCategories.getCostSubCategoryName());
+        if(updateCostCategories.getCostCategoryCode() != null && updateCostCategories.getCostCategoryCode() != "") costSubCategories.setCostCategoryCode(updateCostCategories.getCostCategoryCode());
+        if(updateCostCategories.getCostCategoryName() != null && updateCostCategories.getCostCategoryName() != "") costSubCategories.setCostCategoryName(updateCostCategories.getCostCategoryName());
 
 
 
-        if(subCategories.getDescription() != null && subCategories.getDescription() != "") costSubCategories.setDescription(subCategories.getDescription());
-        if(subCategories.getFixedRate() != null && subCategories.getFixedRate() != "") costSubCategories.setFixedRate(subCategories.getFixedRate());
-        if(subCategories.getHourRate() != null && subCategories.getHourRate() != "") costSubCategories.setHourRate(subCategories.getHourRate());
+        if(updateCostCategories.getDescription() != null && updateCostCategories.getDescription() != "") costSubCategories.setDescription(updateCostCategories.getDescription());
+        if(updateCostCategories.getFixedRate() != null && updateCostCategories.getFixedRate() != "") costSubCategories.setFixedRate(updateCostCategories.getFixedRate());
+        if(updateCostCategories.getHourRate() != null && updateCostCategories.getHourRate() != "") costSubCategories.setHourRate(updateCostCategories.getHourRate());
 
-        if(subCategories.getHalfHourRate() != null && subCategories.getHalfHourRate() != "") costSubCategories.setHalfHourRate(subCategories.getHalfHourRate());
-        if(subCategories.getIsActive() != null && subCategories.getIsActive() != "") costSubCategories.setIsActive(subCategories.getIsActive());
+        if(updateCostCategories.getHalfHourRate() != null && updateCostCategories.getHalfHourRate() != "") costSubCategories.setHalfHourRate(updateCostCategories.getHalfHourRate());
+        if(updateCostCategories.getIsActive() != null && updateCostCategories.getIsActive() != "") costSubCategories.setIsActive(updateCostCategories.getIsActive());
         costSubCategories.setModifiedDate(new Date());
-        if(subCategories.getIsDeleted() != null && subCategories.getIsDeleted() != "") costSubCategories.setIsDeleted(subCategories.getIsDeleted());
+        if(updateCostCategories.getIsDeleted() != null && updateCostCategories.getIsDeleted() != "") costSubCategories.setIsDeleted(updateCostCategories.getIsDeleted());
 
 
 

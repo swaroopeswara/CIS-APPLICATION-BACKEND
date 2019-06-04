@@ -7,15 +7,15 @@ import com.dw.ngms.cis.im.entity.RequestItems;
 import com.dw.ngms.cis.im.entity.Requests;
 import com.dw.ngms.cis.im.service.RequestItemService;
 import com.dw.ngms.cis.im.service.RequestService;
+import com.dw.ngms.cis.uam.configuration.ApplicationPropertiesConfiguration;
+import com.dw.ngms.cis.uam.configuration.FTPConfiguration;
 import com.dw.ngms.cis.uam.dto.FilePathsDTO;
 import com.dw.ngms.cis.uam.dto.MailDTO;
 import com.dw.ngms.cis.uam.entity.TaskLifeCycle;
-import com.dw.ngms.cis.uam.entity.User;
 import com.dw.ngms.cis.uam.jsonresponse.UserControllerResponse;
 import com.dw.ngms.cis.uam.service.ProvinceService;
 import com.dw.ngms.cis.uam.service.TaskService;
 import com.dw.ngms.cis.uam.storage.StorageService;
-import com.dw.ngms.cis.uam.utilities.Constants;
 import com.dw.ngms.cis.workflow.api.ProcessAdditionalInfo;
 import com.dw.ngms.cis.workflow.model.Target;
 import com.google.gson.Gson;
@@ -50,6 +50,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -72,6 +74,12 @@ public class RequestController extends MessageController {
     private StorageService testService;
     @Autowired
     private TaskService taskService;
+
+    @Autowired
+    private ApplicationPropertiesConfiguration applicationPropertiesConfiguration;
+
+    @Autowired
+    private FTPConfiguration ftpConfiguration;
 
     @Autowired
     private ProvinceService provinceService;
@@ -287,7 +295,7 @@ public class RequestController extends MessageController {
                 if (requests != null) {
                     String fileName = testService.store(file);
                     files.add(file.getOriginalFilename());
-                    requests.setInvoiceFilePath(Constants.uploadDirectoryPath + fileName);
+                    requests.setInvoiceFilePath(applicationPropertiesConfiguration.getUploadDirectoryPath() + fileName);
                     message = "You successfully uploaded " + requests.getInvoiceFilePath() + "!";
                     Requests requests1 = requestService.saveRequest(requests);
                     if (requests1 != null) {
@@ -360,46 +368,7 @@ public class RequestController extends MessageController {
 
 
 
-   /* @PostMapping("/uploadPaymentConfirmation")
-     public ResponseEntity<?> uploadPaymentConfirmation(HttpServletRequest request, @RequestParam("file") MultipartFile file
-                                                       ,@RequestBody @Valid ProcessAdditionalInfo info
 
-     ) {
-         String message = "";
-         List<String> files = new ArrayList<String>();
-         try {
-             if (file.isEmpty()) {
-                 return generateEmptyResponse(request, "File Not Found to upload, Please upload a file");
-             } else if (info.getUserCode() != null && !isEmpty(info.getRequestCode())) {
-                 Requests requests = this.requestService.getRequestsByRequestCode(info.getRequestCode());
-                 if (requests != null && requests != null) {
-                     String fileName = testService.store(file);
-                     files.add(file.getOriginalFilename());
-                     requests.setPopFilePath(Constants.uploadDirectoryPath + fileName);
-                     message = "You successfully uploaded " + requests.getInvoiceFilePath() + "!";
-                     requestService.saveRequest(requests);
-
-                     ProcessAdditionalInfo processAdditionalInfo = new ProcessAdditionalInfo();
-                     processAdditionalInfo.setTaskId(info.getTaskId());
-                     processAdditionalInfo.setRequestCode(info.getRequestCode());
-                     processAdditionalInfo.setProvinceCode(info.getProvinceCode());
-                     processAdditionalInfo.setSectionCode(info.getSectionCode());
-                     processAdditionalInfo.setTargetSequenceId(info.getTargetSequenceId());
-                     processAdditionalInfo.setUserCode(info.getUserCode());
-                     processAdditionalInfo.setUserName(info.getUserName());
-                     processUserState(request,processAdditionalInfo);
-
-                     return ResponseEntity.status(HttpStatus.OK).body(message);
-                 } else {
-                     return generateEmptyResponse(request, "No Internal User Roles  found");
-                 }
-             }
-             return generateEmptyResponse(request, "No Internal User Roles  found");
-         } catch (Exception exception) {
-             message = "FAIL to upload " + file.getOriginalFilename() + "!";
-             return generateFailureResponse(request, exception);
-         }
-     }//uploadPaymentConfirmation*/
 
     private void updateRequestProvinceAndSectionCodes(ProcessAdditionalInfo additionalInfo) {
         if (additionalInfo != null && additionalInfo.getRequestCode() != null) {
@@ -421,11 +390,11 @@ public class RequestController extends MessageController {
         try {
             Requests req = requestService.getRequestsByRequestCode(requestCode);
             if (req != null) {
-                ClassPathResource template = new ClassPathResource(Constants.pdfTemplate);
+                ClassPathResource template = new ClassPathResource(applicationPropertiesConfiguration.getPdfTemplate());
                 String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
-                String filename = Constants.fileNamePDF;
+                String filename = applicationPropertiesConfiguration.getFileNamePDF();
                 filename = timeStamp + "_" + filename;
-                File file = new File(Constants.invoiceDirectory + filename);
+                File file = new File(applicationPropertiesConfiguration.getInvoiceDirectory() + filename);
                 if (template.exists()) {
                     try {
                         PdfReader reader = new PdfReader(template.getFilename());
@@ -457,7 +426,7 @@ public class RequestController extends MessageController {
                     response.setContentLength((int) file.length());
                     InputStream inputStream = new BufferedInputStream(new FileInputStream(file));
                     FileCopyUtils.copy(inputStream, response.getOutputStream());
-                    req.setInvoiceFilePath(Constants.invoiceDirectory + "/" + filename);
+                    req.setInvoiceFilePath(applicationPropertiesConfiguration.getInvoiceDirectory() + "/" + filename);
                     Requests updatedRequest = requestService.saveRequest(req);
                     return ResponseEntity.status(HttpStatus.OK).body("Generated Invoice Successfully");
                 }
@@ -604,7 +573,7 @@ public class RequestController extends MessageController {
                         List<String> files = new ArrayList<String>();
                         String fileName = testService.store(f);
                         files.add(f.getOriginalFilename());
-                        filesExist.add(Constants.uploadDirectoryPath + fileName);
+                        filesExist.add(applicationPropertiesConfiguration.getUploadDirectoryPath() + fileName);
                         userControllerResponse.setFiles(filesExist);
                         json = gson.toJson(userControllerResponse);
                         requests.setDispatchDocs(json);
@@ -616,7 +585,7 @@ public class RequestController extends MessageController {
                         List<String> files = new ArrayList<String>();
                         String fileName = testService.store(f);
                         files.add(f.getOriginalFilename());
-                        filesExist.add(Constants.uploadDirectoryPath + fileName);
+                        filesExist.add(applicationPropertiesConfiguration.getDownloadDirectoryPath() + fileName);
                         userControllerResponse.setFiles(filesExist);
                         json = gson.toJson(userControllerResponse);
                         requests.setDispatchDocs(json);
@@ -657,7 +626,7 @@ public class RequestController extends MessageController {
                         List<String> files = new ArrayList<String>();
                         String fileName = testService.store(f);
                         files.add(f.getOriginalFilename());
-                        filesExist.add(Constants.uploadDirectoryPath + fileName);
+                        filesExist.add(applicationPropertiesConfiguration.getUploadDirectoryPath() + fileName);
                         userControllerResponse.setFiles(filesExist);
                         json = gson.toJson(userControllerResponse);
                         requests.setExternalUserDispatchDocs(json);
@@ -669,7 +638,7 @@ public class RequestController extends MessageController {
                         List<String> files = new ArrayList<String>();
                         String fileName = testService.store(f);
                         files.add(f.getOriginalFilename());
-                        filesExist.add(Constants.uploadDirectoryPath + fileName);
+                        filesExist.add(applicationPropertiesConfiguration.getUploadDirectoryPath() + fileName);
                         userControllerResponse.setFiles(filesExist);
                         json = gson.toJson(userControllerResponse);
                         requests.setExternalUserDispatchDocs(json);
@@ -697,7 +666,7 @@ public class RequestController extends MessageController {
         FTPClient ftpClient = new FTPClient();
         try {
             Requests requests = this.requestService.getRequestsByRequestCode(requestsParam.getRequestCode());
-            if (requests.getDeliveryMethod().equalsIgnoreCase("Electronic(Email)") || requests.getDeliveryMethod().equalsIgnoreCase("Electronic(FTP)")) {
+            if (requests.getFormatType().equalsIgnoreCase("Electronic(Email)") || requests.getFormatType().equalsIgnoreCase("Electronic(FTP)")) {
                 if (requests != null && !isEmpty(requests)) {
                     String pathFromDB = requests.getDispatchDocs();
                     FilePathsDTO filePath = gson.fromJson(pathFromDB, FilePathsDTO.class);
@@ -706,66 +675,60 @@ public class RequestController extends MessageController {
                     for (String str1 : filePath.getFiles()) {
                         System.out.println(str1);
                         files.add(str1);
-                        ftpZipFiles(files);
+                        ftpZipFiles(files, ftpClient);
                     }
 
-                    String zipFilename = "ftpFilesDownload.zip";
+                    String zipFilename = "FTPFilesDownload.zip";
 
-                   /* boolean loginExists = ftpLogin(ftpClient);
+                    boolean loginExists = ftpLogin(ftpClient);
                     if (loginExists) {
-                        ftpClient.changeWorkingDirectory("/uploadFiles/");
-                        File firstLocalFile = new File(Constants.uploadDirectoryPathFTP + zipFilename);
+                        ftpClient.changeWorkingDirectory("/ftpFileDownload/");
+                        File firstLocalFile = new File(applicationPropertiesConfiguration.getUploadDirectoryPathFTP() + zipFilename);
                         String firstRemoteFile = zipFilename;
                         InputStream inputStream = new FileInputStream(firstLocalFile);
                         System.out.println("Start uploading first file");
                         boolean done = ftpClient.storeFile(firstRemoteFile, inputStream);
                         inputStream.close();
-                        if (done) {
+
+                        //Techlive done
+                        /*if (done) {
                             String path = ftpClient.printWorkingDirectory();
                             String ftpFilePath = "ftp://160.119.101.57" + path + "/" + zipFilename;
                             System.out.println(ftpFilePath);
                             System.out.println("The first file is uploaded successfully.");
-                        }
-                    }
+                        }*/
 
-
-                    ftpClient.logout();*/
-                    //File file = new File(Constants.downloadDirectoryPath + "DispatchDocumentsDownloadFiles.zip");
-
-
-
-                /*    boolean loginExists = ftpLogin(ftpClient);
-                    System.out.println("loginExists: " + loginExists);
-                    if (loginExists) {
-                        List<String> filesExist = new ArrayList<>();
-                        for (MultipartFile f : multipleFiles) {
-                            List<String> files = new ArrayList<String>();
-                            String fileName = testService.storeFtpFiles(f);
-                            files.add(f.getOriginalFilename());
-                            filesExist.add(Constants.uploadDirectoryPathFTP + fileName);
-                        }
-
-                            String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
-                            ftpZipFiles(filesExist,timeStamp,ftpClient);
-
-                           *//* String zipFilename = timeStamp+"download.zip";
-                            ftpClient.changeWorkingDirectory("/uploadFiles/");
-                            File localZip = new File(Constants.downloadDirectoryPath + zipFilename);
-                            InputStream inputStream = new FileInputStream(localZip);
-                            ftpClient.storeFile(zipFilename, inputStream);
+                    //data world done
+                        /*if (done) {
                             String path = ftpClient.printWorkingDirectory();
-                            String ftpFilePath = "ftp://160.119.101.57" + path + "/" + zipFilename;
-                            System.out.println(ftpFilePath);*//*
-                            //MailDTO mailDTO = new MailDTO();
-                           // sendMailWithFTPPAth(requests, mailDTO, ftpFilePath);
+                            String ftpFilePath = "ftp://10.1.15.226" + path + "/" + zipFilename;
+                            System.out.println(ftpFilePath);
+                            System.out.println("The first file is uploaded successfully.");
+                        }*/
 
-                        ftpClient.logout();
-                    }*/
-                    String path = "/ftpFileDownload/";
-                    String ftpFilePath = "ftp://160.119.101.57" + path + zipFilename;
 
+                    }
+                    ftpClient.logout();
+                    String path = ftpConfiguration.getUploadFilePath();
+                    String server =  "ftp://"+ftpConfiguration.getServer();
+                    String ftpFilePath = server + path + zipFilename;
+                    System.out.println("File Path is: "+ftpFilePath);
                     MailDTO mailDTO = new MailDTO();
-                    sendMailWithFTPPAth(requests, mailDTO, ftpFilePath);
+
+                    // inside your getSalesUserData() method
+                    ExecutorService emailExecutor = Executors.newSingleThreadExecutor();
+                    emailExecutor.execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                sendMailWithFTPPAth(requests, mailDTO, ftpFilePath);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+
+                        }
+                    });
+                    emailExecutor.shutdown(); // it is very important to shutdown your non-singleton ExecutorService.
 
                 }
             }
@@ -773,14 +736,42 @@ public class RequestController extends MessageController {
         } catch (Exception exception) {
             return generateFailureResponse(request, exception);
         }
-        return ResponseEntity.status(HttpStatus.OK).body("Successfully function");
+        return ResponseEntity.status(HttpStatus.OK).body("Sent email Sucessfully");
     }//uploadFTPDispatchDocumentSendMail
 
-    private boolean ftpLogin(FTPClient ftpClient) throws IOException {
+    // ftp server local tech live
+   /* private boolean ftpLogin(FTPClient ftpClient) throws IOException {
         String server = "160.119.101.57";
         int port = 21;
         String user = "Administrator";
         String pass = "dataworld@1";
+
+        ftpClient.connect(server, port);
+        showServerReply(ftpClient);
+        int replyCode = ftpClient.getReplyCode();
+        if (!FTPReply.isPositiveCompletion(replyCode)) {
+            System.out.println("Operation failed. Server reply code: " + replyCode);
+            return false;
+        }
+        boolean success = ftpClient.login(user, pass);
+        showServerReply(ftpClient);
+        if (!success) {
+            System.out.println("Could not login to the server");
+            return false;
+        } else {
+            System.out.println("LOGGED IN SERVER");
+            return true;
+        }
+
+    }*/
+
+
+
+    private boolean ftpLogin(FTPClient ftpClient) throws IOException {
+        String server = ftpConfiguration.getServer();
+        int port = ftpConfiguration.getPort();
+        String user = ftpConfiguration.getUsername();
+        String pass = ftpConfiguration.getPassword();
 
         ftpClient.connect(server, port);
         showServerReply(ftpClient);
@@ -981,7 +972,7 @@ public class RequestController extends MessageController {
             files.add(str1);
             externalUserZipFiles(files);
         }
-        File file = new File(Constants.downloadDirectoryPath + "ExternalUserDispatchDocumentsDownloadFiles.zip");
+        File file = new File(applicationPropertiesConfiguration.getDownloadDirectoryPath() + "ExternalUserDispatchDocumentsDownloadFiles.zip");
 
         InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
         return ResponseEntity.ok()
@@ -1008,7 +999,7 @@ public class RequestController extends MessageController {
             files.add(str1);
             zipFiles(files);
         }
-        File file = new File(Constants.downloadDirectoryPath + "DispatchDocumentsDownloadFiles.zip");
+        File file = new File(applicationPropertiesConfiguration.getDownloadDirectoryPath() + "DispatchDocumentsDownloadFiles.zip");
 
         InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
         return ResponseEntity.ok()
@@ -1025,7 +1016,7 @@ public class RequestController extends MessageController {
         FileInputStream fis = null;
 
         try {
-            fos = new FileOutputStream(Constants.downloadDirectoryPath + "ExternalUserDispatchDocumentsDownloadFiles.zip");
+            fos = new FileOutputStream(applicationPropertiesConfiguration.getDownloadDirectoryPath() + "ExternalUserDispatchDocumentsDownloadFiles.zip");
             zipOut = new ZipOutputStream(new BufferedOutputStream(fos));
             for (String filePath : files) {
                 File input = new File(filePath);
@@ -1056,6 +1047,44 @@ public class RequestController extends MessageController {
             }
         }
     }//zipFiles
+
+
+    @PostMapping("/uploadUserPaymentConfirmation")
+    public ResponseEntity<?> uploadUserPaymentConfirmation(HttpServletRequest request, @RequestParam("file") MultipartFile file,
+                                                           @RequestParam("requestCode") String requestCode,
+                                                           @RequestParam("userCode") String userCode,
+                                                           @RequestParam("userName") String userName
+    ) {
+        String message = "";
+        List<String> files = new ArrayList<String>();
+        try {
+            if (file.isEmpty()) {
+                return generateEmptyResponse(request, "File Not Found to upload, Please upload a file");
+            } else if (requestCode != null && !isEmpty(requestCode)) {
+                Requests requests = this.requestService.getRequestsByRequestCodeUserCodeUserName(requestCode, userCode, userName);
+                if (requests != null) {
+                    String fileName = testService.store(file);
+                    files.add(file.getOriginalFilename());
+                    requests.setInvoiceFilePath(applicationPropertiesConfiguration.getUploadDirectoryPath() + fileName);
+                    message = "You successfully uploaded " + requests.getInvoiceFilePath() + "!";
+                    Requests requests1 = requestService.saveRequest(requests);
+                    if (requests1 != null) {
+                        requests1.setPaymentStatus("PAID");
+                    }
+                    requestService.saveRequest(requests1);
+                    return ResponseEntity.status(HttpStatus.OK).body(message);
+
+                } else {
+                    return generateEmptyResponse(request, "No Internal User Roles  found");
+                }
+            }
+            return generateEmptyResponse(request, "No Internal User Roles  found");
+        } catch (Exception exception) {
+            message = "FAIL to upload " + file.getOriginalFilename() + "!";
+            return generateFailureResponse(request, exception);
+        }
+    }//uploadUserPaymentConfirmation
+
 
     public void zipFiles(List<String> files) {
 
@@ -1063,7 +1092,7 @@ public class RequestController extends MessageController {
         ZipOutputStream zipOut = null;
         FileInputStream fis = null;
         try {
-            fos = new FileOutputStream(Constants.downloadDirectoryPath + "DispatchDocumentsDownloadFiles.zip");
+            fos = new FileOutputStream(applicationPropertiesConfiguration.getDownloadDirectoryPath() + "DispatchDocumentsDownloadFiles.zip");
             zipOut = new ZipOutputStream(new BufferedOutputStream(fos));
             for (String filePath : files) {
                 File input = new File(filePath);
@@ -1096,14 +1125,15 @@ public class RequestController extends MessageController {
     }//zipFiles
 
 
-    public void ftpZipFiles(List<String> files) {
+    public void ftpZipFiles(List<String> files, FTPClient ftpClient) {
         FileOutputStream fos = null;
         ZipOutputStream zipOut = null;
         FileInputStream fis = null;
 
-        String zipFilename = "download.zip";
+        String zipFilename = "FTPFilesDownload.zip";
         try {
-            fos = new FileOutputStream(Constants.uploadDirectoryPathFTP + zipFilename);
+
+            fos = new FileOutputStream(applicationPropertiesConfiguration.getUploadDirectoryPathFTP() + zipFilename);
             zipOut = new ZipOutputStream(new BufferedOutputStream(fos));
             for (String filePath : files) {
                 System.out.println("filePath is " + filePath);

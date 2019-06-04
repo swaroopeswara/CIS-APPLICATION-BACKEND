@@ -96,6 +96,10 @@ public class RequestService {
         return this.requestRepository.getRequestsByRequestCode(requestCode);
     } //saveRequest
 
+	public Requests getRequestsByRequestCodeUserCodeUserName(String requestCode,String userCode, String userName) {
+		return this.requestRepository.getRequestsByRequestCodeUserCodeUserName(requestCode,userCode,userName);
+	} //sa
+
 	public boolean updateRequestOnLapse(String requestCode, Integer lapseTime, boolean isLapsed) {
 		log.info("Processing lapse request");
 		

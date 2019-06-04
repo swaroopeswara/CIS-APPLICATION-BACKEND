@@ -1,7 +1,8 @@
 package com.dw.ngms.cis.uam.controller;
 
 import com.dw.ngms.cis.controller.MessageController;
-import com.dw.ngms.cis.uam.configuration.MailConfiguration;
+import com.dw.ngms.cis.uam.configuration.ApplicationPropertiesConfiguration;
+
 import com.dw.ngms.cis.uam.dto.*;
 import com.dw.ngms.cis.uam.entity.*;
 import com.dw.ngms.cis.uam.enums.ApprovalStatus;
@@ -58,7 +59,7 @@ public class UserController extends MessageController {
     private TaskService taskService;
 
     @Autowired
-    private MailConfiguration mailConfiguration;
+    private ApplicationPropertiesConfiguration applicationPropertiesConfiguration;
 
     @PostMapping("/checkADUserExists")
     public ResponseEntity<?> isADUserExists(HttpServletRequest request, @RequestBody @Valid UserCredentials userCredentials) {
@@ -807,7 +808,7 @@ public class UserController extends MessageController {
         model.put("body3", "");
         model.put("body4", "");
         mailDTO.setMailFrom("cheifsurveyorgeneral@gmail.com");
-        mailDTO.setMailTo(mailConfiguration.getAdminUserMail());
+        mailDTO.setMailTo(applicationPropertiesConfiguration.getAdminUserMail());
         mailDTO.setModel(model);
         sendEmail(mailDTO);
     }
@@ -824,7 +825,7 @@ public class UserController extends MessageController {
         model.put("body3", "");
         model.put("body4", "");
         mailDTO.setMailFrom("cheifsurveyorgeneral@gmail.com");
-        mailDTO.setMailTo(mailConfiguration.getAdminUserMail());
+        mailDTO.setMailTo(applicationPropertiesConfiguration.getAdminUserMail());
         mailDTO.setModel(model);
         sendEmail(mailDTO);
     }
@@ -842,7 +843,7 @@ public class UserController extends MessageController {
         model.put("body4", "");
 
         mailDTO.setMailFrom("cheifsurveyorgeneral@gmail.com");
-        mailDTO.setMailTo(mailConfiguration.getProvinceAdminMail());
+        mailDTO.setMailTo(applicationPropertiesConfiguration.getProvinceAdminMail());
         mailDTO.setModel(model);
         sendEmail(mailDTO);
     }
@@ -861,7 +862,7 @@ public class UserController extends MessageController {
 
 
         mailDTO.setMailFrom("cheifsurveyorgeneral@gmail.com");
-        mailDTO.setMailTo(mailConfiguration.getProvinceAdminMail());
+        mailDTO.setMailTo(applicationPropertiesConfiguration.getProvinceAdminMail());
         mailDTO.setModel(model);
         sendEmail(mailDTO);
     }

@@ -55,29 +55,22 @@ public class DBConfiguration {
 		return "DB connection for DEV Environment";
 	}
 
-	@Profile("test")
+
+
+	@Profile("pre")
 	@Bean
-	public String testDatabaseConnection() {
-		System.out.println("DB Connection to UAM_PRE - Low Cost Instance");
+	public String prodDatabaseConnection() {
+		System.out.println("DB Connection to UAM_PRE");
 		System.out.println(driverClassName);
 		System.out.println(url);
-		return "DB Connection to PRE Environment";
+		return "DB Connection to pre Environment";
 	}
+
 
 	@Profile("prod")
 	@Bean
-	public String prodDatabaseConnection() {
-		System.out.println("DB Connection to UAM_PROD - High Performance Instance");
-		System.out.println(driverClassName);
-		System.out.println(url);
-		return "DB Connection to PROD Environment";
-	}
-
-
-	@Profile("dataworld")
-	@Bean
 	public String prodDataWorldDatabaseConnection() {
-		System.out.println("DB Connection to to UAM_DATAWORLD");
-		return "DB Connection to UAM_DATAWORLD Environment";
+		System.out.println("DB Connection to to UAM_PROD");
+		return "DB Connection to prod Environment";
 	}
 }

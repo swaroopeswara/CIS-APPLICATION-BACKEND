@@ -1,13 +1,13 @@
 package com.dw.ngms.cis.uam.controller;
 
 import com.dw.ngms.cis.controller.MessageController;
+import com.dw.ngms.cis.uam.configuration.ApplicationPropertiesConfiguration;
 import com.dw.ngms.cis.uam.dto.FilePathsDTO;
 import com.dw.ngms.cis.uam.dto.MailDTO;
 import com.dw.ngms.cis.uam.entity.Notifications;
 import com.dw.ngms.cis.uam.jsonresponse.UserControllerResponse;
 import com.dw.ngms.cis.uam.service.NotificationService;
 import com.dw.ngms.cis.uam.storage.StorageService;
-import com.dw.ngms.cis.uam.utilities.Constants;
 import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
@@ -15,8 +15,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,8 +26,10 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -50,6 +50,9 @@ public class NotificationController extends MessageController {
     @Autowired
     private NotificationService notificationService;
 
+    @Autowired
+    private ApplicationPropertiesConfiguration applicationPropertiesConfiguration;
+
 
     @PostMapping("/saveNotification")
     public ResponseEntity<?> saveNotification(HttpServletRequest request, @RequestBody @Valid Notifications notification) {
@@ -60,8 +63,8 @@ public class NotificationController extends MessageController {
             Notifications notificationSave = this.notificationService.saveNotification(notification);
             MailDTO mailDTO = new MailDTO();
             sendMailToNotification(mailDTO, notification);
-            //sendMailToNotification1(mailDTO,notification);
-            //sendMailToNotification2(mailDTO,notification);
+            sendMailToNotification1(mailDTO,notification);
+            sendMailToNotification2(mailDTO,notification);
 
             return ResponseEntity.status(HttpStatus.OK).body(notificationSave);
         } catch (Exception exception) {
@@ -72,35 +75,6 @@ public class NotificationController extends MessageController {
 
 
 
-
-   /* @Component
-    public class EmailNotificationScheduler {
-        @Scheduled(fixedRate = 60000)
-        public void fixedRateSch() throws Exception {
-            List<Notifications> notificationsList = notificationService.getAllNotifications();
-            for (Notifications notifications : notificationsList) {
-                if (notifications.getNotificationStatus().equalsIgnoreCase("OPEN") &&
-                        notifications.getNotificationuserTypes().equalsIgnoreCase("All Internal Users")) {
-                    System.out.println("Email Notification scheduler into internal users: " + notifications.getNotificationId());
-                    MailDTO mailDTO = new MailDTO();
-                    sendMailToNotification(mailDTO, notifications);
-                    //send email to all Internal users
-                    notifications.setNotificationStatus("CLOSE");
-                    System.out.println("Email Notification scheduler before save:");
-                    notificationService.saveNotification(notifications);
-                } else if (notifications.getNotificationStatus().equalsIgnoreCase("OPEN") &&
-                        notifications.getNotificationuserTypes().equalsIgnoreCase("All Internal Users")) {
-                    System.out.println("Email Notification scheduler into external users: " + notifications.getNotificationId());
-                    //send email to all external users
-                }
-            }
-
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-            Date now = new Date();
-            String strDate = sdf.format(now);
-            System.out.println("Fixed Rate scheduler:: " + strDate);
-        }
-    }*/
 
 
     @GetMapping("/getNotifications")
@@ -132,7 +106,7 @@ public class NotificationController extends MessageController {
     }
 
 
-    /*private void sendMailToNotification1(MailDTO mailDTO, Notifications notifications) throws Exception {
+    private void sendMailToNotification1(MailDTO mailDTO, Notifications notifications) throws Exception {
         Map<String, Object> model = new HashMap<String, Object>();
         model.put("firstName", "User");
         model.put("body1", notifications.getBody());
@@ -142,7 +116,7 @@ public class NotificationController extends MessageController {
         mailDTO.setMailSubject(notifications.getSubject());
         model.put("FOOTER", "CIS ADMIN");
         mailDTO.setMailFrom("cheifsurveyorgeneral@gmail.com");
-        mailDTO.setMailTo("sibusiso.dlamini@drdlr.gov.za");
+        mailDTO.setMailTo("dataworldproject@gmail.com");
         mailDTO.setModel(model);
         InternetAddress cc = new InternetAddress();
         sendEmail1(mailDTO,cc);
@@ -160,11 +134,11 @@ public class NotificationController extends MessageController {
         mailDTO.setMailSubject(notifications.getSubject());
         model.put("FOOTER", "CIS ADMIN");
         mailDTO.setMailFrom("cheifsurveyorgeneral@gmail.com");
-        mailDTO.setMailTo("sibusiso.dlamini@drdlr.gov.za");
+        mailDTO.setMailTo("dataworldproject@gmail.com");
         mailDTO.setModel(model);
         InternetAddress cc = new InternetAddress();
         sendEmail2(mailDTO,cc);
-    }*/
+    }
 
 
     @PostMapping("/uploadNotificationDocument")
@@ -190,7 +164,7 @@ public class NotificationController extends MessageController {
                         List<String> files = new ArrayList<String>();
                         String fileName = testService.store(f);
                         files.add(f.getOriginalFilename());
-                        filesExist.add(Constants.uploadDirectoryPath + fileName);
+                        filesExist.add(applicationPropertiesConfiguration.getUploadDirectoryPath() + fileName);
                         userControllerResponse.setFiles(filesExist);
                         json = gson.toJson(userControllerResponse);
                         notifications.setNotificationDocs(json);
@@ -202,7 +176,7 @@ public class NotificationController extends MessageController {
                         List<String> files = new ArrayList<String>();
                         String fileName = testService.store(f);
                         files.add(f.getOriginalFilename());
-                        filesExist.add(Constants.uploadDirectoryPath + fileName);
+                        filesExist.add(applicationPropertiesConfiguration.getUploadDirectoryPath() + fileName);
                         userControllerResponse.setFiles(filesExist);
                         json = gson.toJson(userControllerResponse);
                         notifications.setNotificationDocs(json);
@@ -311,7 +285,7 @@ public class NotificationController extends MessageController {
             files.add(str1);
             zipFiles(files);
         }
-        File file = new File(Constants.downloadDirectoryPath + "NotificationDocumentsDownloadFiles.zip");
+        File file = new File(applicationPropertiesConfiguration.getDownloadDirectoryPath() + "NotificationDocumentsDownloadFiles.zip");
 
         InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
         return ResponseEntity.ok()
@@ -328,7 +302,7 @@ public class NotificationController extends MessageController {
         ZipOutputStream zipOut = null;
         FileInputStream fis = null;
         try {
-            fos = new FileOutputStream(Constants.downloadDirectoryPath + "NotificationDocumentsDownloadFiles.zip");
+            fos = new FileOutputStream(applicationPropertiesConfiguration.getDownloadDirectoryPath() + "NotificationDocumentsDownloadFiles.zip");
             zipOut = new ZipOutputStream(new BufferedOutputStream(fos));
             for (String filePath : files) {
                 File input = new File(filePath);

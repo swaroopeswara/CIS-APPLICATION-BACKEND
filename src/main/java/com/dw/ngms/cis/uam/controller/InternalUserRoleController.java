@@ -1,28 +1,21 @@
 package com.dw.ngms.cis.uam.controller;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.*;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
-
 import com.dw.ngms.cis.controller.MessageController;
-import com.dw.ngms.cis.exception.ExceptionConstants;
+import com.dw.ngms.cis.uam.configuration.ApplicationPropertiesConfiguration;
+import com.dw.ngms.cis.uam.dto.InternalUserRoleDTO;
 import com.dw.ngms.cis.uam.dto.MailDTO;
 import com.dw.ngms.cis.uam.dto.UserDTO;
+import com.dw.ngms.cis.uam.entity.InternalRole;
+import com.dw.ngms.cis.uam.entity.InternalUserRoles;
 import com.dw.ngms.cis.uam.entity.Task;
 import com.dw.ngms.cis.uam.entity.User;
-import com.dw.ngms.cis.uam.enums.ApprovalStatus;
-import com.dw.ngms.cis.uam.enums.Status;
+import com.dw.ngms.cis.uam.service.InternalUserRoleService;
+import com.dw.ngms.cis.uam.service.InternalUserService;
 import com.dw.ngms.cis.uam.service.TaskService;
 import com.dw.ngms.cis.uam.service.UserService;
+import com.dw.ngms.cis.uam.storage.StorageService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -31,15 +24,15 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.core.io.ByteArrayResource;
 
-import com.dw.ngms.cis.uam.dto.InternalUserRoleDTO;
-import com.dw.ngms.cis.uam.entity.InternalRole;
-import com.dw.ngms.cis.uam.entity.InternalUserRoles;
-import com.dw.ngms.cis.uam.service.InternalUserRoleService;
-import com.dw.ngms.cis.uam.service.InternalUserService;
-import com.dw.ngms.cis.uam.storage.StorageService;
-import com.dw.ngms.cis.uam.utilities.Constants;
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
 
 import static org.springframework.util.StringUtils.isEmpty;
 
@@ -60,6 +53,9 @@ public class InternalUserRoleController extends MessageController {
     private StorageService testService;
     @Autowired
     private TaskService taskService;
+
+    @Autowired
+    private ApplicationPropertiesConfiguration applicationPropertiesConfiguration;
 
     @Autowired
     private UserService userService;
@@ -169,7 +165,7 @@ public class InternalUserRoleController extends MessageController {
                 if (internalUserRoles != null && internalUserRoles.getUserRoleId() != null) {
                     String fileName = testService.store(file);
                     files.add(file.getOriginalFilename());
-                    internalUserRoles.setSignedAccessDocPath(Constants.uploadDirectoryPath + fileName);
+                    internalUserRoles.setSignedAccessDocPath(applicationPropertiesConfiguration.getUploadDirectoryPath() + fileName);
                     message = "You successfully uploaded " + internalUserRoles.getSignedAccessDocPath() + "!";
                     internalUserService.saveInternalUserRole(internalUserRoles);
                     return ResponseEntity.status(HttpStatus.OK).body(message);
@@ -187,29 +183,6 @@ public class InternalUserRoleController extends MessageController {
 
 
 
-
-   /* @PostMapping("/uploadDocumentationForInternalUsers")
-    public ResponseEntity<?> uploadDocumentationForInternalUsers(HttpServletRequest request,
-                                                                 @RequestParam MultipartFile[] multipleFiles
-    ) {
-
-        try{
-        for(MultipartFile f : multipleFiles) {
-            List<String> files = new ArrayList<String>();
-            String fileName = testService.store(f);
-            files.add(f.getOriginalFilename());
-            System.out.println("File Name is "+fileName);
-            File file = new File(Constants.uploadDirectoryPath  + fileName);
-
-        }
-
-        } catch (Exception exception) {
-            String  message = "FAIL to upload the files";
-            return generateFailureResponse(request, exception);
-        }
-        return ResponseEntity.status(HttpStatus.OK).body("sucess");
-    }//uploadDocumentationForInternalUsers
-*/
 
 
     @RequestMapping(value = "/downloadSignedUserAccess", method = RequestMethod.POST)

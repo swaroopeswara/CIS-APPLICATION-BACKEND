@@ -61,9 +61,9 @@ public class CostSubCategoryController extends MessageController {
     }//createCategory
 
     @PostMapping("/updateCostSubCategory")
-    public ResponseEntity<?> updateCostSubCategory(HttpServletRequest request, @RequestBody CostSubCategories costSubCategories) {
+    public ResponseEntity<?> updateCostSubCategory(HttpServletRequest request, @RequestBody CostSubCategories updateCostCategories) {
         try {
-            CostSubCategories subCategories = this.costSubService.updateSUbCategories(costSubCategories);
+            CostSubCategories subCategories = this.costSubService.updateSUbCategories(updateCostCategories);
                 return (subCategories == null) ? generateEmptyResponse(request, "Failed to update internal user") :
                         ResponseEntity.status(HttpStatus.OK).body("Update Successful");
 

@@ -1,38 +1,7 @@
 package com.dw.ngms.cis.uam.controller;
 
-import static org.springframework.util.StringUtils.isEmpty;
-
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.InputStreamResource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
-
 import com.dw.ngms.cis.controller.MessageController;
+import com.dw.ngms.cis.uam.configuration.ApplicationPropertiesConfiguration;
 import com.dw.ngms.cis.uam.dto.FilePathsDTO;
 import com.dw.ngms.cis.uam.dto.UserDTO;
 import com.dw.ngms.cis.uam.entity.ExternalUser;
@@ -42,8 +11,25 @@ import com.dw.ngms.cis.uam.jsonresponse.UserControllerResponse;
 import com.dw.ngms.cis.uam.service.ExternalUserService;
 import com.dw.ngms.cis.uam.service.UserService;
 import com.dw.ngms.cis.uam.storage.StorageService;
-import com.dw.ngms.cis.uam.utilities.Constants;
 import com.google.gson.Gson;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
+
+import static org.springframework.util.StringUtils.isEmpty;
 
 /**
  * Created by swaroop on 2019/03/28.
@@ -61,6 +47,9 @@ public class ExternalController extends MessageController {
 
     @Autowired
     private StorageService testService;
+
+    @Autowired
+    private ApplicationPropertiesConfiguration applicationPropertiesConfiguration;
 
     @RequestMapping(value = "/updateSecurityQuestions", method = RequestMethod.POST)
     public ResponseEntity<?> updateSecurityQuestions(HttpServletRequest request, @RequestBody @Valid UserDTO userDTO) throws IOException {
@@ -110,7 +99,7 @@ public class ExternalController extends MessageController {
                     List<String> files = new ArrayList<String>();
                     String fileName = testService.store(f);
                     files.add(f.getOriginalFilename());
-                    filesExist.add(Constants.uploadDirectoryPath + fileName);
+                    filesExist.add(applicationPropertiesConfiguration.getUploadDirectoryPath() + fileName);
                     userControllerResponse.setFiles(filesExist);
                     json = gson.toJson(userControllerResponse);
                     externalUser.setDocumentUploadMultiple(json);
@@ -142,7 +131,7 @@ public class ExternalController extends MessageController {
             files.add(str1);
             zipFiles(files);
         }
-        File file = new File(Constants.downloadDirectoryPath + "DownloadFiles.zip");
+        File file = new File(applicationPropertiesConfiguration.getDownloadDirectoryPath() + "DownloadFiles.zip");
 
         InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
         return ResponseEntity.ok()
@@ -159,7 +148,7 @@ public class ExternalController extends MessageController {
         ZipOutputStream zipOut = null;
         FileInputStream fis = null;
         try {
-            fos = new FileOutputStream(Constants.downloadDirectoryPath + "DownloadFiles.zip");
+            fos = new FileOutputStream(applicationPropertiesConfiguration.getDownloadDirectoryPath() + "DownloadFiles.zip");
             zipOut = new ZipOutputStream(new BufferedOutputStream(fos));
             for (String filePath : files) {
                 File input = new File(filePath);

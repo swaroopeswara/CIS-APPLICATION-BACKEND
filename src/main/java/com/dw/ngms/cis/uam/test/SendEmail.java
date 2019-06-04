@@ -2,7 +2,8 @@ package com.dw.ngms.cis.uam.test;
 
 import com.dw.ngms.cis.exception.ExceptionConstants;
 import com.dw.ngms.cis.uam.config.SendBlueMailService;
-import com.dw.ngms.cis.uam.configuration.MailConfiguration;
+import com.dw.ngms.cis.uam.configuration.ApplicationPropertiesConfiguration;
+
 import com.dw.ngms.cis.uam.dto.MailDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -14,8 +15,7 @@ import java.util.Map;
  */
 public class SendEmail {
 
-    @Autowired
-    private static MailConfiguration mailConfiguration;
+
 
     public static void main(String args[]){
         MailDTO mailDTO = new MailDTO();

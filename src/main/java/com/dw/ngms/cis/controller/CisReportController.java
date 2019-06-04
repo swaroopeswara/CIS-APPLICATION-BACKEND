@@ -1,26 +1,19 @@
 package com.dw.ngms.cis.controller;
 
+import com.dw.ngms.cis.dto.CisReportDto;
+import com.dw.ngms.cis.report.ReportGenerator;
+import com.dw.ngms.cis.uam.configuration.ApplicationPropertiesConfiguration;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.io.File;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import com.dw.ngms.cis.dto.CisReportDto;
-import com.dw.ngms.cis.report.ReportGenerator;
-import com.dw.ngms.cis.uam.utilities.Constants;
-
-import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestController
@@ -30,6 +23,9 @@ public class CisReportController extends MessageController {
 
 	@Autowired
 	private ReportGenerator reportGenerator;
+
+	@Autowired
+	private ApplicationPropertiesConfiguration applicationPropertiesConfiguration;
 	
 	@PostMapping("/productionReport")
 	public ResponseEntity<?> generateProductionReport(HttpServletRequest request, @RequestBody @Valid CisReportDto cisReportDto) {
@@ -50,7 +46,7 @@ public class CisReportController extends MessageController {
 			parameters.put("category", cisReportDto.getCategory());
 			parameters.put("taskStatus", cisReportDto.getTaskStatus());
 			parameters.put("officer", cisReportDto.getOfficer());
-			parameters.put("resourcePath", Constants.REPORT_RESOURCE_PATH);
+			parameters.put("resourcePath", applicationPropertiesConfiguration.getREPORT_RESOURCE_PATH());
 			
 			boolean isReportGenerated = reportGenerator.generateAndExportReport(reportJrxml, reportName, parameters);
 			if(!isReportGenerated)
@@ -86,7 +82,7 @@ public class CisReportController extends MessageController {
 			parameters.put("category", cisReportDto.getCategory());
 			parameters.put("taskStatus", cisReportDto.getTaskStatus());
 			parameters.put("officer", cisReportDto.getOfficer());
-			parameters.put("resourcePath", Constants.REPORT_RESOURCE_PATH);
+			parameters.put("resourcePath", applicationPropertiesConfiguration.getREPORT_RESOURCE_PATH());
 			
 			boolean isReportGenerated = reportGenerator.generateAndExportReport(reportJrxml, reportName, parameters);
 			if(!isReportGenerated)
@@ -120,7 +116,7 @@ public class CisReportController extends MessageController {
 			parameters.put("provinceCode", cisReportDto.getProvinceCode());
 			parameters.put("category", cisReportDto.getProvince());
 			parameters.put("taskStatus", cisReportDto.getProvince());
-			parameters.put("resourcePath", Constants.REPORT_RESOURCE_PATH);
+			parameters.put("resourcePath", applicationPropertiesConfiguration.getREPORT_RESOURCE_PATH());
 			
 			boolean isReportGenerated = reportGenerator.generateAndExportReport(reportJrxml, reportName, parameters);
 			if(!isReportGenerated)
@@ -149,7 +145,7 @@ public class CisReportController extends MessageController {
 				cisReportDto.getToDate());
 			parameters.put("province", cisReportDto.getProvince());
 			parameters.put("admin", cisReportDto.getAdmin());
-			parameters.put("resourcePath", Constants.REPORT_RESOURCE_PATH);
+			parameters.put("resourcePath", applicationPropertiesConfiguration.getREPORT_RESOURCE_PATH());
 			
 			boolean isReportGenerated = reportGenerator.generateAndExportReport(reportJrxml, reportName, parameters);
 			if(!isReportGenerated)
