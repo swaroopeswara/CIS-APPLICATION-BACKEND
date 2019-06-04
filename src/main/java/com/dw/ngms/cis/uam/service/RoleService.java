@@ -29,5 +29,7 @@ public class RoleService {
         return roleRepository.getMenuByRoleCode(roleCode);
     }
 
-
+    public void deleteRole(Roles roleCode) {
+        roleRepository.delete(roleCode);
+    }
 }

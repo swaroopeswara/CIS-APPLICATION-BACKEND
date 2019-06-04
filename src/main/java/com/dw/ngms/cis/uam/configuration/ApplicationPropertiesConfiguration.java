@@ -32,7 +32,7 @@ public class ApplicationPropertiesConfiguration {
     @Profile("dev")
     @Bean
     public String devDatabaseConnection() {
-        System.out.println("Application Properties for UAM_DEV");
+        System.out.println("Application Properties for UAM_DEV "+uploadDirectoryPath);
         return "Application Properties for DEV Environment";
     }
 

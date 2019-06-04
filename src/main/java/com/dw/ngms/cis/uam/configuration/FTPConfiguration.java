@@ -26,7 +26,7 @@ public class FTPConfiguration {
 	@Profile("dev")
 	@Bean
 	public String devDatabaseConnection() {
-		System.out.println("FTP connection for UAM_DEV");
+		System.out.println("FTP connection for UAM_DEV "+server);
 		return "FTP connection for DEV Environment";
 	}
 

@@ -87,4 +87,9 @@ public class InternalUserRoleService {
         return this.internalUserRoleRepository.getInternalUserName(provinceCode,sectionCode,roleCode);
     }
 
+
+    public List<InternalUserRoles> getInternalUsersForDelete(String roleCode) {
+        return internalUserRoleRepository.getInternalUsersForDelete(roleCode);
+    }
+
 }

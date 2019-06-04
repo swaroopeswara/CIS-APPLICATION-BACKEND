@@ -56,4 +56,8 @@ public interface InternalUserRoleRepository  extends JpaRepository<InternalUserR
 	@Query("select u from InternalUserRoles u where u.provinceCode = :provinceCode and u.sectionCode = :sectionCode and u.roleCode = :roleCode")
 	List<InternalUserRoles> getInternalUserName(@Param("provinceCode") String provinceCode,@Param("sectionCode") String sectionCode,@Param("roleCode") String roleCode);
 
+	@Query("select u from InternalUserRoles u where u.roleCode = :roleCode")
+	List<InternalUserRoles> getInternalUsersForDelete(@Param("roleCode") String roleCode);
+
+
 }
