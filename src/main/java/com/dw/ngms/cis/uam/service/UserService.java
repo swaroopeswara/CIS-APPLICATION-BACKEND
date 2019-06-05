@@ -293,11 +293,11 @@ public class UserService {
 	public UserProfile isADUserExists(String username, String password) {
 		UserProfile userProfile = new UserProfile();
 		try {
-//			if (ldapClient.authenticate(username.trim(), password.trim())) {
+			if (ldapClient.authenticate(username.trim(), password.trim())) {
 				List<UserProfile> userProfileList = ldapClient.searchUser(username.trim());
 				userProfile = (userProfileList != null && userProfileList.size() == 1) ? userProfileList.get(0)
 						: userProfile;
-//			}
+			}
 		} catch (Exception e) {
 			log.error("User '{}' LDAP authentication failed", username);
 		}
