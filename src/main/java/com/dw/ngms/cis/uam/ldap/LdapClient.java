@@ -90,8 +90,8 @@ public class LdapClient {
 					profile.setEmployeeNumber((String) attrs.get("employeeNumber").get());				
 				if (attrs.get("facsimileTelephoneNumber") != null)
 					profile.setFacsimileTelephoneNumber((String) attrs.get("facsimileTelephoneNumber").get());				
-				if (attrs.get("mail") != null)
-					profile.setMail((String) attrs.get("mail").get());
+				if (attrs.get("userPrincipalName") != null)
+					profile.setMail((String) attrs.get("userPrincipalName").get());
 				if (attrs.get("mobile") != null)
 					profile.setMobile((String) attrs.get("mobile").get());
 				if (attrs.get("telephoneNumber") != null)
