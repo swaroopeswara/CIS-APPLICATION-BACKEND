@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * Created by swaroop on 2019/04/12.
  */
@@ -22,6 +24,9 @@ public interface NotificationRepository extends JpaRepository<Notifications, Lon
 
     @Query("SELECT u FROM Notifications u WHERE u.notificationId = :notificationId")
     Notifications getNotificationByID(@Param("notificationId") long notificationId);
+
+    @Query("SELECT notificationsubtype FROM Notifications u")
+    List<Notifications> getNotificationSubTypes();
 
 
 

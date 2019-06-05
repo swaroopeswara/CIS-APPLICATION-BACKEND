@@ -89,6 +89,18 @@ public class NotificationController extends MessageController {
     }//getNotifications
 
 
+    @GetMapping("/getNotificationSubTypes")
+    public ResponseEntity<?> getNotificationSubTypes(HttpServletRequest request) {
+        try {
+            List<Notifications> notificationsList = notificationService.getNotificationSubTypes();
+            return (CollectionUtils.isEmpty(notificationsList)) ? generateEmptyResponse(request, "Notification SubType(s) not found")
+                    : ResponseEntity.status(HttpStatus.OK).body(notificationsList);
+        } catch (Exception exception) {
+            return generateFailureResponse(request, exception);
+        }
+    }//getNotifications
+
+
     private void sendMailToNotification(MailDTO mailDTO, Notifications notifications) throws Exception {
         Map<String, Object> model = new HashMap<String, Object>();
         model.put("firstName", "User");

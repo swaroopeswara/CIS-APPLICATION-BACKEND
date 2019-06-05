@@ -30,6 +30,13 @@ public class NotificationService {
     }//getAllNotifications
 
 
+    public List<Notifications> getNotificationSubTypes() {
+        return this.notificationRepository.getNotificationSubTypes();
+    }//getAllNotifications
+
+
+
+
 
     public Notifications getNotificationByID(Long notificationId) {
         return this.notificationRepository.getNotificationByID(notificationId);

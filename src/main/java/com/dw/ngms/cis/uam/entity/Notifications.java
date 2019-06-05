@@ -57,6 +57,12 @@ public class Notifications implements Serializable {
 	@Column(name = "NOTIFICATIONDOCS", length = 200)
 	private String notificationDocs;
 
+	@Column(name = "NOTIFICATIONSUBTYPE", length = 200)
+	private String notificationsubtype;
+
+	@Column(name = "PROVINCE", length = 20)
+	private String province;
+
 
 
 
