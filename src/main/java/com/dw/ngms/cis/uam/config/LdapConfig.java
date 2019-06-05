@@ -32,6 +32,7 @@ public class LdapConfig {
 		contextSource.setBase(env.getRequiredProperty("ldap.base.dn"));
 		contextSource.setUserDn(env.getRequiredProperty("ldap.principal"));
 		contextSource.setPassword(env.getRequiredProperty("ldap.password"));
+		contextSource.setReferral("follow");
 		contextSource.afterPropertiesSet();
 		return contextSource;
 	}//contextSourceOne
@@ -41,6 +42,7 @@ public class LdapConfig {
 	public LdapTemplate ldapTemplate() {		
 		try {
 			LdapTemplate ldapTemplate = new LdapTemplate(contextSource());
+			ldapTemplate.setIgnorePartialResultException(true);
 			ldapTemplate.afterPropertiesSet();
 			return ldapTemplate;
 		} catch (Exception e) {

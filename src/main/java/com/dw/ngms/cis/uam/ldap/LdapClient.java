@@ -111,6 +111,7 @@ public class LdapClient {
 				if (attrs.get("postalCode") != null)
 					profile.setPostalCode((String) attrs.get("postalCode").get());
 				
+				log.info("User profile created {}", profile.toString());
 				return profile;
 			}
 		}));
@@ -122,6 +123,8 @@ public class LdapClient {
 		contextSource.setBase(env.getRequiredProperty("ldap.base.dn2"));
 		contextSource.setUserDn(env.getRequiredProperty("ldap.principal2"));
 		contextSource.setPassword(env.getRequiredProperty("ldap.password2"));
+		contextSource.setReferral("follow");
+		contextSource.afterPropertiesSet();
 		return contextSource;
 	}//contextSourceTwo
 	
@@ -131,15 +134,21 @@ public class LdapClient {
 		contextSource.setBase(env.getRequiredProperty("ldap.base.dn3"));
 		contextSource.setUserDn(env.getRequiredProperty("ldap.principal3"));
 		contextSource.setPassword(env.getRequiredProperty("ldap.password3"));
+		contextSource.setReferral("follow");
+		contextSource.afterPropertiesSet();
 		return contextSource;
 	}//contextSourceThree
 	
 	public LdapTemplate getLdapTemplateTwo() {
-		return new LdapTemplate(getContextSourceTwo());
+		LdapTemplate ldapTemplate = new LdapTemplate(getContextSourceTwo());
+		ldapTemplate.setIgnorePartialResultException(true);
+		return ldapTemplate;
 	}//ldapTemplate
 
 	public LdapTemplate getLdapTemplateThree() {
-		return new LdapTemplate(getContextSourceThree());
+		LdapTemplate ldapTemplate = new LdapTemplate(getContextSourceThree());
+		ldapTemplate.setIgnorePartialResultException(true);
+		return ldapTemplate;
 	}//ldapTemplate
 	
 }
