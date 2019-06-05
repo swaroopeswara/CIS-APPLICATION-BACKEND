@@ -30,12 +30,16 @@ public class LdapClient {
 	private LdapTemplate ldapTemplate;
 
 	public boolean authenticate(String username, String password) {
+		log.info("Authentication on ldap server one");
 		boolean returnValue = getAuthenticateUser(ldapTemplate, username, password);
-		if(returnValue == false) 
+		if(returnValue == false) {
+			log.info("Authentication on ldap server two");
 			returnValue = getAuthenticateUser(getLdapTemplateTwo(), username, password);
-		if(returnValue == false) 
+		}
+		if(returnValue == false) {
+			log.info("Authentication on ldap server three");
 			returnValue = getAuthenticateUser(getLdapTemplateThree(), username, password);
-		
+		}
 		return returnValue;
 	}//authenticate
 
@@ -56,12 +60,16 @@ public class LdapClient {
 	}//getAuthenticateUser
 	
 	public List<UserProfile> searchUser(String username) {		
+		log.info("Search on ldap server one");
 		List<UserProfile> userProfiles = searchLdapUser(ldapTemplate, username);
-		if(CollectionUtils.isEmpty(userProfiles))
+		if(CollectionUtils.isEmpty(userProfiles)) {
+			log.info("Search on ldap server two");
 			userProfiles = searchLdapUser(getLdapTemplateTwo(), username);
-		if(CollectionUtils.isEmpty(userProfiles))
+		}
+		if(CollectionUtils.isEmpty(userProfiles)) {
+			log.info("Search on ldap server three");
 			userProfiles = searchLdapUser(getLdapTemplateThree(), username);
-		
+		}
 		return userProfiles;
 	}//searchUser
 
