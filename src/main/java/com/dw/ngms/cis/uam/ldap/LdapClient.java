@@ -140,15 +140,27 @@ public class LdapClient {
 	}//contextSourceThree
 	
 	public LdapTemplate getLdapTemplateTwo() {
-		LdapTemplate ldapTemplate = new LdapTemplate(getContextSourceTwo());
-		ldapTemplate.setIgnorePartialResultException(true);
-		return ldapTemplate;
+		try {
+			LdapTemplate ldapTemplate = new LdapTemplate(getContextSourceTwo());
+			ldapTemplate.setIgnorePartialResultException(true);
+			ldapTemplate.afterPropertiesSet();
+			return ldapTemplate;
+		} catch (Exception e) {
+			log.error("Failed to create ldap template, "+e.getMessage(), e);
+			return null;
+		}	
 	}//ldapTemplate
 
 	public LdapTemplate getLdapTemplateThree() {
-		LdapTemplate ldapTemplate = new LdapTemplate(getContextSourceThree());
-		ldapTemplate.setIgnorePartialResultException(true);
-		return ldapTemplate;
+		try {
+			LdapTemplate ldapTemplate = new LdapTemplate(getContextSourceThree());
+			ldapTemplate.setIgnorePartialResultException(true);
+			ldapTemplate.afterPropertiesSet();
+			return ldapTemplate;
+		} catch (Exception e) {
+			log.error("Failed to create ldap template, "+e.getMessage(), e);
+			return null;
+		}	
 	}//ldapTemplate
 	
 }
