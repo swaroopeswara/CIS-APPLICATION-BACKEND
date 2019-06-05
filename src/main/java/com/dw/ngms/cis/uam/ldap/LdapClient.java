@@ -41,15 +41,16 @@ public class LdapClient {
 
 	private boolean getAuthenticateUser(LdapTemplate ldpTemplate, String username, String password) {
 		if(ldpTemplate == null || username == null || password == null) return false;
-		
+		log.info("LDAP template in authenticate user {}", ldpTemplate.toString());
 		try {
 			AndFilter filter = new AndFilter();
 	        filter.and(new EqualsFilter("objectclass", env.getRequiredProperty("ldap.user.search.filter.class")));
 	        filter.and(new EqualsFilter(env.getRequiredProperty("ldap.user.search.attribute"), username));
+	        log.info("Authenticate user filter {}", filter.toString());
 	        
 	        return ldpTemplate.authenticate(LdapUtils.emptyLdapName(), filter.encode(), password);
 		}catch(Exception e) {
-			log.error("User '{}' LDAP authentication failed", username);
+			log.error("User '{}' LDAP authentication failed, {}",username, e);
 			return false;
 		}
 	}//getAuthenticateUser
@@ -68,17 +69,22 @@ public class LdapClient {
 	private List<UserProfile> searchLdapUser(LdapTemplate ldpTemplate, String username) {
 		if(ldpTemplate == null || username == null)
 			return new ArrayList<UserProfile>();
-			
+		log.info("LDAP template in search user {}", ldpTemplate.toString());	
+		
 		AndFilter filter = new AndFilter();
 		String uidAttribute = env.getRequiredProperty("ldap.user.search.attribute");
 		filter.and(new EqualsFilter("objectclass", env.getRequiredProperty("ldap.user.search.filter.class")));
         filter.and(new EqualsFilter(uidAttribute, username));
+        
+        log.info("Search user filter {}", filter.toString());
         
 		return ldpTemplate.search(LdapUtils.emptyLdapName(), filter.encode(), SearchControls.SUBTREE_SCOPE, (new AttributesMapper() {
 			@Override
 			public Object mapFromAttributes(Attributes attrs) throws NamingException {
 				UserProfile profile = new UserProfile();				
 				profile.setExists(Boolean.TRUE);
+				
+				log.info("User attributes {} ", attrs.toString());
 				
 				if (attrs.get(uidAttribute) != null)
 					profile.setUid((String) attrs.get(uidAttribute).get());				
