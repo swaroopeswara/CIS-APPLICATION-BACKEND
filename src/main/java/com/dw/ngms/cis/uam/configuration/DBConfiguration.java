@@ -73,4 +73,11 @@ public class DBConfiguration {
 		System.out.println("DB Connection to to UAM_PROD");
 		return "DB Connection to prod Environment";
 	}
+
+	@Profile("drdlr")
+	@Bean
+	public String prodDrdlrDatabaseConnection() {
+		System.out.println("DB Connection to to UAM_DRDLR");
+		return "DB Connection to DRDLR Environment";
+	}
 }

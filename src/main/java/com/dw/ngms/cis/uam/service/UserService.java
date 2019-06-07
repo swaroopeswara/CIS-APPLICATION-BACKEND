@@ -51,7 +51,12 @@ public class UserService {
 	public User getUserByUserCodeUserNameAndTypeName(String userCode, String userName, String userTypeName){
 		return userRepository.findByUserCodeUserNameAndTypeName(userCode, userName, userTypeName);
 	}//getAllUsersByUserTypeName
-	
+
+	public  List<User> findAllUsersByUserType(String userTypeName){
+		return userRepository.findAllUsersByUserType(userTypeName);
+	}//findAllUsersByUserType
+
+
 	public List<User> getAllInternalUsersByProvinceCode(String provinceCode){
 		return userRepository.findInternalUsersByProvinceCode(provinceCode);
 	}//getAllUsersByUserTypeNameAndProvinceCode

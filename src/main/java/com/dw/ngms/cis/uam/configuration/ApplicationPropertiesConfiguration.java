@@ -51,4 +51,11 @@ public class ApplicationPropertiesConfiguration {
         System.out.println("Application Properties to UAM_PROD");
         return "Application Properties to UAM_PROD Environment";
     }
+
+    @Profile("drdlr")
+    @Bean
+    public String prodDrdlrDatabaseConnection() {
+        System.out.println("Application Properties to UAM_DRDLR_PROD");
+        return "Application Properties to UAM_DRDLR_PROD Environment";
+    }
 }

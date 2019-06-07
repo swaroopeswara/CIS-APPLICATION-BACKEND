@@ -46,4 +46,11 @@ public class FTPConfiguration {
 		System.out.println("FTP Connection to to UAM_PROD");
 		return "FTP Connection to prod Environment";
 	}
+
+	@Profile("drdlr")
+	@Bean
+	public String prodDrdlrDatabaseConnection() {
+		System.out.println("FTP Connection to to UAM_DRDLR");
+		return "FTP Connection to drdlr Environment";
+	}
 }

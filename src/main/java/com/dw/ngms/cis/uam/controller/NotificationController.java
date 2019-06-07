@@ -1,12 +1,16 @@
 package com.dw.ngms.cis.uam.controller;
 
 import com.dw.ngms.cis.controller.MessageController;
+import com.dw.ngms.cis.im.service.ApplicationPropertiesService;
 import com.dw.ngms.cis.uam.configuration.ApplicationPropertiesConfiguration;
 import com.dw.ngms.cis.uam.dto.FilePathsDTO;
 import com.dw.ngms.cis.uam.dto.MailDTO;
+import com.dw.ngms.cis.uam.entity.ExternalUser;
 import com.dw.ngms.cis.uam.entity.Notifications;
+import com.dw.ngms.cis.uam.entity.User;
 import com.dw.ngms.cis.uam.jsonresponse.UserControllerResponse;
 import com.dw.ngms.cis.uam.service.NotificationService;
+import com.dw.ngms.cis.uam.service.UserService;
 import com.dw.ngms.cis.uam.storage.StorageService;
 import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +19,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -53,29 +59,40 @@ public class NotificationController extends MessageController {
     @Autowired
     private ApplicationPropertiesConfiguration applicationPropertiesConfiguration;
 
+    @Autowired
+    private UserService userService;
 
+    @Autowired
+    private ApplicationPropertiesService appPropertiesService;
+
+    /* @PostMapping("/saveNotification")
+     public ResponseEntity<?> saveNotification(HttpServletRequest request, @RequestBody @Valid Notifications notification) {
+         try {
+             //Long notificationId = this.notificationService.getNotificationId();
+             //System.out.println("notificationId is "+notificationId);
+             //costCategories.setCategoryCode("COST" + Long.toString(categoryId));
+             Notifications notificationSave = this.notificationService.saveNotification(notification);
+             MailDTO mailDTO = new MailDTO();
+             sendMailToNotification(mailDTO, notification);
+             sendMailToNotification1(mailDTO,notification);
+             sendMailToNotification2(mailDTO,notification);
+
+             return ResponseEntity.status(HttpStatus.OK).body(notificationSave);
+         } catch (Exception exception) {
+             return generateFailureResponse(request, exception);
+         }
+     }//saveNotification
+
+ */
     @PostMapping("/saveNotification")
     public ResponseEntity<?> saveNotification(HttpServletRequest request, @RequestBody @Valid Notifications notification) {
         try {
-            //Long notificationId = this.notificationService.getNotificationId();
-            //System.out.println("notificationId is "+notificationId);
-            //costCategories.setCategoryCode("COST" + Long.toString(categoryId));
             Notifications notificationSave = this.notificationService.saveNotification(notification);
-            MailDTO mailDTO = new MailDTO();
-            sendMailToNotification(mailDTO, notification);
-            sendMailToNotification1(mailDTO,notification);
-            sendMailToNotification2(mailDTO,notification);
-
             return ResponseEntity.status(HttpStatus.OK).body(notificationSave);
         } catch (Exception exception) {
             return generateFailureResponse(request, exception);
         }
-    }//createCategory
-
-
-
-
-
+    }//saveNotification
 
     @GetMapping("/getNotifications")
     public ResponseEntity<?> getNotifications(HttpServletRequest request) {
@@ -88,7 +105,6 @@ public class NotificationController extends MessageController {
         }
     }//getNotifications
 
-
     @GetMapping("/getNotificationSubTypes")
     public ResponseEntity<?> getNotificationSubTypes(HttpServletRequest request) {
         try {
@@ -99,6 +115,21 @@ public class NotificationController extends MessageController {
             return generateFailureResponse(request, exception);
         }
     }//getNotifications
+
+    private void sendEmailTOAllUsers(MailDTO mailDTO, Notifications notifications, User user) throws Exception {
+        Map<String, Object> model = new HashMap<String, Object>();
+        model.put("firstName", user.getUserName());
+        model.put("body1", notifications.getBody());
+        model.put("body2", "");
+        model.put("body3", "");
+        model.put("body4", "");
+        mailDTO.setMailSubject(notifications.getSubject());
+        mailDTO.setMailTo(user.getEmail());
+        model.put("FOOTER", "CIS ADMIN");
+        mailDTO.setMailFrom("cheifsurveyorgeneral@gmail.com");
+        mailDTO.setModel(model);
+        sendEmail(mailDTO);
+    }
 
 
     private void sendMailToNotification(MailDTO mailDTO, Notifications notifications) throws Exception {
@@ -117,7 +148,6 @@ public class NotificationController extends MessageController {
         sendEmail(mailDTO, cc);
     }
 
-
     private void sendMailToNotification1(MailDTO mailDTO, Notifications notifications) throws Exception {
         Map<String, Object> model = new HashMap<String, Object>();
         model.put("firstName", "User");
@@ -131,10 +161,8 @@ public class NotificationController extends MessageController {
         mailDTO.setMailTo("dataworldproject@gmail.com");
         mailDTO.setModel(model);
         InternetAddress cc = new InternetAddress();
-        sendEmail1(mailDTO,cc);
+        sendEmail1(mailDTO, cc);
     }
-
-
 
     private void sendMailToNotification2(MailDTO mailDTO, Notifications notifications) throws Exception {
         Map<String, Object> model = new HashMap<String, Object>();
@@ -149,9 +177,8 @@ public class NotificationController extends MessageController {
         mailDTO.setMailTo("dataworldproject@gmail.com");
         mailDTO.setModel(model);
         InternetAddress cc = new InternetAddress();
-        sendEmail2(mailDTO,cc);
+        sendEmail2(mailDTO, cc);
     }
-
 
     @PostMapping("/uploadNotificationDocument")
     public ResponseEntity<?> uploadNotificationDocument(HttpServletRequest request, @RequestParam MultipartFile[] multipleFiles,
@@ -204,7 +231,6 @@ public class NotificationController extends MessageController {
         return ResponseEntity.status(HttpStatus.OK).body(json);
     }//uploadNotificationDocument
 
-
     @RequestMapping(value = "/deleteNotificationDocument", method = RequestMethod.POST)
     public ResponseEntity<?> deleteNotificationDocument(HttpServletRequest request,
                                                         @RequestBody @Valid Notifications notificationBody,
@@ -251,7 +277,6 @@ public class NotificationController extends MessageController {
         }
     }//deleteNotificationDocument
 
-
     @RequestMapping(value = "/getNotificationDocsList", method = RequestMethod.GET)
     public ResponseEntity<?> getNotificationDocsList(HttpServletRequest request,
                                                      @RequestParam Long notificationId) throws IOException {
@@ -280,7 +305,6 @@ public class NotificationController extends MessageController {
         }
     }//getDispatchDocsList
 
-
     @RequestMapping(value = "/downloadNotificationDocuments", method = RequestMethod.POST)
     public ResponseEntity<InputStreamResource> downloadNotificationDocuments(HttpServletRequest request,
                                                                              @RequestBody @Valid Notifications notificationBody) throws IOException {
@@ -306,7 +330,6 @@ public class NotificationController extends MessageController {
                 .contentLength(file.length()) //
                 .body(resource);
     }//downloadNotificationDocuments
-
 
     public void zipFiles(List<String> files) {
 
@@ -346,5 +369,65 @@ public class NotificationController extends MessageController {
         }
     }//zipFiles
 
+
+    @Component
+    public class EmailNotificationScheduler {
+
+        //@Scheduled(fixedRate = 10000000 ) for two hours
+        @Scheduled(fixedRate = 24000000)
+        public void fixedRateSch() throws Exception {
+
+            List<Notifications> notificationsList = notificationService.getAllNotifications();
+            MailDTO mailDTO = new MailDTO();
+            for (Notifications notifications : notificationsList) {
+                if (notifications.getNotificationStatus().equalsIgnoreCase("OPEN") &&
+                        notifications.getNotificationuserTypes().equalsIgnoreCase("All Internal Users")) {
+                    System.out.println("Email Notification scheduler into internal users: " + notifications.getNotificationId());
+                    //send email to all Internal users
+                    List<User> userList = userService.findAllUsersByUserType("INTERNAL");
+                    if (!isEmpty(userList) && userList != null) {
+                        for (User userEmailList : userList) {
+                            System.out.println("User test email for Internal: " + userEmailList.getEmail());
+                            sendEmailTOAllUsers(mailDTO, notifications, userEmailList);
+                        }
+                        notifications.setNotificationStatus("CLOSE");
+                        notificationService.saveNotification(notifications);
+                    }
+                    System.out.println("Email Notification scheduler Done for Internal:");
+                } else if (notifications.getNotificationStatus().equalsIgnoreCase("OPEN") &&
+                        notifications.getNotificationuserTypes().equalsIgnoreCase("All External Users")) {
+                    System.out.println("Email Notification scheduler into external users: " + notifications.getNotificationId());
+                    //send email to all external users
+                    List<User> userList = userService.findAllUsersByUserType("EXTERNAL");
+
+                    if (!isEmpty(userList) && userList != null) {
+                        for (User userEmailList : userList) {
+                            ExternalUser externalUser = userService.getChildElements(userEmailList.getUserCode());
+                            userEmailList.setExternaluser(externalUser);
+                            System.out.println("User test email for External: " + userEmailList.getEmail());
+                            if (notifications.getNotificationType() != null && notifications.getNotificationType().contains("News") && userEmailList.getExternaluser().getSubscribenews().equalsIgnoreCase("Y")) {
+                                System.out.println("This is for news");
+                                sendEmailTOAllUsers(mailDTO, notifications, userEmailList);
+                            } else if (notifications.getNotificationType() != null && notifications.getNotificationType().contains("Events") && userEmailList.getExternaluser().getSubscribeevents().equalsIgnoreCase("Y")) {
+                                System.out.println("This is for Events");
+                                sendEmailTOAllUsers(mailDTO, notifications, userEmailList);
+                            } else if (notifications.getNotificationType() != null && notifications.getNotificationType().contains("Information") && userEmailList.getExternaluser().getSubscribenotifications().equalsIgnoreCase("Y")) {
+                                System.out.println("This is for Information");
+                                sendEmailTOAllUsers(mailDTO, notifications, userEmailList);
+                            }
+                            notifications.setNotificationStatus("CLOSE");
+                            notificationService.saveNotification(notifications);
+                        }
+                        System.out.println("Email Notification scheduler Done for External:");
+                    }
+                }
+
+                /*SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+                Date now = new Date();
+                String strDate = sdf.format(now);
+                System.out.println("Fixed Rate scheduler:: " + strDate);*/
+            }
+        }
+    }
 
 }
