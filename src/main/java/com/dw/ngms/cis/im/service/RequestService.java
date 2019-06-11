@@ -1,6 +1,7 @@
 package com.dw.ngms.cis.im.service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -203,6 +204,7 @@ public class RequestService {
 	
 	private void updateAndPersistRequest(boolean isLapsed, Requests request) {
 		request.setLapseStatus(isLapsed ? LapseStatus.LAPSED : LapseStatus.PRELAPSE);
+		request.setModifiedDate(new Date());
 		log.info("Request status update, {0}", request.getLapseStatus().name());
 		requestRepository.save(request);
 	}//updateAndPersistRequest
