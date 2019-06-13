@@ -478,7 +478,7 @@ public class RequestController extends MessageController {
 
         mailDTO.setMailSubject("Welcome to CIS");
         model.put("FOOTER", "CIS ADMIN");
-        mailDTO.setMailFrom("cheifsurveyorgeneral@gmail.com");
+        mailDTO.setMailFrom(applicationPropertiesConfiguration.getMailFrom());
         mailDTO.setMailTo(requests.getUserName());
         mailDTO.setModel(model);
         sendEmail(mailDTO, fileName, fileLater);
@@ -498,7 +498,7 @@ public class RequestController extends MessageController {
 
         mailDTO.setMailSubject("Welcome to CIS");
         model.put("FOOTER", "CIS ADMIN");
-        mailDTO.setMailFrom("cheifsurveyorgeneral@gmail.com");
+        mailDTO.setMailFrom(applicationPropertiesConfiguration.getMailFrom());
         mailDTO.setMailTo(requests.getUserName());
         mailDTO.setModel(model);
         sendEmail(mailDTO);
@@ -1179,7 +1179,7 @@ public class RequestController extends MessageController {
         model.put("body4", "");
         mailDTO.setMailSubject("Create Request");
         model.put("FOOTER", "CIS ADMIN");
-        mailDTO.setMailFrom("cheifsurveyorgeneral@gmail.com");
+        mailDTO.setMailFrom(applicationPropertiesConfiguration.getMailFrom());
         mailDTO.setMailTo(requests.getEmail());
         mailDTO.setModel(model);
         sendEmail(mailDTO);

@@ -118,7 +118,7 @@ public class NotificationController extends MessageController {
 
     private void sendEmailTOAllUsers(MailDTO mailDTO, Notifications notifications, User user) throws Exception {
         Map<String, Object> model = new HashMap<String, Object>();
-        model.put("firstName", user.getUserName());
+        model.put("firstName", user.getFirstName());
         model.put("body1", notifications.getBody());
         model.put("body2", "");
         model.put("body3", "");
@@ -126,7 +126,7 @@ public class NotificationController extends MessageController {
         mailDTO.setMailSubject(notifications.getSubject());
         mailDTO.setMailTo(user.getEmail());
         model.put("FOOTER", "CIS ADMIN");
-        mailDTO.setMailFrom("cheifsurveyorgeneral@gmail.com");
+        mailDTO.setMailFrom(applicationPropertiesConfiguration.getMailFrom());
         mailDTO.setModel(model);
         sendEmail(mailDTO);
     }
@@ -142,7 +142,7 @@ public class NotificationController extends MessageController {
         mailDTO.setMailSubject(notifications.getSubject());
         mailDTO.setMailTo("swaroopragava23@gmail.com");
         model.put("FOOTER", "CIS ADMIN");
-        mailDTO.setMailFrom("cheifsurveyorgeneral@gmail.com");
+        mailDTO.setMailFrom(applicationPropertiesConfiguration.getMailFrom());
         mailDTO.setModel(model);
         InternetAddress cc = new InternetAddress();
         sendEmail(mailDTO, cc);
@@ -157,7 +157,7 @@ public class NotificationController extends MessageController {
         model.put("body4", "");
         mailDTO.setMailSubject(notifications.getSubject());
         model.put("FOOTER", "CIS ADMIN");
-        mailDTO.setMailFrom("cheifsurveyorgeneral@gmail.com");
+        mailDTO.setMailFrom(applicationPropertiesConfiguration.getMailFrom());
         mailDTO.setMailTo("dataworldproject@gmail.com");
         mailDTO.setModel(model);
         InternetAddress cc = new InternetAddress();
@@ -173,7 +173,7 @@ public class NotificationController extends MessageController {
         model.put("body4", "");
         mailDTO.setMailSubject(notifications.getSubject());
         model.put("FOOTER", "CIS ADMIN");
-        mailDTO.setMailFrom("cheifsurveyorgeneral@gmail.com");
+        mailDTO.setMailFrom(applicationPropertiesConfiguration.getMailFrom());
         mailDTO.setMailTo("dataworldproject@gmail.com");
         mailDTO.setModel(model);
         InternetAddress cc = new InternetAddress();

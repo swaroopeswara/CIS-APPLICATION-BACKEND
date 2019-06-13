@@ -2,6 +2,7 @@ package com.dw.ngms.cis.uam.controller;
 
 import com.dw.ngms.cis.controller.MessageController;
 import com.dw.ngms.cis.exception.ExceptionConstants;
+import com.dw.ngms.cis.uam.configuration.ApplicationPropertiesConfiguration;
 import com.dw.ngms.cis.uam.dto.MailDTO;
 import com.dw.ngms.cis.uam.entity.IssueLog;
 import com.dw.ngms.cis.uam.entity.User;
@@ -33,6 +34,10 @@ public class IssueLogController extends MessageController {
 
     @Autowired
     private IssueLogService issueLogService;
+
+
+    @Autowired
+    private ApplicationPropertiesConfiguration applicationPropertiesConfiguration;
 
     @RequestMapping(value = "/saveIssueLog", method = RequestMethod.POST)
     public ResponseEntity<?> saveIssueLog(HttpServletRequest request, @RequestBody @Valid IssueLog issueLog) {
@@ -136,7 +141,7 @@ public class IssueLogController extends MessageController {
         mailDTO.setSubject("Welcome to CIS");
         model.put("firstName", issueLog.getFullName());
         model.put("FOOTER", "CIS ADMIN");
-        mailDTO.setMailFrom("cheifsurveyorgeneral@gmail.com");
+        mailDTO.setMailFrom(applicationPropertiesConfiguration.getMailFrom());
         mailDTO.setMailTo(issueLog.getEmail());
         mailDTO.setModel(model);
         try {

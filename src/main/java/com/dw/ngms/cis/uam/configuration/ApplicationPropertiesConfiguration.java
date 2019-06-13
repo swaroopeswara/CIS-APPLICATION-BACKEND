@@ -26,6 +26,8 @@ public class ApplicationPropertiesConfiguration {
     private String pdfTemplate;
     private String adminUserMail;
     private String provinceAdminMail;
+    private String mailFrom;
+    private String mailTo;
 
 
 

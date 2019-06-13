@@ -24,6 +24,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static org.springframework.util.StringUtils.isEmpty;
 
@@ -177,6 +179,10 @@ public class UserController extends MessageController {
             return generateFailureResponse(request, exception);
         }
     }//getAllExternalUsers
+
+
+
+
 
     @PostMapping("/updateExternalUser")
     public ResponseEntity<?> updateExternalUser(HttpServletRequest request, @RequestBody UserUpdateDTO externalUserDTO) {
@@ -497,9 +503,26 @@ public class UserController extends MessageController {
             User response = userService.saveExternalUser(user);
 
             MailDTO mailDTO = new MailDTO();
-            sendMailToUser(user, mailDTO);
-            sendMailToAdmin(user, mailDTO);
-            sendMailToProvinceAdmin(user, mailDTO);
+
+            // inside your getSalesUserData() method
+            ExecutorService emailExecutor = Executors.newSingleThreadExecutor();
+            emailExecutor.execute(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        sendMailToUser(user, mailDTO);
+                        sendMailToAdmin(user, mailDTO);
+                        sendMailToProvinceAdmin(user, mailDTO);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            });
+            emailExecutor.shutdown(); // it is very important to shutdown your non-singleton ExecutorService.
+
+
+
 
             //sendSMS(user.getMobileNo(),message);
             //sendSMS(user.getMobileNo(),message); //todo for provincial administrator
@@ -583,15 +606,48 @@ public class UserController extends MessageController {
             User response = userService.saveInternalUser(internalUser);
 
             MailDTO mailDTO = new MailDTO();
-            sendMailToInternalUser(internalUser, mailDTO);
-            sendMailToInternalAdmin(internalUser, mailDTO);
-            sendMailToProvinceInternalAdmin(internalUser, mailDTO);
+
+            // inside your getSalesUserData() method
+            ExecutorService emailExecutor = Executors.newSingleThreadExecutor();
+            emailExecutor.execute(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        sendMailToInternalUser(internalUser, mailDTO);
+                        sendMailToInternalAdmin(internalUser, mailDTO);
+                        sendMailToProvinceInternalAdmin(internalUser, mailDTO);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            });
+            emailExecutor.shutdown(); // it is very important to shutdown your non-singleton ExecutorService.
+
+
+
+
 
             return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (Exception exception) {
             return generateFailureResponse(request, exception);
         }
     }//saveInternalUserm
+
+
+
+    @GetMapping("/sendEmailTest")
+    public ResponseEntity<?> sendEmailTest(HttpServletRequest request) {
+        try {
+            System.out.println("Inside the send email test: ");
+            MailDTO mailDTO = new MailDTO();
+            sendTestEmail(mailDTO);
+            System.out.println("send email test done: ");
+            return ResponseEntity.status(HttpStatus.OK).body("Mail Sent Successfully");
+        } catch (Exception exception) {
+            return generateFailureResponse(request, exception);
+        }
+    }//getAllExternalUsers
 
 
     @RequestMapping(value = "/approveRejectUser", method = RequestMethod.POST)
@@ -644,10 +700,11 @@ public class UserController extends MessageController {
                 } else if (updatePasswordDTO.getType().equalsIgnoreCase("reset")) {
                     user.setPassword(updatePasswordDTO.getNewpassword());
                     user.setFirstLogin(updatePasswordDTO.getFirstlogin());
+                    sendPasswordResetMailToUser(user);
                 }
             }
             this.userService.updatePassword(user);
-            userControllerResponse.setMessage("User Password Updated Sucessfully");
+            userControllerResponse.setMessage("User Password Updated Successfully");
             json = gson.toJson(userControllerResponse);
             return ResponseEntity.status(HttpStatus.OK).body(json);
         } catch (Exception exception) {
@@ -655,19 +712,41 @@ public class UserController extends MessageController {
         }
     }//updatePassword*/
 
+    private void sendPasswordResetMailToUser(User user) {
+        try {
+            Map<String, Object> model = new HashMap<String, Object>();
+            MailDTO mailDTO = new MailDTO();
+            mailDTO.setMailSubject("User password reset");
+
+            model.put("body1", "Your password is reset Successfully");
+            model.put("body2", "Your password is " + user.getPassword());
+            model.put("body3", "");
+            model.put("body4", "");
+            model.put("firstName", user.getFirstName() + ",");
+            model.put("FOOTER", "CIS ADMIN");
+            mailDTO.setMailFrom(applicationPropertiesConfiguration.getMailFrom());
+            mailDTO.setMailTo(user.getEmail());
+            mailDTO.setModel(model);
+            sendEmail(mailDTO);
+        } catch (Exception e) {
+            log.error("Error while sending mail {}", e.getMessage());
+        }
+    }//sendPasswordChangeMailToUser
+
+
     private void sendPasswordChangeMailToUser(User user) {
         try {
             Map<String, Object> model = new HashMap<String, Object>();
             MailDTO mailDTO = new MailDTO();
             mailDTO.setMailSubject("User password updated");
 
-            model.put("body1", "Thank you for registering with us. Your account is approved.");
+            model.put("body1", "Your password is updated Successfully");
             model.put("body2", "Your password is " + user.getPassword());
             model.put("body3", "");
             model.put("body4", "");
             model.put("firstName", user.getFirstName() + ",");
             model.put("FOOTER", "CIS ADMIN");
-            mailDTO.setMailFrom("cheifsurveyorgeneral@gmail.com");
+            mailDTO.setMailFrom(applicationPropertiesConfiguration.getMailFrom());
             mailDTO.setMailTo(user.getEmail());
             mailDTO.setModel(model);
             sendEmail(mailDTO);
@@ -763,13 +842,30 @@ public class UserController extends MessageController {
         mailDTO.setMailSubject("Welcome to CIS");
         model.put("FOOTER", "CIS ADMIN");
         //mailDTO.setFooter("CIS ADMIN");
-        mailDTO.setMailFrom("cheifsurveyorgeneral@gmail.com");
+        mailDTO.setMailFrom(applicationPropertiesConfiguration.getMailFrom());
         mailDTO.setMailTo(user.getEmail());
 
         mailDTO.setModel(model);
         sendEmail(mailDTO);
 
 
+    }
+
+    private void sendTestEmail(MailDTO mailDTO) throws Exception {
+        System.out.println("send email test with body: ");
+        Map<String, Object> model = new HashMap<String, Object>();
+            model.put("body1", "This is test mail to test the SMPTP. Plz ignore the mail");
+            model.put("body2", "");
+            model.put("body3", "");
+            model.put("body4", "");
+        mailDTO.setMailSubject("Test Email");
+        model.put("firstName",  "Test User ,");
+        model.put("FOOTER", "CIS ADMIN");
+        mailDTO.setMailFrom(applicationPropertiesConfiguration.getMailFrom());
+        mailDTO.setMailTo("swaroopeswara@gmail.com");
+        mailDTO.setModel(model);
+        System.out.println("send email test with body with to : "+mailDTO.getMailTo());
+        sendEmail(mailDTO);
     }
 
 
@@ -787,10 +883,12 @@ public class UserController extends MessageController {
             model.put("body4", "");
         }
 
+
+
         mailDTO.setMailSubject("Welcome to CIS");
         model.put("firstName", " " + user.getFirstName() + ",");
         model.put("FOOTER", "CIS ADMIN");
-        mailDTO.setMailFrom("cheifsurveyorgeneral@gmail.com");
+        mailDTO.setMailFrom(applicationPropertiesConfiguration.getMailFrom());
         mailDTO.setMailTo(user.getEmail());
         mailDTO.setModel(model);
         sendEmail(mailDTO);
@@ -807,7 +905,7 @@ public class UserController extends MessageController {
         model.put("body2", "New task created for approval by provincial administrator");
         model.put("body3", "");
         model.put("body4", "");
-        mailDTO.setMailFrom("cheifsurveyorgeneral@gmail.com");
+        mailDTO.setMailFrom(applicationPropertiesConfiguration.getMailFrom());
         mailDTO.setMailTo(applicationPropertiesConfiguration.getAdminUserMail());
         mailDTO.setModel(model);
         sendEmail(mailDTO);
@@ -824,7 +922,7 @@ public class UserController extends MessageController {
         model.put("body2", "New task created for approval by provincial administrator");
         model.put("body3", "");
         model.put("body4", "");
-        mailDTO.setMailFrom("cheifsurveyorgeneral@gmail.com");
+        mailDTO.setMailFrom(applicationPropertiesConfiguration.getMailFrom());
         mailDTO.setMailTo(applicationPropertiesConfiguration.getAdminUserMail());
         mailDTO.setModel(model);
         sendEmail(mailDTO);
@@ -842,7 +940,7 @@ public class UserController extends MessageController {
         model.put("body3", "");
         model.put("body4", "");
 
-        mailDTO.setMailFrom("cheifsurveyorgeneral@gmail.com");
+        mailDTO.setMailFrom(applicationPropertiesConfiguration.getMailFrom());
         mailDTO.setMailTo(applicationPropertiesConfiguration.getProvinceAdminMail());
         mailDTO.setModel(model);
         sendEmail(mailDTO);
@@ -861,7 +959,7 @@ public class UserController extends MessageController {
         model.put("body4", "");
 
 
-        mailDTO.setMailFrom("cheifsurveyorgeneral@gmail.com");
+        mailDTO.setMailFrom(applicationPropertiesConfiguration.getMailFrom());
         mailDTO.setMailTo(applicationPropertiesConfiguration.getProvinceAdminMail());
         mailDTO.setModel(model);
         sendEmail(mailDTO);

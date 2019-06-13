@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.dw.ngms.cis.uam.configuration.ApplicationPropertiesConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
@@ -41,7 +42,10 @@ public class RequestService {
     private RequestRepository requestRepository;
     @Autowired
     private MessageController messageController;
-    
+
+
+	@Autowired
+	private ApplicationPropertiesConfiguration applicationPropertiesConfiguration;
     public List<Requests> getAllRequests() {
         return this.requestRepository.findAll();
     }//getAllRequests
@@ -187,7 +191,7 @@ public class RequestService {
         mailDTO.getModel().put("body4", "");
         mailDTO.getModel().put("firstName", "");
         mailDTO.getModel().put("FOOTER","CIS ADMIN");
-        mailDTO.setMailFrom("cheifsurveyorgeneral@gmail.com");
+        mailDTO.setMailFrom(applicationPropertiesConfiguration.getMailFrom());
     
         if(CollectionUtils.isEmpty(userList)) 
         	throw new RuntimeException("No users found to send notification mail");
