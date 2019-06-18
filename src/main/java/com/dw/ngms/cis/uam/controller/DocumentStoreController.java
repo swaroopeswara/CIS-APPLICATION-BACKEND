@@ -95,7 +95,7 @@ public class DocumentStoreController extends MessageController {
                     List<String> files = new ArrayList<String>();
                     String fileName = testService.store(f);
                     files.add(f.getOriginalFilename());
-                    filesExist.add(applicationPropertiesConfiguration.getDownloadDirectoryPath() + fileName);
+                    filesExist.add(applicationPropertiesConfiguration.getUploadDirectoryPath() + fileName);
                     userControllerResponse.setFiles(filesExist);
                     json = gson.toJson(userControllerResponse);
                     documentStore.setDocumentPath(json);
