@@ -823,7 +823,7 @@ public class UserController extends MessageController {
         Map<String, Object> model = new HashMap<String, Object>();
 
         if (user.getIsApproved().getDisplayString().equalsIgnoreCase("YES")) {
-            model.put("firstName", user.getFirstName());
+            model.put("firstName", user.getFirstName() + " " +user.getSurname());
             model.put("body1", "Thank you for registering with us. Your account is approved.");
             model.put("body2", "Your password is " + user.getPassword());
             model.put("body3", "");
@@ -831,7 +831,7 @@ public class UserController extends MessageController {
 
         } else {
 
-            model.put("firstName", user.getFirstName());
+            model.put("firstName", user.getFirstName() + " " +user.getSurname());
             model.put("body1", "Thank you for registering with us. Your account is pending approval.");
             model.put("body2", "Your password is " + user.getPassword());
             model.put("body3", "");
@@ -886,7 +886,7 @@ public class UserController extends MessageController {
 
 
         mailDTO.setMailSubject("Welcome to CIS");
-        model.put("firstName", " " + user.getFirstName() + ",");
+        model.put("firstName", " " + user.getFirstName() + " " +user.getSurname() + ",");
         model.put("FOOTER", "CIS ADMIN");
         mailDTO.setMailFrom(applicationPropertiesConfiguration.getMailFrom());
         mailDTO.setMailTo(user.getEmail());

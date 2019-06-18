@@ -102,7 +102,7 @@ public class DocumentStoreController extends MessageController {
                     this.documentStoreService.saveDocument(documentStore);
                 }
             }
-            return ResponseEntity.status(HttpStatus.OK).body(json);
+            return ResponseEntity.status(HttpStatus.OK).body(documentStore);
         } catch (Exception exception) {
             return generateFailureResponse(request, exception);
         }

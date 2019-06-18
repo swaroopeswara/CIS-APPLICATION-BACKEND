@@ -118,7 +118,7 @@ public class NotificationController extends MessageController {
 
     private void sendEmailTOAllUsers(MailDTO mailDTO, Notifications notifications, User user) throws Exception {
         Map<String, Object> model = new HashMap<String, Object>();
-        model.put("firstName", user.getFirstName());
+        model.put("firstName", user.getFirstName() + " " +user.getSurname());
         model.put("body1", notifications.getBody());
         model.put("body2", "");
         model.put("body3", "");
@@ -132,53 +132,6 @@ public class NotificationController extends MessageController {
     }
 
 
-    private void sendMailToNotification(MailDTO mailDTO, Notifications notifications) throws Exception {
-        Map<String, Object> model = new HashMap<String, Object>();
-        model.put("firstName", "User");
-        model.put("body1", notifications.getBody());
-        model.put("body2", "");
-        model.put("body3", "");
-        model.put("body4", "");
-        mailDTO.setMailSubject(notifications.getSubject());
-        mailDTO.setMailTo("swaroopragava23@gmail.com");
-        model.put("FOOTER", "CIS ADMIN");
-        mailDTO.setMailFrom(applicationPropertiesConfiguration.getMailFrom());
-        mailDTO.setModel(model);
-        InternetAddress cc = new InternetAddress();
-        sendEmail(mailDTO, cc);
-    }
-
-    private void sendMailToNotification1(MailDTO mailDTO, Notifications notifications) throws Exception {
-        Map<String, Object> model = new HashMap<String, Object>();
-        model.put("firstName", "User");
-        model.put("body1", notifications.getBody());
-        model.put("body2", "");
-        model.put("body3", "");
-        model.put("body4", "");
-        mailDTO.setMailSubject(notifications.getSubject());
-        model.put("FOOTER", "CIS ADMIN");
-        mailDTO.setMailFrom(applicationPropertiesConfiguration.getMailFrom());
-        mailDTO.setMailTo("dataworldproject@gmail.com");
-        mailDTO.setModel(model);
-        InternetAddress cc = new InternetAddress();
-        sendEmail1(mailDTO, cc);
-    }
-
-    private void sendMailToNotification2(MailDTO mailDTO, Notifications notifications) throws Exception {
-        Map<String, Object> model = new HashMap<String, Object>();
-        model.put("firstName", "User");
-        model.put("body1", notifications.getBody());
-        model.put("body2", "");
-        model.put("body3", "");
-        model.put("body4", "");
-        mailDTO.setMailSubject(notifications.getSubject());
-        model.put("FOOTER", "CIS ADMIN");
-        mailDTO.setMailFrom(applicationPropertiesConfiguration.getMailFrom());
-        mailDTO.setMailTo("dataworldproject@gmail.com");
-        mailDTO.setModel(model);
-        InternetAddress cc = new InternetAddress();
-        sendEmail2(mailDTO, cc);
-    }
 
     @PostMapping("/uploadNotificationDocument")
     public ResponseEntity<?> uploadNotificationDocument(HttpServletRequest request, @RequestParam MultipartFile[] multipleFiles,

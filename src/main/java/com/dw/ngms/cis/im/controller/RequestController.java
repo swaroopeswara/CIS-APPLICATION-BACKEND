@@ -12,9 +12,11 @@ import com.dw.ngms.cis.uam.configuration.FTPConfiguration;
 import com.dw.ngms.cis.uam.dto.FilePathsDTO;
 import com.dw.ngms.cis.uam.dto.MailDTO;
 import com.dw.ngms.cis.uam.entity.TaskLifeCycle;
+import com.dw.ngms.cis.uam.entity.User;
 import com.dw.ngms.cis.uam.jsonresponse.UserControllerResponse;
 import com.dw.ngms.cis.uam.service.ProvinceService;
 import com.dw.ngms.cis.uam.service.TaskService;
+import com.dw.ngms.cis.uam.service.UserService;
 import com.dw.ngms.cis.uam.storage.StorageService;
 import com.dw.ngms.cis.workflow.api.ProcessAdditionalInfo;
 import com.dw.ngms.cis.workflow.model.Target;
@@ -74,6 +76,9 @@ public class RequestController extends MessageController {
     private StorageService testService;
     @Autowired
     private TaskService taskService;
+
+    @Autowired
+    private UserService userService;
 
     @Autowired
     private ApplicationPropertiesConfiguration applicationPropertiesConfiguration;
@@ -1170,9 +1175,15 @@ public class RequestController extends MessageController {
 
 
     private void sendMailToCreateRequestUser(@RequestBody @Valid Requests requests, MailDTO mailDTO) throws Exception {
-
+        String userName = null;
+        if(requests.getUserCode()!= null){
+            User user  = this.userService.findByUserCode(requests.getUserCode());
+            if(user!=null){
+                userName = user.getFirstName() +" "+ user.getSurname();
+            }
+        }
         Map<String, Object> model = new HashMap<String, Object>();
-        model.put("firstName", requests.getUserName());
+        model.put("firstName", userName);
         model.put("body1", "Your request is created successfully");
         model.put("body2", "");
         model.put("body3", "");
