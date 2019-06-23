@@ -1,17 +1,26 @@
 package com.dw.ngms.cis.entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+
+import com.dw.ngms.cis.uam.entity.User;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -36,13 +45,21 @@ public class CisNotification implements Serializable {
 	
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name="CREATIONDATETIME")
-	private Date creationDatetime;
+	private Date creationDatetime = new Date();
 	
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name="UPDATEDATETIME")
-	private Date updateDatetime;
+	private Date updateDatetime = new Date();
 	
 	@Column(name="ISREAD", columnDefinition="boolean")
-	private String isRead;
+	private boolean isRead = Boolean.FALSE;
 	
+	@Column(name="REQUESTCODE", length=50)
+	private String requestCode;	
+	
+	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinTable(name = "CISUSERNOTIFICATION",
+            joinColumns = { @JoinColumn(name = "NOTIFICATIONID", referencedColumnName = "ID") },
+            inverseJoinColumns = { @JoinColumn(name = "USERID", referencedColumnName = "USERID") })
+    private List<User> userList = new ArrayList<>();
 }

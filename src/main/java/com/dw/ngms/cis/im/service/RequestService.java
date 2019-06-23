@@ -5,7 +5,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.dw.ngms.cis.uam.configuration.ApplicationPropertiesConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
@@ -13,8 +12,11 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import com.dw.ngms.cis.controller.MessageController;
+import com.dw.ngms.cis.entity.CisNotification;
 import com.dw.ngms.cis.im.entity.Requests;
 import com.dw.ngms.cis.im.repository.RequestRepository;
+import com.dw.ngms.cis.service.CisNotificationService;
+import com.dw.ngms.cis.uam.configuration.ApplicationPropertiesConfiguration;
 import com.dw.ngms.cis.uam.dto.MailDTO;
 import com.dw.ngms.cis.uam.entity.InternalRole;
 import com.dw.ngms.cis.uam.entity.Task;
@@ -42,8 +44,9 @@ public class RequestService {
     private RequestRepository requestRepository;
     @Autowired
     private MessageController messageController;
-
-
+    @Autowired
+    private CisNotificationService cisNotificationService;
+    
 	@Autowired
 	private ApplicationPropertiesConfiguration applicationPropertiesConfiguration;
     public List<Requests> getAllRequests() {
@@ -129,7 +132,7 @@ public class RequestService {
 
 	private boolean populateAndSendMail(Requests request, Integer lapseTime, boolean isLapsed) {
 		try {
-			MailDTO mail = this.populateMail(request, lapseTime, isLapsed);
+			MailDTO mail = this.addNotificationAndPopulateMail(request, lapseTime, isLapsed);
 			if(mail != null) {
 				log.info("Sending mail {0}", mail.toString());			
 				messageController.sendEmails(mail);			
@@ -141,7 +144,7 @@ public class RequestService {
 		return Boolean.TRUE;
 	}//populateAndSendMail
 
-	private MailDTO populateMail(Requests request, Integer lapseTime, boolean isLapsed) {		
+	private MailDTO addNotificationAndPopulateMail(Requests request, Integer lapseTime, boolean isLapsed) {		
         Task task = taskService.getTask(request.getRequestCode());
         
         String mailBody = (isLapsed) ? getPropertyValue("lapsed.notification.body1", request.getRequestCode()) :
@@ -149,8 +152,25 @@ public class RequestService {
         
         List<User> userList = (isLapsed) ? this.getReportingUsersToNotify(task) : this.getAssignedUsersToNotify(task);
         
-    	return this.populateMailForUsers(request, mailBody, userList);
-	}//populateMail
+        this.addCisNotification(request, mailBody, userList);
+    	
+        return this.populateMailForUsers(request, mailBody, userList);
+	}//addNotificationAndPopulateMail
+	
+	private void addCisNotification(Requests request, String mailBody, List<User> userList) {
+		if(request == null || StringUtils.isEmpty(mailBody))
+			return;
+		try {
+			CisNotification notification = new CisNotification();			
+			notification.setRequestCode(request.getRequestCode());
+			notification.setPayload(mailBody);
+			if(!CollectionUtils.isEmpty(userList))
+				notification.getUserList().addAll(userList);
+			cisNotificationService.addNotification(notification);
+		}catch (Exception e) {
+			log.error("Error while adding cis notification", e);
+		}
+	}//addCisNotification
 
 	/**
 	 * @param task
