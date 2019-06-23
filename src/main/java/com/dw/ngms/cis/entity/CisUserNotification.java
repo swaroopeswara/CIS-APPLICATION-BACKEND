@@ -15,7 +15,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-@Table(name = "CISNOTIFICATION")
+@Table(name = "CISUSERNOTIFICATION")
 public class CisUserNotification implements Serializable {
 	
 	private static final long serialVersionUID = 3209158392625197416L;
