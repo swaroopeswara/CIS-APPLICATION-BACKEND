@@ -104,6 +104,13 @@ public class RequestService {
         return this.requestRepository.getRequestsByRequestCode(requestCode);
     } //saveRequest
 
+
+	public List<Requests> getRequestByDeliveryname(String deliveryMethod) {
+		return this.requestRepository.getRequestByDeliveryname(deliveryMethod);
+	} //saveRequest
+
+
+
 	public Requests getRequestsByRequestCodeUserCodeUserName(String requestCode,String userCode, String userName) {
 		return this.requestRepository.getRequestsByRequestCodeUserCodeUserName(requestCode,userCode,userName);
 	} //sa

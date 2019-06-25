@@ -53,6 +53,12 @@ public interface RequestRepository extends JpaRepository<Requests, UUID>  {
     @Query("SELECT u FROM Requests u WHERE u.requestCode = :requestCode")
     Requests getRequestsByRequestCode(@Param("requestCode") String requestCode);
 
+
+    @Query("SELECT u FROM Requests u WHERE u.deliveryMethod = :deliveryMethod")
+    List<Requests> getRequestByDeliveryname(@Param("deliveryMethod") String deliveryMethod);
+
+
+
     @Query("SELECT u FROM Requests u WHERE u.requestCode = :requestCode and u.userCode = :userCode and u.userName = :userName")
     Requests getRequestsByRequestCodeUserCodeUserName(@Param("requestCode") String requestCode,
                                                       @Param("userCode") String userCode,

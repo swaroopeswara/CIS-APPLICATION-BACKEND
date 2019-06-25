@@ -109,6 +109,9 @@ public class IssueLogController extends MessageController {
         IssueLog issueLog = issueLogService.findById(issueID);
         if (!StringUtils.isEmpty(issueLog)) {
             issueLog.setIssueStatus(issueLogDetails.getIssueStatus());
+            if(issueLogDetails.getResolvedComments() != null){
+                issueLog.setResolvedComments(issueLogDetails.getResolvedComments());
+            }
             IssueLog updateIssueLog = this.issueLogService.saveIssueLog(issueLog);
             MailDTO mailDTO = new MailDTO();
             sendMailToUser(updateIssueLog, mailDTO);

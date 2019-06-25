@@ -30,7 +30,7 @@ public class InternalUserRoleService {
     	if(usercode == null || username == null || internalrolecode == null)
     		throw new RuntimeException("Usercode and username and internalrolecode required");
     	
-    	InternalUserRoles internalUserRoles = internalUserRoleRepository.findByUserCodeUserNameAndInternalRoleCode(usercode,username,internalrolecode);
+    	InternalUserRoles internalUserRoles = internalUserRoleRepository.findByUserCodeUserNameAndInternalRoleCode(usercode,username.trim().toLowerCase(),internalrolecode);
 
     	internalUserRoleRepository.delete(internalUserRoles);
     }//deleteInternalUserRole
@@ -39,10 +39,10 @@ public class InternalUserRoleService {
         return internalUserRoleRepository.findByInternalRoleCodeAndStatus(internalRoleCode, isActive);
     }
     
-    public InternalUserRoles getInternalUserRole(String usercode, String username, String internalrolecode) {
+   /* public InternalUserRoles getInternalUserRole(String usercode, String username, String internalrolecode) {
     	return internalUserRoleRepository.findByUserCodeUserNameAndInternalRoleCode(usercode, username, internalrolecode);
     }//getInternalUserRole
-
+*/
 
     public InternalUserRoles getInternalUserRoleCode(String userCode, String userName,String provinceCode, String sectionCode, String roleCode, String internalRoleCode) {
         return this.internalUserRoleRepository.getInternalRoleCode(userCode,userName,provinceCode,sectionCode,roleCode,internalRoleCode);

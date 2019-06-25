@@ -1,3 +1,4 @@
+/*
 package com.dw.ngms.cis.uam.configuration;
 
 import lombok.Data;
@@ -54,3 +55,4 @@ public class FTPConfiguration {
 		return "FTP Connection to drdlr Environment";
 	}
 }
+*/

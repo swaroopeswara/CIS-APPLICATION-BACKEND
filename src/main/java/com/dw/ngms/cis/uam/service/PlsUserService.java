@@ -31,7 +31,7 @@ public class PlsUserService {
 	}
 
 	public PlsUser findByEmail(String email) {
-		return this.plsUserRepository.findByEmail(email);
+		return this.plsUserRepository.findByEmail(email.trim().toLowerCase());
 	} //findByEmail
 	
 	public PlsUser findByCode(String plsCode) {

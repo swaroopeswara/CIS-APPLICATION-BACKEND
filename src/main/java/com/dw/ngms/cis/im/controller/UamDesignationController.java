@@ -56,7 +56,7 @@ public class UamDesignationController extends MessageController {
 
 
     @GetMapping(value = "/deleteUamDesignation")
-    public ResponseEntity<?> deleteInternalRole(HttpServletRequest request, @RequestParam String designationCode) throws IOException {
+    public ResponseEntity<?> deleteUamDesignation(HttpServletRequest request, @RequestParam String designationCode) throws IOException {
         try {
             if(designationCode!= null && !isEmpty(designationCode)) {
                 UamDesignations uamDesignations = this.uamDesignationTypeService.findByUamDesignationCode(designationCode);

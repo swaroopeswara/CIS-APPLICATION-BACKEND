@@ -32,5 +32,18 @@ public class DeliveryMethodService {
     } //getAllDeliveryMethos
 
 
+    public DeliveryMethods getDeliveryMethodByCode(String deliveryMethodCode) {
+        return this.deliveryMethodRepository.getDeliveryMethodByCode(deliveryMethodCode);
+    } //getDeliveryMethodByCode
+
+
+    public void deleteDeliveyMethod(DeliveryMethods deliveryMethods) {
+         this.deliveryMethodRepository.delete(deliveryMethods);
+    } //deleteDeliveyMethod
+
+
+
+
+
 
 }

@@ -158,9 +158,9 @@ public class InternalUserRoleController extends MessageController {
             } else {
                 InternalUserRoles internalUserRoles;
                 if(sectionCode!= null && !isEmpty(sectionCode) ) {
-                     internalUserRoles = this.internalUserRoleService.getInternalUserRoleCode(userCode, userName, provinceCode, sectionCode, roleCode, internalRoleCode);
+                     internalUserRoles = this.internalUserRoleService.getInternalUserRoleCode(userCode, userName.trim().toLowerCase(), provinceCode, sectionCode, roleCode, internalRoleCode);
                 }else{
-                    internalUserRoles = this.internalUserRoleService.getInternalUserRoleCodeWithEmptySectionCode(userCode, userName, provinceCode, roleCode, internalRoleCode);
+                    internalUserRoles = this.internalUserRoleService.getInternalUserRoleCodeWithEmptySectionCode(userCode, userName.trim().toLowerCase(), provinceCode, roleCode, internalRoleCode);
                 }
                 if (internalUserRoles != null && internalUserRoles.getUserRoleId() != null) {
                     String fileName = testService.store(file);
@@ -251,11 +251,11 @@ public class InternalUserRoleController extends MessageController {
                                                          @RequestParam String isActive) {
         try {
             if(isActive.equalsIgnoreCase("all")){
-                List<InternalUserRoles> internalUserRoles = internalUserRoleService.getInternalUserRole(email);
+                List<InternalUserRoles> internalUserRoles = internalUserRoleService.getInternalUserRole(email.trim().toLowerCase());
                 return (CollectionUtils.isEmpty(internalUserRoles)) ? ResponseEntity.status(HttpStatus.OK).body(internalUserRoles)
                         : ResponseEntity.status(HttpStatus.OK).body(internalUserRoles);
             }else{
-                List<InternalUserRoles> internalUserRoles = internalUserRoleService.getInternalUserRoleWithActive(email,isActive);
+                List<InternalUserRoles> internalUserRoles = internalUserRoleService.getInternalUserRoleWithActive(email.trim().toLowerCase(),isActive);
                 return (CollectionUtils.isEmpty(internalUserRoles)) ? ResponseEntity.status(HttpStatus.OK).body(internalUserRoles)
                         : ResponseEntity.status(HttpStatus.OK).body(internalUserRoles);
             }

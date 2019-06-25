@@ -5,10 +5,10 @@ import com.dw.ngms.cis.controller.MessageController;
 import com.dw.ngms.cis.im.dto.InvoiceDTO;
 import com.dw.ngms.cis.im.entity.RequestItems;
 import com.dw.ngms.cis.im.entity.Requests;
+import com.dw.ngms.cis.im.service.ApplicationPropertiesService;
 import com.dw.ngms.cis.im.service.RequestItemService;
 import com.dw.ngms.cis.im.service.RequestService;
 import com.dw.ngms.cis.uam.configuration.ApplicationPropertiesConfiguration;
-import com.dw.ngms.cis.uam.configuration.FTPConfiguration;
 import com.dw.ngms.cis.uam.dto.FilePathsDTO;
 import com.dw.ngms.cis.uam.dto.MailDTO;
 import com.dw.ngms.cis.uam.entity.TaskLifeCycle;
@@ -84,7 +84,7 @@ public class RequestController extends MessageController {
     private ApplicationPropertiesConfiguration applicationPropertiesConfiguration;
 
     @Autowired
-    private FTPConfiguration ftpConfiguration;
+    private ApplicationPropertiesService appPropertiesService;
 
     @Autowired
     private ProvinceService provinceService;
@@ -694,28 +694,11 @@ public class RequestController extends MessageController {
                         System.out.println("Start uploading first file");
                         boolean done = ftpClient.storeFile(firstRemoteFile, inputStream);
                         inputStream.close();
-
-                        //Techlive done
-                        /*if (done) {
-                            String path = ftpClient.printWorkingDirectory();
-                            String ftpFilePath = "ftp://160.119.101.57" + path + "/" + zipFilename;
-                            System.out.println(ftpFilePath);
-                            System.out.println("The first file is uploaded successfully.");
-                        }*/
-
-                    //data world done
-                        /*if (done) {
-                            String path = ftpClient.printWorkingDirectory();
-                            String ftpFilePath = "ftp://10.1.15.226" + path + "/" + zipFilename;
-                            System.out.println(ftpFilePath);
-                            System.out.println("The first file is uploaded successfully.");
-                        }*/
-
-
                     }
                     ftpClient.logout();
-                    String path = ftpConfiguration.getUploadFilePath();
-                    String server =  "ftp://"+ftpConfiguration.getServer();
+                    String path = appPropertiesService.getProperty("FTP_UPLOAD_PATH").getKeyValue();
+                    String server =  "ftp://"+appPropertiesService.getProperty("FTP_SERVER").getKeyValue();
+
                     String ftpFilePath = server + path + zipFilename;
                     System.out.println("File Path is: "+ftpFilePath);
                     MailDTO mailDTO = new MailDTO();
@@ -773,11 +756,10 @@ public class RequestController extends MessageController {
 
 
     private boolean ftpLogin(FTPClient ftpClient) throws IOException {
-        String server = ftpConfiguration.getServer();
-        int port = ftpConfiguration.getPort();
-        String user = ftpConfiguration.getUsername();
-        String pass = ftpConfiguration.getPassword();
-
+        String server = appPropertiesService.getProperty("FTP_SERVER").getKeyValue();
+        int port = Integer.valueOf(appPropertiesService.getProperty("FTP_PORT").getKeyValue());
+        String user = appPropertiesService.getProperty("FTP_SERVER").getKeyValue();
+        String pass = appPropertiesService.getProperty("FTP_SERVER").getKeyValue();
         ftpClient.connect(server, port);
         showServerReply(ftpClient);
         int replyCode = ftpClient.getReplyCode();

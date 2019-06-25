@@ -57,7 +57,7 @@ public class SecurityQuestionController extends MessageController {
         try {
 
 
-            User user = this.userService.findByEmail(userDTO.getEmail());
+            User user = this.userService.findByEmail(userDTO.getEmail().trim().toLowerCase());
 
 
             List<SecurityQuestionDTO> securityQuestionsTestList = new ArrayList<>();

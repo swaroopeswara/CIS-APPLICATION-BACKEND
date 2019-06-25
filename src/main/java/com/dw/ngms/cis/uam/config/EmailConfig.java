@@ -1,5 +1,6 @@
 package com.dw.ngms.cis.uam.config;
 
+import com.dw.ngms.cis.im.service.ApplicationPropertiesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,22 +14,25 @@ import java.util.Properties;
 @Configuration
 public class EmailConfig {
 	
-	@Autowired
-	EmailProperties emailProperties;
-		
+
+
+    @Autowired
+    private ApplicationPropertiesService appPropertiesService;
 	
 	@Bean
     public JavaMailSender getMailSender() {
         JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
- 
-        mailSender.setHost(emailProperties.getHost());
-        mailSender.setPort(Integer.parseInt(emailProperties.getPort()));
-        mailSender.setUsername(emailProperties.getUsername());
-        mailSender.setPassword(emailProperties.getPassword());
- 
+
+
+        mailSender.setHost(appPropertiesService.getProperty("EMAIL_HOST").getKeyValue());
+        mailSender.setPort(Integer.valueOf(appPropertiesService.getProperty("EMAIL_PORT").getKeyValue()));
+        mailSender.setUsername(appPropertiesService.getProperty("EMAIL_USERNAME").getKeyValue());
+        mailSender.setPassword(appPropertiesService.getProperty("EMAIL_PASSWORD").getKeyValue());
+
+        System.out.println("Host is "+mailSender.getHost());
         Properties javaMailProperties = new Properties();
         javaMailProperties.put("mail.smtp.starttls.enable", "true");
-        javaMailProperties.put("mail.smtp.auth", "true");
+        javaMailProperties.put("mail.smtp.auth", appPropertiesService.getProperty("EMAIL_AUTH").getKeyValue());
         javaMailProperties.put("mail.transport.protocol", "smtp");
         javaMailProperties.put("mail.debug", "true");
  

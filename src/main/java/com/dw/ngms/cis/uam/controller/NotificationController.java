@@ -1,6 +1,7 @@
 package com.dw.ngms.cis.uam.controller;
 
 import com.dw.ngms.cis.controller.MessageController;
+import com.dw.ngms.cis.im.entity.Requests;
 import com.dw.ngms.cis.im.service.ApplicationPropertiesService;
 import com.dw.ngms.cis.uam.configuration.ApplicationPropertiesConfiguration;
 import com.dw.ngms.cis.uam.dto.FilePathsDTO;
@@ -22,6 +23,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -88,11 +90,42 @@ public class NotificationController extends MessageController {
     public ResponseEntity<?> saveNotification(HttpServletRequest request, @RequestBody @Valid Notifications notification) {
         try {
             Notifications notificationSave = this.notificationService.saveNotification(notification);
+            MailDTO mailDTO = new MailDTO();
+            sendMailToCreateNotificationUser(notificationSave, mailDTO);
             return ResponseEntity.status(HttpStatus.OK).body(notificationSave);
         } catch (Exception exception) {
             return generateFailureResponse(request, exception);
         }
     }//saveNotification
+
+
+    private void sendMailToCreateNotificationUser(@RequestBody @Valid Notifications notifications, MailDTO mailDTO) throws Exception {
+        String userName = null;
+        if(notifications.getCreatedByUserName()!= null){
+            User user  = this.userService.findByEmail(notifications.getCreatedByUserName().trim().toLowerCase());
+            if(user!=null){
+                userName = user.getFirstName() +" "+ user.getSurname();
+            }
+        }
+        if(StringUtils.isEmpty(userName)){
+            userName = "Notification User";
+        }
+        Map<String, Object> model = new HashMap<String, Object>();
+        model.put("firstName", userName);
+        model.put("body1", "Your Notification is created successfully");
+        model.put("body2", "");
+        model.put("body3", "");
+        model.put("body4", "");
+        mailDTO.setMailSubject("Create Notification");
+        model.put("FOOTER", "CIS ADMIN");
+        mailDTO.setMailFrom(applicationPropertiesConfiguration.getMailFrom());
+        mailDTO.setMailTo(notifications.getCreatedByUserName());
+        mailDTO.setModel(model);
+        sendEmail(mailDTO);
+
+
+    }
+
 
     @GetMapping("/getNotifications")
     public ResponseEntity<?> getNotifications(HttpServletRequest request) {

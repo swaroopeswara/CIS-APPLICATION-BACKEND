@@ -13,20 +13,20 @@ import com.dw.ngms.cis.uam.entity.InternalUserRoles;
  */
 public interface InternalUserRoleRepository  extends JpaRepository<InternalUserRoles, Long> {
 	
-	@Query("select iur from InternalUserRoles iur where iur.userName = ?1")
+	@Query("select iur from InternalUserRoles iur where Lower(iur.userName) = ?1")
 	List<InternalUserRoles> findByEmail(String username);
 
-	@Query("select iur from InternalUserRoles iur where iur.userName = ?1 and isActive = ?2")
+	@Query("select iur from InternalUserRoles iur where Lower(iur.userName) = ?1 and isActive = ?2")
 	List<InternalUserRoles> getInternalUserRoleWithActive(String username, String isActive);
 
 	@Query("select iur from InternalUserRoles iur where iur.internalRoleCode = ?1 and iur.isActive = ?2")
 	InternalUserRoles findByInternalRoleCodeAndStatus(String internalrolecode, String isActive);
 	
-	@Query("select iur from InternalUserRoles iur where iur.userCode = ?1 and iur.userName = ?2 and iur.internalRoleCode = ?3")
+	@Query("select iur from InternalUserRoles iur where iur.userCode = ?1 and Lower(iur.userName) = ?2 and iur.internalRoleCode = ?3")
 	InternalUserRoles findByUserCodeUserNameAndInternalRoleCode(String usercode, String username, String internalrolecode);
 
 
-	@Query("select u from InternalUserRoles u where u.userCode = :userCode and u.userName = :userName and u.provinceCode = :provinceCode and u.sectionCode = :sectionCode and u.roleCode = :roleCode and u.internalRoleCode = :internalRoleCode")
+	@Query("select u from InternalUserRoles u where u.userCode = :userCode and Lower(u.userName) = :userName and u.provinceCode = :provinceCode and u.sectionCode = :sectionCode and u.roleCode = :roleCode and u.internalRoleCode = :internalRoleCode")
 	InternalUserRoles getInternalRoleCode(@Param("userCode") String userCode,@Param("userName") String userName,@Param("provinceCode") String provinceCode,@Param("sectionCode") String sectionCode,@Param("roleCode") String roleCode, @Param("internalRoleCode") String internalRoleCode);
 
 	@Query("select u from InternalUserRoles u where u.provinceCode = :provinceCode and u.sectionCode = :sectionCode and USERROLECODE = 'IN014'")
@@ -40,7 +40,7 @@ public interface InternalUserRoleRepository  extends JpaRepository<InternalUserR
 	List<InternalUserRoles> getOfficersOfMySectionSectionCode(@Param("sectionCode") String sectionCode);
 
 
-	@Query("select u from InternalUserRoles u where u.userCode = :userCode and u.userName = :userName and u.provinceCode = :provinceCode and u.sectionCode IS NULL and u.roleCode = :roleCode and u.internalRoleCode = :internalRoleCode")
+	@Query("select u from InternalUserRoles u where u.userCode = :userCode and Lower(u.userName) = :userName and u.provinceCode = :provinceCode and u.sectionCode IS NULL and u.roleCode = :roleCode and u.internalRoleCode = :internalRoleCode")
 	InternalUserRoles getInternalUserRoleCodeWithEmptySectionCode(@Param("userCode") String userCode,@Param("userName") String userName,@Param("provinceCode") String provinceCode,@Param("roleCode") String roleCode, @Param("internalRoleCode") String internalRoleCode);
 
 

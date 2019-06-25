@@ -54,6 +54,10 @@ public class IssueLog implements Serializable {
     @Column(name = "PROVINCE", length = 50)
     private String province;
 
+    @Column(name = "RESOLVEDCOMMENTS", length = 200)
+    private String resolvedComments;
+
+
     @Temporal(TemporalType.DATE)
     @Column(name = "CREATEDDATE")
     private Date createdDate = new Date();

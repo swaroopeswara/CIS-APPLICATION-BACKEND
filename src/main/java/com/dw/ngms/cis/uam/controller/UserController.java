@@ -358,7 +358,7 @@ public class UserController extends MessageController {
         Gson gson = new Gson();
         UserControllerResponse userControllerResponse = new UserControllerResponse();
         try {
-            userExists = this.userService.findByEmail(email.trim());
+            userExists = this.userService.findByEmail(email.trim().toLowerCase());
             if (userExists == null) {
                 userControllerResponse.setExists("false");
                 json = gson.toJson(userControllerResponse);
@@ -386,7 +386,7 @@ public class UserController extends MessageController {
         System.out.println("email is " + email);
         try {
 
-            User userInfo = this.userService.findByEmail(email);
+            User userInfo = this.userService.findByEmail(email.trim().toLowerCase());
             if (!isEmpty(userInfo) && userInfo != null && userInfo.getUserTypeName().equalsIgnoreCase("EXTERNAL")) {
                 ExternalUser externalUser = this.userService.getChildElements(userInfo.getUserCode());
                 List<ExternalUserRoles> externalUserRolesList = this.userService.getExternalUserRolesChildElements(userInfo.getUserCode());
@@ -457,7 +457,7 @@ public class UserController extends MessageController {
         UserControllerResponse userControllerResponse = new UserControllerResponse();
         try {
             System.out.println("Email is " + user.getEmail());
-            User userExists = this.userService.findByEmail(user.getEmail().trim());
+            User userExists = this.userService.findByEmail(user.getEmail().trim().toLowerCase());
             if (userExists != null && userExists.getEmail() != null) {
                 userControllerResponse.setMessage("User Already Exist with this email ID");
                 json = gson.toJson(userControllerResponse);
@@ -567,7 +567,7 @@ public class UserController extends MessageController {
         System.out.println("email is " + email);
         try {
 
-            User userInfo = this.userService.findByEmail(email);
+            User userInfo = this.userService.findByEmail(email.trim().toLowerCase());
             if (!isEmpty(userInfo) && userInfo != null) {
                 UserLiteDTO userLiteDTO = new UserLiteDTO();
                 userLiteDTO.setFirstName(userInfo.getFirstName());
@@ -593,7 +593,7 @@ public class UserController extends MessageController {
         String json = null;
         try {
             System.out.println("internalUser.getEmail() " + internalUser.getEmail());
-            User userExists = this.userService.findByEmail(internalUser.getEmail().trim());
+            User userExists = this.userService.findByEmail(internalUser.getEmail().trim().toLowerCase());
             if (userExists != null && userExists.getEmail() != null) {
                 userControllerResponse.setMessage("User Already Exist with this email ID");
                 json = gson.toJson(userControllerResponse);
