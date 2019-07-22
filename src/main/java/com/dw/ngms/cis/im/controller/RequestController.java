@@ -360,9 +360,9 @@ public class RequestController extends MessageController {
             requests.setRequestItems(req);
             Requests requestToSave = this.requestService.saveRequest(requests);
             MailDTO mailDTO = new MailDTO();
-            sendMailToCreateRequestUser(requests, mailDTO);
+            sendMailToCreateRequestUser(requestToSave, mailDTO);
 
-            taskService.startProcess(processId, requests);
+            taskService.startProcess(processId, requestToSave);
 
             return ResponseEntity.status(HttpStatus.OK).body(requestToSave);
         } catch (Exception exception) {
@@ -1164,9 +1164,10 @@ public class RequestController extends MessageController {
                 userName = user.getFirstName() +" "+ user.getSurname();
             }
         }
+
         Map<String, Object> model = new HashMap<String, Object>();
         model.put("firstName", userName);
-        model.put("body1", "Your request is created successfully");
+        model.put("body1", "Your request is created successfully with request code "+requests.getRequestCode());
         model.put("body2", "");
         model.put("body3", "");
         model.put("body4", "");
