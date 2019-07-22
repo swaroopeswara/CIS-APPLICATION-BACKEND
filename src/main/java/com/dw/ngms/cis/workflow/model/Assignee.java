@@ -22,4 +22,11 @@ public class Assignee {
 	private String type;
 	@JsonProperty("name")
 	private String name;
+		
+	public Assignee(String type, String name) {
+		this.type = type;
+		this.name = name;
+	}
+	
+	
 }

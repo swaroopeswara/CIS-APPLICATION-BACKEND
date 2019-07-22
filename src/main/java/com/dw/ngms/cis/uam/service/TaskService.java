@@ -26,6 +26,7 @@ import com.dw.ngms.cis.uam.repository.TaskLifeCycleRepository;
 import com.dw.ngms.cis.uam.repository.TaskRepository;
 import com.dw.ngms.cis.workflow.api.ProcessAdditionalInfo;
 import com.dw.ngms.cis.workflow.api.ProcessEngine;
+import com.dw.ngms.cis.workflow.model.Assignee;
 import com.dw.ngms.cis.workflow.model.Assigner;
 import com.dw.ngms.cis.workflow.model.Process;
 import com.dw.ngms.cis.workflow.model.Target;
@@ -90,20 +91,33 @@ public class TaskService {
 
     public void startProcess(String processId, Requests requests) {
     	if(processId == null)
-    		throw new RuntimeException("Process id is reqired to start process");    	
-    	processEngine.startProcess(processId, populateTask(requests), populateAdditionalInfo(requests));
+    		throw new RuntimeException("Process id is reqired to start process");
+    	Task task = populateTask(requests);
+    	ProcessAdditionalInfo additionalInfo = populateAdditionalInfo(task, requests);
+    	processEngine.startProcess(processId, task, additionalInfo);
+    	if(additionalInfo.isInternalCapturer()) {
+    		additionalInfo.setTargetSequenceId(
+    				processEngine.getSequenceByStateAndProcessId(
+    						"Reassigned", processId).getId());
+    		this.processUserState(task, additionalInfo);
+    	}    		
     }//startProcess
     
 	public Target processUserState(ProcessAdditionalInfo additionalInfo) {
 		if(additionalInfo == null)
+    		throw new RuntimeException("Task process details reqired to process");		
+    	return this.processUserState(getTask(additionalInfo), additionalInfo);
+    }//processUserState
+    
+	public Target processUserState(Task task, ProcessAdditionalInfo additionalInfo) {
+		if(additionalInfo == null)
     		throw new RuntimeException("Task process details reqired to process");
-		Task task = getTask(additionalInfo);
 		if(task == null) 
     		throw new RuntimeException("Task not found with ID: "+ additionalInfo.getTaskId());
 		
     	return processEngine.processUserState(task, additionalInfo);
     }//processUserState
-    
+	
     public void endProcess(Process process, Task task, ProcessAdditionalInfo additionalInfo) {
     	processEngine.endProcess(process, task, additionalInfo);
     }//processUserState
@@ -182,11 +196,23 @@ public class TaskService {
 		return task;
 	}//populateTask
 
-	private ProcessAdditionalInfo populateAdditionalInfo(Requests requests) {
+	private ProcessAdditionalInfo populateAdditionalInfo(Task task, Requests requests) {
 		ProcessAdditionalInfo additionalInfo = new ProcessAdditionalInfo();
+		
 		additionalInfo.setProvinceCode(requests.getProvinceCode());
 		additionalInfo.setSectionCode(requests.getSectionCode());
 		additionalInfo.setSequenceRequest(requests.getSequenceRequest());
+		additionalInfo.setTaskId(task.getTaskId());
+		additionalInfo.setRequestCode(requests.getRequestCode());
+		additionalInfo.setInternalCapturer(requests.isInternalCapturer());
+		additionalInfo.setAssigneeInfoManager(requests.getAssigneeInfoManager());
+		if(!StringUtils.isEmpty(requests.getAssigneeInfoOfficer()))
+			additionalInfo.getAssigneeList().add(new Assignee("User", requests.getAssigneeInfoOfficer()));
+		if(!StringUtils.isEmpty(requests.getUserCode())) {
+			additionalInfo.setUserCode(requests.getUserCode());
+			additionalInfo.setUserName(requests.getUserName());
+			additionalInfo.setUserFullName(requests.getUserFullName());
+        }
 		return additionalInfo;
 	}//populateAdditionalInfo
 

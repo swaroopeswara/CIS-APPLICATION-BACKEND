@@ -2,6 +2,8 @@ package com.dw.ngms.cis.workflow.api;
 
 import java.util.List;
 
+import javax.persistence.Transient;
+
 import com.dw.ngms.cis.workflow.model.Assignee;
 
 import lombok.Data;
@@ -27,5 +29,8 @@ public class ProcessAdditionalInfo {
 	private String userFullName;
 	private String sequenceRequest;
 	List<Assignee> assigneeList;
+    private boolean isInternalCapturer;    
+    private String capturer;    
+    private String assigneeInfoManager;    
 	private String url;//Not required to be passed
 }

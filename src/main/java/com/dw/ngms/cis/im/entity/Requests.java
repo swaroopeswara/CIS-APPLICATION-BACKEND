@@ -184,4 +184,16 @@ public class Requests implements Serializable {
     
     @Transient
     private String sequenceRequest;
+    
+    @Transient
+    private boolean isInternalCapturer;
+    
+    @Transient
+    private String capturer;
+    
+    @Transient
+    private String assigneeInfoManager;
+    
+    @Transient
+    private String assigneeInfoOfficer;
 }
