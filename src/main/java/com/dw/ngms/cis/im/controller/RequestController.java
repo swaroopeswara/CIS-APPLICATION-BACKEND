@@ -360,8 +360,8 @@ public class RequestController extends MessageController {
             requests.setRequestItems(req);
             requests.setRequestTypeName(requests.getRequestTypeName());
             Requests requestToSave = this.requestService.saveRequest(requests);
-//            MailDTO mailDTO = new MailDTO();
-//            sendMailToCreateRequestUser(requestToSave, mailDTO);
+            MailDTO mailDTO = new MailDTO();
+            sendMailToCreateRequestUser(requestToSave, mailDTO);
             updateSavedRequests(requests, requestToSave);
             taskService.startProcess(processId, requestToSave);
 
