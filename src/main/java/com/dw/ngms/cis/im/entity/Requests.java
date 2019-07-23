@@ -177,23 +177,21 @@ public class Requests implements Serializable {
     private LapseStatus lapseStatus = LapseStatus.NONE;
 
     @Transient
-    private String processId;
-    
+    private String processId;    
     @Transient
-    private String userFullName;
-    
+    private String userFullName;    
     @Transient
-    private String sequenceRequest;
-    
+    private String sequenceRequest;    
     @Transient
-    private boolean isInternalCapturer;
-    
+    private String isInternalCapturer;    
     @Transient
-    private String capturer;
-    
+    private String capturerCode;
     @Transient
-    private String assigneeInfoManager;
-    
+    private String capturerName; 
+    @Transient
+    private String capturerFullName; 
+    @Transient
+    private String assigneeInfoManager;    
     @Transient
     private String assigneeInfoOfficer;
 }

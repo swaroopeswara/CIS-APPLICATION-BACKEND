@@ -358,17 +358,28 @@ public class RequestController extends MessageController {
                 }
             }
             requests.setRequestItems(req);
+            requests.setRequestTypeName(requests.getRequestTypeName());
             Requests requestToSave = this.requestService.saveRequest(requests);
-            MailDTO mailDTO = new MailDTO();
-            sendMailToCreateRequestUser(requestToSave, mailDTO);
-
+//            MailDTO mailDTO = new MailDTO();
+//            sendMailToCreateRequestUser(requestToSave, mailDTO);
+            updateSavedRequests(requests, requestToSave);
             taskService.startProcess(processId, requestToSave);
 
             return ResponseEntity.status(HttpStatus.OK).body(requestToSave);
         } catch (Exception exception) {
+        	System.out.println(exception.toString());
             return generateFailureResponse(request, exception);
         }
     }//createRequest
+
+	private void updateSavedRequests(Requests requests, Requests requestToSave) {
+		requestToSave.setAssigneeInfoManager(requests.getAssigneeInfoManager());
+		requestToSave.setAssigneeInfoOfficer(requests.getAssigneeInfoOfficer());
+		requestToSave.setCapturerCode(requests.getCapturerCode());
+		requestToSave.setCapturerName(requests.getCapturerName());
+		requestToSave.setCapturerFullName(requests.getCapturerFullName());
+		requestToSave.setIsInternalCapturer(requests.getIsInternalCapturer());
+	}
 
 
 

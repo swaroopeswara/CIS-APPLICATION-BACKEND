@@ -95,11 +95,12 @@ public class TaskService {
     	Task task = populateTask(requests);
     	ProcessAdditionalInfo additionalInfo = populateAdditionalInfo(task, requests);
     	processEngine.startProcess(processId, task, additionalInfo);
-    	if(additionalInfo.isInternalCapturer()) {
+    	if(additionalInfo.getIsInternalCapturer().equalsIgnoreCase("true")) {
+    		additionalInfo = updateAdditionalInfo(additionalInfo, requests);
     		additionalInfo.setTargetSequenceId(
     				processEngine.getSequenceByStateAndProcessId(
     						"Reassigned", processId).getId());
-    		this.processUserState(task, additionalInfo);
+    		this.processUserState(additionalInfo);
     	}    		
     }//startProcess
     
@@ -188,7 +189,12 @@ public class TaskService {
         task.setTaskAllOCSectionCode(requests.getSectionCode());
         task.setTaskOpenDate(new Date());        
         task.setTaskReferenceCode(requests.getRequestCode());
-        if(!StringUtils.isEmpty(requests.getUserCode())) {
+        if(requests.getIsInternalCapturer().equalsIgnoreCase("true") && 
+        		!StringUtils.isEmpty(requests.getCapturerCode())) {
+        	task.setTaskDoneUserCode(requests.getCapturerCode());
+            task.setTaskDoneUserName(requests.getCapturerName());
+            task.setTaskDoneUserFullName(requests.getCapturerFullName());
+        }else if(!StringUtils.isEmpty(requests.getUserCode())) {
         	task.setTaskDoneUserCode(requests.getUserCode());
             task.setTaskDoneUserName(requests.getUserName());
             task.setTaskDoneUserFullName(requests.getUserFullName());
@@ -202,20 +208,29 @@ public class TaskService {
 		additionalInfo.setProvinceCode(requests.getProvinceCode());
 		additionalInfo.setSectionCode(requests.getSectionCode());
 		additionalInfo.setSequenceRequest(requests.getSequenceRequest());
-		additionalInfo.setTaskId(task.getTaskId());
 		additionalInfo.setRequestCode(requests.getRequestCode());
-		additionalInfo.setInternalCapturer(requests.isInternalCapturer());
-		additionalInfo.setAssigneeInfoManager(requests.getAssigneeInfoManager());
-		if(!StringUtils.isEmpty(requests.getAssigneeInfoOfficer()))
+		additionalInfo.setIsInternalCapturer(requests.getIsInternalCapturer());
+		if(additionalInfo.getIsInternalCapturer().equalsIgnoreCase("true") && 
+				!StringUtils.isEmpty(requests.getAssigneeInfoManager())) {
+			additionalInfo.getAssigneeList().add(new Assignee("User", requests.getAssigneeInfoManager()));
+		}		
+		return additionalInfo;
+	}//populateAdditionalInfo
+
+	private ProcessAdditionalInfo updateAdditionalInfo(ProcessAdditionalInfo additionalInfo, Requests requests) {
+		additionalInfo.getAssigneeList().clear();
+		if(additionalInfo.getIsInternalCapturer().equalsIgnoreCase("true") && 
+				!StringUtils.isEmpty(requests.getAssigneeInfoOfficer())) {
 			additionalInfo.getAssigneeList().add(new Assignee("User", requests.getAssigneeInfoOfficer()));
+		}
 		if(!StringUtils.isEmpty(requests.getUserCode())) {
 			additionalInfo.setUserCode(requests.getUserCode());
 			additionalInfo.setUserName(requests.getUserName());
 			additionalInfo.setUserFullName(requests.getUserFullName());
         }
 		return additionalInfo;
-	}//populateAdditionalInfo
-
+	}//updateAdditionalInfo
+	
 	public String getTaskCurrentStatus(String requestcode) {
 		if(StringUtils.isEmpty(requestcode))
     		throw new RuntimeException("Request code is reqired");
