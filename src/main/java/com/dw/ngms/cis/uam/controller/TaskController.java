@@ -117,9 +117,10 @@ public class TaskController extends MessageController {
                                        @RequestParam(required = false) String taskAllProvinceCode,
                                        @RequestParam(required = false) String taskAllOCSectionCode,
                                        @RequestParam(required = false) String taskAllOCRoleCode,
+                                       @RequestParam(required = false) String userName,
                                        @RequestParam(required = false) String omitTaskStatus) {
 
-        return  this.taskService.findByCriteria(taskStatus,taskType,taskAllProvinceCode,taskAllOCSectionCode,taskAllOCRoleCode,omitTaskStatus);
+        return  this.taskService.findByCriteria(taskStatus,taskType,taskAllProvinceCode,taskAllOCSectionCode,taskAllOCRoleCode,userName,omitTaskStatus);
     }
 
 

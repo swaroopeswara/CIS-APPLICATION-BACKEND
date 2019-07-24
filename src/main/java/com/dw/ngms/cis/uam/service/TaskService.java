@@ -21,6 +21,7 @@ import com.dw.ngms.cis.im.entity.Requests;
 import com.dw.ngms.cis.uam.entity.InternalRole;
 import com.dw.ngms.cis.uam.entity.Task;
 import com.dw.ngms.cis.uam.entity.TaskLifeCycle;
+import com.dw.ngms.cis.uam.entity.User;
 import com.dw.ngms.cis.uam.repository.InternalRoleRepository;
 import com.dw.ngms.cis.uam.repository.TaskLifeCycleRepository;
 import com.dw.ngms.cis.uam.repository.TaskRepository;
@@ -57,7 +58,8 @@ public class TaskService {
     } //FindUserByEmail
     
     @SuppressWarnings({ "unchecked", "serial" })
-	public List<Task> findByCriteria(String taskStatus, String taskType, String taskAllProvinceCode, String taskAllOCSectionCode, String taskAllOCRoleCode,String omitTaskStatus) {
+	public List<Task> findByCriteria(String taskStatus, String taskType, String taskAllProvinceCode, String taskAllOCSectionCode, 
+			String taskAllOCRoleCode, String userName, String omitTaskStatus) {
         return this.taskRepository.findAll(new Specification<Task>() {
             @Override
             public Predicate toPredicate(Root<Task> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
@@ -78,7 +80,10 @@ public class TaskService {
 					Join<Task, InternalRole> internalRoleJoin = (Join<Task, InternalRole>) root.<Task, InternalRole>fetch("internalRoleList", JoinType.INNER);
                     predicates.add(criteriaBuilder.and(criteriaBuilder.equal(internalRoleJoin.get("internalRoleCode"), taskAllOCRoleCode)));
                 }
-
+                if (userName != null && !StringUtils.isEmpty(userName)) {               	                	
+                	Join<Task, User> userJoin = (Join<Task, User>) root.<Task, User>fetch("userList", JoinType.INNER);
+                    predicates.add(criteriaBuilder.and(criteriaBuilder.equal(userJoin.get("userName"), userName)));                   
+                }
                 if (omitTaskStatus != null && !StringUtils.isEmpty(omitTaskStatus)) {
                     predicates.add(criteriaBuilder.and(criteriaBuilder.notEqual(root.get("taskStatus"), omitTaskStatus)));
                 }
