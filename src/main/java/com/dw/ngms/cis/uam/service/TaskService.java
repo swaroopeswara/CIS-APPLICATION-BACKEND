@@ -95,7 +95,7 @@ public class TaskService {
     	Task task = populateTask(requests);
     	ProcessAdditionalInfo additionalInfo = populateAdditionalInfo(task, requests);
     	processEngine.startProcess(processId, task, additionalInfo);
-    	if(additionalInfo.getIsInternalCapturer().equalsIgnoreCase("true")) {
+    	if(additionalInfo.isInternalCapturer()) {
     		additionalInfo = updateAdditionalInfo(additionalInfo, requests);
     		additionalInfo.setTargetSequenceId(
     				processEngine.getSequenceByStateAndProcessId(
@@ -189,7 +189,7 @@ public class TaskService {
         task.setTaskAllOCSectionCode(requests.getSectionCode());
         task.setTaskOpenDate(new Date());        
         task.setTaskReferenceCode(requests.getRequestCode());
-        if(requests.getIsInternalCapturer().equalsIgnoreCase("true") && 
+        if(requests.isInternalCapturer() && 
         		!StringUtils.isEmpty(requests.getCapturerCode())) {
         	task.setTaskDoneUserCode(requests.getCapturerCode());
             task.setTaskDoneUserName(requests.getCapturerName());
@@ -209,8 +209,8 @@ public class TaskService {
 		additionalInfo.setSectionCode(requests.getSectionCode());
 		additionalInfo.setSequenceRequest(requests.getSequenceRequest());
 		additionalInfo.setRequestCode(requests.getRequestCode());
-		additionalInfo.setIsInternalCapturer(requests.getIsInternalCapturer());
-		if(additionalInfo.getIsInternalCapturer().equalsIgnoreCase("true") && 
+		additionalInfo.setInternalCapturer(requests.isInternalCapturer());
+		if(additionalInfo.isInternalCapturer() && 
 				!StringUtils.isEmpty(requests.getAssigneeInfoManager())) {
 			additionalInfo.getAssigneeList().add(new Assignee("User", requests.getAssigneeInfoManager()));
 		}		
@@ -219,7 +219,7 @@ public class TaskService {
 
 	private ProcessAdditionalInfo updateAdditionalInfo(ProcessAdditionalInfo additionalInfo, Requests requests) {
 		additionalInfo.getAssigneeList().clear();
-		if(additionalInfo.getIsInternalCapturer().equalsIgnoreCase("true") && 
+		if(additionalInfo.isInternalCapturer() && 
 				!StringUtils.isEmpty(requests.getAssigneeInfoOfficer())) {
 			additionalInfo.getAssigneeList().add(new Assignee("User", requests.getAssigneeInfoOfficer()));
 		}

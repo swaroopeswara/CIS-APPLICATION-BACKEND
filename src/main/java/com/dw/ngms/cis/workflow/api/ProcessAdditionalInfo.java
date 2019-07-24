@@ -28,7 +28,7 @@ public class ProcessAdditionalInfo {
 	private String userFullName;
 	private String sequenceRequest;
 	List<Assignee> assigneeList = new ArrayList<>();
-    private String isInternalCapturer;    
+    private boolean internalCapturer;    
     private String capturerCode;
     private String capturerName; 
     private String capturerFullName;     

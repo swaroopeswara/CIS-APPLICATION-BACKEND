@@ -367,7 +367,6 @@ public class RequestController extends MessageController {
 
             return ResponseEntity.status(HttpStatus.OK).body(requestToSave);
         } catch (Exception exception) {
-        	System.out.println(exception.toString());
             return generateFailureResponse(request, exception);
         }
     }//createRequest
@@ -378,14 +377,9 @@ public class RequestController extends MessageController {
 		requestToSave.setCapturerCode(requests.getCapturerCode());
 		requestToSave.setCapturerName(requests.getCapturerName());
 		requestToSave.setCapturerFullName(requests.getCapturerFullName());
-		requestToSave.setIsInternalCapturer(requests.getIsInternalCapturer());
-	}
-
-
-
-
-
-
+		requestToSave.setInternalCapturer(requests.isInternalCapturer());
+	}//updateSavedRequests
+	
     private void updateRequestProvinceAndSectionCodes(ProcessAdditionalInfo additionalInfo) {
         if (additionalInfo != null && additionalInfo.getRequestCode() != null) {
             Requests request = requestService.getRequestsByRequestCode(additionalInfo.getRequestCode());
