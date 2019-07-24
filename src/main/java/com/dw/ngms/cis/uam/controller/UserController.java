@@ -57,8 +57,6 @@ public class UserController extends MessageController {
     @Autowired
     private InternalUserRoleService internalUserRoleService;
 
-    @Autowired
-    private TaskService taskService;
 
     @Autowired
     private ApplicationPropertiesConfiguration applicationPropertiesConfiguration;
@@ -864,6 +862,7 @@ public class UserController extends MessageController {
         mailDTO.setMailFrom(applicationPropertiesConfiguration.getMailFrom());
         mailDTO.setMailTo("swaroopeswara@gmail.com");
         mailDTO.setModel(model);
+        System.out.println("send email test with body from : "+applicationPropertiesConfiguration.getMailFrom());
         System.out.println("send email test with body with to : "+mailDTO.getMailTo());
         sendEmail(mailDTO);
     }

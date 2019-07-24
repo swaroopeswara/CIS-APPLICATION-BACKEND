@@ -30,6 +30,8 @@ public class EmailConfig {
         mailSender.setPassword(appPropertiesService.getProperty("EMAIL_PASSWORD").getKeyValue());
 
         System.out.println("Host is "+mailSender.getHost());
+        System.out.println("EMAIL_USERNAME is "+mailSender.getUsername());
+        System.out.println("EMAIL_PASSWORD "+mailSender.getPassword());
         Properties javaMailProperties = new Properties();
         javaMailProperties.put("mail.smtp.starttls.enable", "true");
         javaMailProperties.put("mail.smtp.auth", appPropertiesService.getProperty("EMAIL_AUTH").getKeyValue());

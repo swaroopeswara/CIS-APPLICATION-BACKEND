@@ -678,51 +678,54 @@ public class RequestController extends MessageController {
             Requests requests = this.requestService.getRequestsByRequestCode(requestsParam.getRequestCode());
             if (requests.getFormatType().equalsIgnoreCase("Electronic(Email)") || requests.getFormatType().equalsIgnoreCase("Electronic(FTP)")) {
                 if (requests != null && !isEmpty(requests)) {
-                    String pathFromDB = requests.getDispatchDocs();
-                    FilePathsDTO filePath = gson.fromJson(pathFromDB, FilePathsDTO.class);
-                    System.out.println("filePath is " + filePath.getFiles().toString());
-                    List<String> files = new ArrayList<String>();
-                    for (String str1 : filePath.getFiles()) {
-                        System.out.println(str1);
-                        files.add(str1);
-                        ftpZipFiles(files, ftpClient);
-                    }
-
-                    String zipFilename = "FTPFilesDownload.zip";
-
-                    boolean loginExists = ftpLogin(ftpClient);
-                    if (loginExists) {
-                        ftpClient.changeWorkingDirectory("/ftpFileDownload/");
-                        File firstLocalFile = new File(applicationPropertiesConfiguration.getUploadDirectoryPathFTP() + zipFilename);
-                        String firstRemoteFile = zipFilename;
-                        InputStream inputStream = new FileInputStream(firstLocalFile);
-                        System.out.println("Start uploading first file");
-                        boolean done = ftpClient.storeFile(firstRemoteFile, inputStream);
-                        inputStream.close();
-                    }
-                    ftpClient.logout();
-                    String path = appPropertiesService.getProperty("FTP_UPLOAD_PATH").getKeyValue();
-                    String server =  "ftp://"+appPropertiesService.getProperty("FTP_SERVER").getKeyValue();
-
-                    String ftpFilePath = server + path + zipFilename;
-                    System.out.println("File Path is: "+ftpFilePath);
-                    MailDTO mailDTO = new MailDTO();
-
-                    // inside your getSalesUserData() method
-                    ExecutorService emailExecutor = Executors.newSingleThreadExecutor();
-                    emailExecutor.execute(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                sendMailWithFTPPAth(requests, mailDTO, ftpFilePath);
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-
+                    if(requests.getDispatchDocs()!= null) {
+                        String pathFromDB = requests.getDispatchDocs();
+                        FilePathsDTO filePath = gson.fromJson(pathFromDB, FilePathsDTO.class);
+                        System.out.println("filePath is " + filePath.getFiles().toString());
+                        List<String> files = new ArrayList<String>();
+                        for (String str1 : filePath.getFiles()) {
+                            System.out.println(str1);
+                            files.add(str1);
+                            ftpZipFiles(files, ftpClient);
                         }
-                    });
-                    emailExecutor.shutdown(); // it is very important to shutdown your non-singleton ExecutorService.
 
+                        String zipFilename = "FTPFilesDownload.zip";
+
+                        boolean loginExists = ftpLogin(ftpClient);
+                        if (loginExists) {
+                            ftpClient.changeWorkingDirectory("/ftpFileDownload/");
+                            File firstLocalFile = new File(applicationPropertiesConfiguration.getUploadDirectoryPathFTP() + zipFilename);
+                            String firstRemoteFile = zipFilename;
+                            InputStream inputStream = new FileInputStream(firstLocalFile);
+                            System.out.println("Start uploading first file");
+                            boolean done = ftpClient.storeFile(firstRemoteFile, inputStream);
+                            inputStream.close();
+                        }
+                        ftpClient.logout();
+                        String path = appPropertiesService.getProperty("FTP_UPLOAD_PATH").getKeyValue();
+                        String server = "ftp://" + appPropertiesService.getProperty("FTP_SERVER").getKeyValue();
+
+                        String ftpFilePath = server + path + zipFilename;
+                        System.out.println("File Path is: " + ftpFilePath);
+                        MailDTO mailDTO = new MailDTO();
+
+                        // inside your getSalesUserData() method
+                        ExecutorService emailExecutor = Executors.newSingleThreadExecutor();
+                        emailExecutor.execute(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    sendMailWithFTPPAth(requests, mailDTO, ftpFilePath);
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+
+                            }
+                        });
+                        emailExecutor.shutdown(); // it is very important to shutdown your non-singleton ExecutorService.
+                    }else{
+                        return ResponseEntity.status(HttpStatus.OK).body("Dispatch documents are not found");
+                    }
                 }
             }
 
