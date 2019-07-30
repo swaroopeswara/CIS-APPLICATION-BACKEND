@@ -12,7 +12,7 @@ import java.util.List;
 public interface TaskLifeCycleRepository extends JpaRepository<TaskLifeCycle, Long> {
 
 
-    @Query("SELECT u FROM TaskLifeCycle u WHERE u.taskReferenceCode = ?1")
+    @Query("SELECT u FROM TaskLifeCycle u WHERE u.taskReferenceCode = ?1 order by u.id asc")
     List<TaskLifeCycle> getTasksLifeCycleByTaskReferenceCode(String taskReferenceCode);
 
 }
