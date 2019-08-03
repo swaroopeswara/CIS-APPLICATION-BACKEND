@@ -189,10 +189,10 @@ public class TaskService {
         task.setTaskId(taskId);
         task.setTaskCode("TASK000" + Long.toString(taskId));
         task.setCreatedDate(new Date());
-        task.setUpdatedDate(new Date());
+        task.setUpdatedDate(task.getCreatedDate());
         task.setTaskAllProvinceCode(requests.getProvinceCode());
         task.setTaskAllOCSectionCode(requests.getSectionCode());
-        task.setTaskOpenDate(new Date());        
+        task.setTaskOpenDate(task.getCreatedDate());        
         task.setTaskReferenceCode(requests.getRequestCode());
         if(requests.isInternalCapturer() && 
         		!StringUtils.isEmpty(requests.getCapturerCode())) {
