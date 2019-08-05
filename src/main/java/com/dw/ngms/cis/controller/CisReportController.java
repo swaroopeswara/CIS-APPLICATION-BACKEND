@@ -63,7 +63,7 @@ public class CisReportController extends MessageController {
 
 	@PostMapping("/userProductionReport")
 	public ResponseEntity<?> generateUserProductionReport(HttpServletRequest request, @RequestBody @Valid CisReportDto cisReportDto) {
-		if(cisReportDto == null || cisReportDto.getOfficer() == null) {
+		if(cisReportDto == null) {
 			return generateEmptyResponse(request, "Officer required to generate user report");
 		}
 		String reportJrxml = reportGenerator.getRptFileDir().concat("/userProduction.jrxml");
