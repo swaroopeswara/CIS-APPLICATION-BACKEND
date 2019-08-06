@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Created with Jaspersoft Studio version 6.6.0.final using JasperReports Library version 6.6.0  -->
+<!-- Created with Jaspersoft Studio version 6.4.0.final using JasperReports Library version 6.4.1  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Blank_Letter_Landscape" pageWidth="1191" pageHeight="842" orientation="Landscape" whenNoDataType="NoDataSection" columnWidth="1151" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="8a465670-cc4a-4270-965f-8efb86e33b71">
 	<property name="template.engine" value="tabular_template"/>
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="CISDS"/>
@@ -95,7 +95,7 @@
 		<parameter name="tProvinceCode" class="java.lang.String"/>
 		<parameter name="tSectionCode" class="java.lang.String"/>
 		<queryString language="SQL">
-			<![CDATA[SELECT * FROM "V_IMREQUESTNOTIFICATIONDETAILS" WHERE REQUESTCREATEDDATE >= $P{tFromDate} AND REQUESTCREATEDDATE <= $P{tToDate} AND
+			<![CDATA[SELECT * FROM "V_IMREQUESTNOTIFICATIONDETAILS" WHERE REQUESTCREATEDDATE >= $P{tFromDate} AND TRUNC(REQUESTCREATEDDATE) <= $P{tToDate} AND
 (PROVINCECODE = NVL($P{tProvince},  PROVINCECODE) OR PROVINCECODE is null) AND 
 (SECTIONCODE = NVL($P{tSection},  SECTIONCODE) OR SECTIONCODE is null) AND 
 (USERTYPENAME = NVL($P{tUserType}, USERTYPENAME) OR USERTYPENAME is null) AND 

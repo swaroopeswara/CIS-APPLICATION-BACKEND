@@ -90,7 +90,7 @@
 		<parameter name="tUserType" class="java.lang.String"/>
 		<queryString language="SQL">
 			<![CDATA[SELECT UPDATEDDATETIME, USERCODE, USERNAME, USERTYPENAME FROM USERS_HISTORY 
-WHERE UPDATEDDATETIME >= $P{tFromDate} AND UPDATEDDATETIME <= $P{tToDate} AND 
+WHERE UPDATEDDATETIME >= $P{tFromDate} AND TRUNC(UPDATEDDATETIME) <= $P{tToDate} AND 
 ISACTIVE='D' AND USERTYPENAME = NVL($P{tUserType},  USERTYPENAME)]]>
 		</queryString>
 		<field name="UPDATEDDATETIME" class="java.sql.Timestamp">

@@ -95,7 +95,7 @@
 		<parameter name="tCategory" class="java.lang.String"/>
 		<parameter name="tOfficer" class="java.lang.String"/>
 		<queryString language="SQL">
-			<![CDATA[SELECT * FROM "V_IMREQUESTSUMMARYDETAILS" WHERE REQUESTCREATEDDATE >= $P{tFromDate} AND REQUESTCREATEDDATE <= $P{tToDate} AND
+			<![CDATA[SELECT * FROM "V_IMREQUESTSUMMARYDETAILS" WHERE REQUESTCREATEDDATE >= $P{tFromDate} AND TRUNC(REQUESTCREATEDDATE) <= $P{tToDate} AND
 (USERPROVINCENAME = NVL($P{tProvince},  USERPROVINCENAME) OR USERPROVINCENAME is null) AND 
 (SECTIONNAME = NVL($P{tSection},  SECTIONNAME) OR SECTIONNAME is null) AND 
 (SECTOR = NVL($P{tSector},  SECTOR) OR SECTOR is null) AND 
