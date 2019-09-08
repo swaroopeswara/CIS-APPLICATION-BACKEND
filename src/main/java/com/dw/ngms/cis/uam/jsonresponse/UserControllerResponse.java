@@ -24,6 +24,7 @@ public class UserControllerResponse {
 	private String practiseName;
 	private List<String> files;
 	private String file;
+	private String isLoggedIn;
     
 	public String getExists() {
 		return exists;

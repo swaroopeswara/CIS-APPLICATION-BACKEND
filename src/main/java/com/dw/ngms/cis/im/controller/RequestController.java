@@ -11,6 +11,7 @@ import com.dw.ngms.cis.im.service.RequestService;
 import com.dw.ngms.cis.uam.configuration.ApplicationPropertiesConfiguration;
 import com.dw.ngms.cis.uam.dto.FilePathsDTO;
 import com.dw.ngms.cis.uam.dto.MailDTO;
+import com.dw.ngms.cis.uam.entity.InternalUserRoles;
 import com.dw.ngms.cis.uam.entity.TaskLifeCycle;
 import com.dw.ngms.cis.uam.entity.User;
 import com.dw.ngms.cis.uam.jsonresponse.UserControllerResponse;
@@ -161,8 +162,63 @@ public class RequestController extends MessageController {
             List<Requests> requestList = new ArrayList<>();
             if (StringUtils.isEmpty(provinceCode) || "all".equalsIgnoreCase(provinceCode.trim()) && !StringUtils.isEmpty(userCode)) {
                 requestList = requestService.getRequestByUserCode(userCode);
+                for(Requests req: requestList){
+                    List<RequestItems> requestItemsList = new ArrayList<>();
+                    System.out.println("Request code is " +req.getRequestCode());
+                    List<RequestItems> requestItems = this.requestItemService.getRequestsByRequestItemCode(req.getRequestCode());
+                    if (!isEmpty(requestItems) && requestItems != null) {
+                        for (RequestItems in : requestItems) {
+                            System.out.println("Internal user roles" + in.getGazetteType1());
+                            RequestItems requestItems1 = new RequestItems();
+                            requestItems1.setCreatedDate(in.getCreatedDate());
+                            requestItems1.setQuantity(in.getQuantity());
+                            requestItems1.setRequestCode(in.getRequestCode());
+                            requestItems1.setRequestCost(in.getRequestCost());
+                            requestItems1.setRequestGazette1(in.getRequestGazette1());
+                            requestItems1.setRequestGazette2(in.getRequestGazette2());
+                            requestItems1.setRequestGazetteType(in.getRequestGazetteType());
+                            requestItems1.setRequestHours(in.getRequestHours());
+                            requestItems1.setSearchText(in.getSearchText());
+                            requestItems1.setRequestId(in.getRequestId());
+                            requestItems1.setGazetteType1(in.getGazetteType1());
+                            requestItems1.setGazetteType2(in.getGazetteType2());
+
+                            requestItemsList.add(requestItems1);
+                            req.setRequestItems(requestItemsList);
+
+                        }
+                    }
+
+                }
+
             } else if (!StringUtils.isEmpty(userCode) && !StringUtils.isEmpty(provinceCode.trim())) {
                 requestList = requestService.getRequestByUserCodeProvinceCode(userCode, provinceCode);
+                for(Requests req: requestList){
+                    List<RequestItems> requestItemsList = new ArrayList<>();
+                    List<RequestItems> requestItems = this.requestItemService.getRequestsByRequestItemCode(req.getRequestCode());
+                    if (!isEmpty(requestItems) && requestItems != null) {
+                        for (RequestItems in : requestItems) {
+                            System.out.println("Internal user roles" + in.getGazetteType1());
+                            RequestItems requestItems1 = new RequestItems();
+
+                            requestItems1.setCreatedDate(in.getCreatedDate());
+                            requestItems1.setQuantity(in.getQuantity());
+                            requestItems1.setRequestCode(in.getRequestCode());
+                            requestItems1.setRequestCost(in.getRequestCost());
+                            requestItems1.setRequestGazette1(in.getRequestGazette1());
+                            requestItems1.setRequestGazette2(in.getRequestGazette2());
+                            requestItems1.setRequestGazetteType(in.getRequestGazetteType());
+                            requestItems1.setRequestHours(in.getRequestHours());
+                            requestItems1.setSearchText(in.getSearchText());
+                            requestItems1.setRequestId(in.getRequestId());
+                            requestItems1.setGazetteType1(in.getGazetteType1());
+                            requestItems1.setGazetteType2(in.getGazetteType2());
+
+                            req.setRequestItems(requestItemsList);
+
+                        }
+                    }
+                }
             }
             return (CollectionUtils.isEmpty(requestList)) ? ResponseEntity.status(HttpStatus.OK).body(requestList)
                     : ResponseEntity.status(HttpStatus.OK).body(requestList);
@@ -361,11 +417,11 @@ public class RequestController extends MessageController {
             requests.setRequestTypeName(requests.getRequestTypeName());
             Requests requestToSave = this.requestService.saveRequest(requests);
             MailDTO mailDTO = new MailDTO();
-            sendMailToCreateRequestUser(requestToSave, mailDTO);
+            sendMailToCreateRequestUser(requests, mailDTO);
             updateSavedRequests(requests, requestToSave);
-            taskService.startProcess(processId, requestToSave);
+            taskService.startProcess(processId, requests);
 
-            return ResponseEntity.status(HttpStatus.OK).body(requestToSave);
+            return ResponseEntity.status(HttpStatus.OK).body(requests);
         } catch (Exception exception) {
             return generateFailureResponse(request, exception);
         }
@@ -1170,12 +1226,14 @@ public class RequestController extends MessageController {
             User user  = this.userService.findByUserCode(requests.getUserCode());
             if(user!=null){
                 userName = user.getFirstName() +" "+ user.getSurname();
+            }else{
+                userName = "Test User";
             }
         }
 
         Map<String, Object> model = new HashMap<String, Object>();
         model.put("firstName", userName);
-        model.put("body1", "Your request is created successfully with request code "+requests.getRequestCode());
+        model.put("body1", "Your request is created successfully with reference code: "+requests.getRequestCode());
         model.put("body2", "");
         model.put("body3", "");
         model.put("body4", "");

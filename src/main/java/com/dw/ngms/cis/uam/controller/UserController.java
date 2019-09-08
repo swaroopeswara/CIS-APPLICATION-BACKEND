@@ -44,6 +44,9 @@ public class UserController extends MessageController {
     @Autowired
     private ExternalRoleService externalRoleService;
 
+    @Autowired
+    private LoginService loginService;
+
 
     @Autowired
     private ExternalUserService externalUserService;
@@ -73,6 +76,42 @@ public class UserController extends MessageController {
             return generateFailureResponse(request, exception);
         }
     }//isADUserExists
+
+
+
+
+
+
+    @PostMapping("/adUserLoginCheck")
+    public ResponseEntity<?> adUserLoginCheck(HttpServletRequest request, @RequestBody @Valid UserDTO userDTO) {
+        Gson gson = new Gson();
+        User user = null;
+        String json = null;
+        String typeName = null;
+        UserControllerResponse userControllerResponse = new UserControllerResponse();
+        try {
+            user = this.userService.findByEmail(userDTO.getEmail());
+            System.out.println("loggedUser.getUsername()" +userDTO.getEmail());
+            if (user == null) {
+                return generateEmptyResponse(request, "User not found");
+            }
+
+            if(user.getLoggedInUser() != null && user.getLoggedInUser().equals("Y")){
+                return generateEmptyResponse(request, "User is already Logged in a different location");
+            }else{
+                //user.setLoggedInUser("Y");
+                user.setLoggedInUser("N");
+                this.userService.updatePassword(user);
+                return ResponseEntity.status(HttpStatus.OK).body("User Logged In updated successful ");
+            }
+
+        } catch (Exception exception) {
+            return generateFailureResponse(request, exception);
+        }
+    }
+
+
+
 
     @PostMapping("/submitInternalUserForApproval")
     public ResponseEntity<?> submitInternalUserForApproval(HttpServletRequest request, @RequestBody @Valid UserDTO userDto) {
@@ -648,6 +687,22 @@ public class UserController extends MessageController {
     }//getAllExternalUsers
 
 
+    @GetMapping("/sendEmailTestDRDLR")
+    public ResponseEntity<?> sendEmailTestDRDLR(HttpServletRequest request) {
+        try {
+
+            System.out.println("Inside the send email test sendEmailTestDRDLR: ");
+            MailDTO mailDTO = new MailDTO();
+            sendTestEmailDRDLR(mailDTO);
+            System.out.println("send email test done: ");
+            return ResponseEntity.status(HttpStatus.OK).body("Mail Sent Successfully");
+        } catch (Exception exception) {
+            return generateFailureResponse(request, exception);
+        }
+    }//getAllExternalUsers
+
+
+
     @RequestMapping(value = "/approveRejectUser", method = RequestMethod.POST)
     public ResponseEntity<?> approveRejectAssitant(HttpServletRequest request, @RequestBody @Valid UserDTO userDTO) throws IOException {
         try {
@@ -671,6 +726,55 @@ public class UserController extends MessageController {
     }//approveRejectAssitant
 
 
+
+  /*  @RequestMapping(value = "/logoutUser", method = RequestMethod.POST)
+    public ResponseEntity<?> logoutUser(HttpServletRequest request, @RequestBody @Valid UserDTO userDTO) throws IOException {
+        try {
+            User user = this.userService.findByUserCode(userDTO);
+            if (isEmpty(user)) {
+                return generateEmptyResponse(request, "Users not found");
+            }
+            if (!isEmpty(user)) {
+                    user.setLoggedInUser("N");
+                }
+            this.userService.updateLogoutUer(user);
+            return ResponseEntity.status(HttpStatus.OK).body("User Logged Out Successfully");
+        } catch (Exception exception) {
+            return generateFailureResponse(request, exception);
+        }
+    }//logoutUser
+*/
+
+
+    @RequestMapping(value = "/logoutUser", method = RequestMethod.POST)
+    public ResponseEntity<?> logoutUser(HttpServletRequest request, @RequestBody @Valid UpdatePasswordDTO updatePasswordDTO) throws IOException {
+        try {
+            UserControllerResponse userControllerResponse = new UserControllerResponse();
+            Gson gson = new Gson();
+            String json = null;
+
+            UserDTO userDTO = new UserDTO();
+            userDTO.setUsercode(updatePasswordDTO.getUsercode());
+            User user = this.userService.findByUserCode(userDTO);
+
+            if (isEmpty(user)) {
+                return generateEmptyResponse(request, "Users not found");
+            }
+            if (!isEmpty(user)) {
+                        user.setLoggedInUser("N");
+                    }
+            this.userService.updatePassword(user);
+
+            userControllerResponse.setMessage("User Logged out successfully");
+            json = gson.toJson(userControllerResponse);
+            return ResponseEntity.status(HttpStatus.OK).body(json);
+
+        } catch (Exception exception) {
+            return generateFailureResponse(request, exception);
+        }
+    }//updatePassword*/
+
+
     @RequestMapping(value = "/updatePassword", method = RequestMethod.POST)
     public ResponseEntity<?> updatePassword(HttpServletRequest request, @RequestBody @Valid UpdatePasswordDTO updatePasswordDTO) throws IOException {
         try {
@@ -689,6 +793,7 @@ public class UserController extends MessageController {
                     if (user.getPassword().equalsIgnoreCase(updatePasswordDTO.getOldpassword())) {
                         user.setPassword(updatePasswordDTO.getNewpassword());
                         user.setFirstLogin(updatePasswordDTO.getFirstlogin());
+                        user.setLoggedInUser("N");
                         sendPasswordChangeMailToUser(user);
                     } else {
                         userControllerResponse.setMessage("Old Password and new password do not match");
@@ -847,6 +952,22 @@ public class UserController extends MessageController {
         sendEmail(mailDTO);
 
 
+    }
+
+
+    private void sendTestEmailDRDLR(MailDTO mailDTO) throws Exception {
+        System.out.println("send email test with body: ");
+        Map<String, Object> model = new HashMap<String, Object>();
+        model.put("body1", "This is test mail to test the SMPTP. Plz ignore the mail");
+        model.put("body2", "");
+        model.put("body3", "");
+        model.put("body4", "");
+        mailDTO.setMailSubject("Test Email");
+        model.put("firstName",  "Test User ,");
+        model.put("FOOTER", "CIS ADMIN");
+        mailDTO.setMailFrom("smtp@dataworld.co.za");
+        mailDTO.setModel(model);
+        sendEmailDrdlr(mailDTO);
     }
 
     private void sendTestEmail(MailDTO mailDTO) throws Exception {

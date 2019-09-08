@@ -163,6 +163,10 @@ public class UserService {
 		return this.userRepository.save(user);
 	}//updateUserApproval
 
+	public User updateLogoutUer(User user) {
+		return this.userRepository.save(user);
+	}//updateUserApproval
+
 	public User updatePassword(User user) {
 		return this.userRepository.save(user);
 	}//updateUserApproval

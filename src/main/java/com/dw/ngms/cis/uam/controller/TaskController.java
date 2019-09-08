@@ -11,6 +11,7 @@ import com.dw.ngms.cis.uam.service.UserService;
 import com.google.gson.Gson;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +19,9 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -118,9 +122,31 @@ public class TaskController extends MessageController {
                                        @RequestParam(required = false) String taskAllOCSectionCode,
                                        @RequestParam(required = false) String taskAllOCRoleCode,
                                        @RequestParam(required = false) String userName,
-                                       @RequestParam(required = false) String omitTaskStatus) {
+                                       @RequestParam(required = false) String omitTaskStatus,
+                                       @RequestParam(required = false) String fromDate,
+                                       @RequestParam(required = false) String toDate) throws ParseException {
 
-        return  this.taskService.findByCriteria(taskStatus,taskType,taskAllProvinceCode,taskAllOCSectionCode,taskAllOCRoleCode,userName,omitTaskStatus);
+           //@RequestParam(value="fromDate") @DateTimeFormat(pattern="dd-M-yyyy") Date fromDate,
+                                       //@RequestParam(value="toDate") @DateTimeFormat(pattern="dd-M-yyyy") Date toDate) throws ParseException {
+
+
+       /* System.out.println("userName is "+userName);
+        SimpleDateFormat formatter = new SimpleDateFormat("dd-M-yyyy");
+        String formatFromDate = formatter.format(fromDate);
+        System.out.println("Format From Date String" +formatFromDate);
+        String formatToDate = formatter.format(toDate);
+        Date formatDateFrom = formatter.parse(formatFromDate);
+        System.out.println("Format From Date Date" +formatDateFrom);
+        Date formatDateTo = formatter.parse(formatToDate);
+*/
+
+        SimpleDateFormat formatter = new SimpleDateFormat("dd/MMM/yy");
+        Date fromdate = formatter.parse(fromDate);
+        System.out.println("test is" +formatter.format(fromdate));
+
+        Date todate = formatter.parse(toDate);
+        System.out.println("todate is" +formatter.format(todate));
+        return  this.taskService.findByCriteria(taskStatus,taskType,taskAllProvinceCode,taskAllOCSectionCode,taskAllOCRoleCode,userName,omitTaskStatus,fromdate,todate);
     }
 
 

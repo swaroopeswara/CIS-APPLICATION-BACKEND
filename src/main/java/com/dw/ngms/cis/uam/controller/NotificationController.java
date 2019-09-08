@@ -7,10 +7,12 @@ import com.dw.ngms.cis.uam.configuration.ApplicationPropertiesConfiguration;
 import com.dw.ngms.cis.uam.dto.FilePathsDTO;
 import com.dw.ngms.cis.uam.dto.MailDTO;
 import com.dw.ngms.cis.uam.entity.ExternalUser;
+import com.dw.ngms.cis.uam.entity.NotificationSubTypes;
 import com.dw.ngms.cis.uam.entity.Notifications;
 import com.dw.ngms.cis.uam.entity.User;
 import com.dw.ngms.cis.uam.jsonresponse.UserControllerResponse;
 import com.dw.ngms.cis.uam.service.NotificationService;
+import com.dw.ngms.cis.uam.service.NotificationSubTypesService;
 import com.dw.ngms.cis.uam.service.UserService;
 import com.dw.ngms.cis.uam.storage.StorageService;
 import com.google.gson.Gson;
@@ -57,6 +59,9 @@ public class NotificationController extends MessageController {
 
     @Autowired
     private NotificationService notificationService;
+
+    @Autowired
+    private NotificationSubTypesService notificationSubTypes;
 
     @Autowired
     private ApplicationPropertiesConfiguration applicationPropertiesConfiguration;
@@ -141,7 +146,7 @@ public class NotificationController extends MessageController {
     @GetMapping("/getNotificationSubTypes")
     public ResponseEntity<?> getNotificationSubTypes(HttpServletRequest request) {
         try {
-            List<Notifications> notificationsList = notificationService.getNotificationSubTypes();
+            List<NotificationSubTypes> notificationsList = notificationSubTypes.getNotificationSubTypes();
             return (CollectionUtils.isEmpty(notificationsList)) ? generateEmptyResponse(request, "Notification SubType(s) not found")
                     : ResponseEntity.status(HttpStatus.OK).body(notificationsList);
         } catch (Exception exception) {

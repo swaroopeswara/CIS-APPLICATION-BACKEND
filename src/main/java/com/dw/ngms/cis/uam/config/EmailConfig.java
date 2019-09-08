@@ -34,8 +34,12 @@ public class EmailConfig {
         System.out.println("EMAIL_PASSWORD "+mailSender.getPassword());
         Properties javaMailProperties = new Properties();
         javaMailProperties.put("mail.smtp.starttls.enable", "true");
+        javaMailProperties.put("mail.smtp.ssl.enable", "false");
+        javaMailProperties.put("mail.smtp.ssl.enable", "false");
+        javaMailProperties.put("mail.smtp.socketFactory.fallback", "false");
         javaMailProperties.put("mail.smtp.auth", appPropertiesService.getProperty("EMAIL_AUTH").getKeyValue());
         javaMailProperties.put("mail.transport.protocol", "smtp");
+        javaMailProperties.put("mail.default-encoding", "UTF-8");
         javaMailProperties.put("mail.debug", "true");
  
         mailSender.setJavaMailProperties(javaMailProperties);

@@ -1,3 +1,4 @@
+/*
 package com.dw.ngms.cis.ftp.impl;
 
 import java.io.File;
@@ -149,4 +150,4 @@ public class FTPFileServiceImpl implements FTPFileService {
         log.debug("Checking for connection to FTP server. Is connected: " + connected);
         return connected;
     }//isConnected
-}
+}*/

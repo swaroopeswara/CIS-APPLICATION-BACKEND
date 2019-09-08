@@ -12,6 +12,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface LoginRepository extends JpaRepository<User, Long> {
 
-    @Query("SELECT u FROM User u WHERE u.userName = :username")
+    @Query("SELECT u FROM User u WHERE upper(u.userName) = :username")
     User findByLoginName(@Param("username") String username);
 }

@@ -59,7 +59,7 @@ public class TaskService {
     
     @SuppressWarnings({ "unchecked", "serial" })
 	public List<Task> findByCriteria(String taskStatus, String taskType, String taskAllProvinceCode, String taskAllOCSectionCode, 
-			String taskAllOCRoleCode, String userName, String omitTaskStatus) {
+			String taskAllOCRoleCode, String userName, String omitTaskStatus, Date fromDate, Date toDate) {
         return this.taskRepository.findAll(new Specification<Task>() {
             @Override
             public Predicate toPredicate(Root<Task> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
@@ -87,6 +87,14 @@ public class TaskService {
                 if (omitTaskStatus != null && !StringUtils.isEmpty(omitTaskStatus)) {
                     predicates.add(criteriaBuilder.and(criteriaBuilder.notEqual(root.get("taskStatus"), omitTaskStatus)));
                 }
+
+				if (fromDate != null) {
+					predicates.add(criteriaBuilder.and(criteriaBuilder.greaterThanOrEqualTo(root.get("createdDate"), fromDate)));
+				}
+
+				if (toDate != null) {
+					predicates.add(criteriaBuilder.and(criteriaBuilder.lessThanOrEqualTo(root.get("createdDate"), toDate)));
+				}
 
                 criteriaQuery.orderBy(criteriaBuilder.desc(root.get("createdDate")));
                 return criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()]));

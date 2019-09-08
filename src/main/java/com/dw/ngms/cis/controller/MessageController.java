@@ -16,6 +16,10 @@ import java.util.Base64;
 import java.util.Map;
 import java.util.Properties;
 
+import javax.mail.Message;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
@@ -202,6 +206,11 @@ public class MessageController implements ExceptionConstants {
         this.sendEmail(mailDTO.getModel(), mailDTO.getMailTo(), mailDTO.getMailSubject());
     }//sendEmail
 
+    public void sendEmailDrdlr(MailDTO mailDTO) throws Exception {
+        this.sendEmailDrdlr(mailDTO.getModel(), mailDTO.getMailTo(), mailDTO.getMailSubject());
+    }//sendEmail
+
+
     public void sendEmail(MailDTO mailDTO, InternetAddress cc) throws Exception {
         this.sendEmailWithBCC(mailDTO.getModel(), mailDTO.getMailTo(), mailDTO.getMailSubject(),cc);
     }//sendEmail
@@ -327,7 +336,7 @@ public class MessageController implements ExceptionConstants {
     public void sendEmail(Map<String, Object> model, String mailTo, String mailSubject) throws Exception {
         MimeMessage message = sender.createMimeMessage();
         
-        MimeMessageHelper helper = new MimeMessageHelper(message);
+        MimeMessageHelper helper = new MimeMessageHelper(message,true, "utf-8");
 
         helper.setTo(mailTo);
         helper.setText(getProcessedTemplate(model), true);
@@ -335,6 +344,42 @@ public class MessageController implements ExceptionConstants {
 
         sendMailMessage(message);
     }//sendEmail
+
+
+    public void sendEmailDrdlr(Map<String, Object> model, String mailTo, String mailSubject) throws Exception {
+
+        Properties prop = new Properties();
+        prop.put("mail.smtp.host", appPropertiesService.getProperty("EMAIL_HOST").getKeyValue());
+        prop.put("mail.smtp.port", Integer.valueOf(appPropertiesService.getProperty("EMAIL_PORT").getKeyValue()));
+        prop.put("mail.smtp.starttls.enable", "true");
+        prop.put("mail.transport.protocol", "smtp");
+        prop.put("mail.debug", "true");
+
+        final String username = appPropertiesService.getProperty("EMAIL_USERNAME").getKeyValue();
+        final String password = appPropertiesService.getProperty("EMAIL_PASSWORD").getKeyValue();
+
+        Session session = Session.getInstance(prop,
+                new javax.mail.Authenticator() {
+                    protected PasswordAuthentication getPasswordAuthentication() {
+                        return new PasswordAuthentication(username, password);
+                    }
+                });
+
+        Message message = new MimeMessage(session);
+
+        message.setFrom(new InternetAddress("smtp@dataworld.co.za"));
+        message.setRecipients(
+                Message.RecipientType.TO,
+                InternetAddress.parse("swaroopeswara@gmail.com, swaroopragava23@gmail.com")
+        );
+        message.setSubject("Testing Gmail TLS");
+        message.setText("Dear Mail Crawler,"
+                + "\n\n Please do not spam my email!");
+        Transport.send(message);
+    }//sendEmail
+
+
+
 
 	private void sendMailMessage(MimeMessage message) {
 		ApplicationProperties property = appPropertiesService.getProperty("SEND_MAIL");

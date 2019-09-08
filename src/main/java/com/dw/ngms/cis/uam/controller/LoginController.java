@@ -5,6 +5,7 @@ import com.dw.ngms.cis.uam.entity.LoggedUser;
 import com.dw.ngms.cis.uam.entity.User;
 import com.dw.ngms.cis.uam.jsonresponse.UserControllerResponse;
 import com.dw.ngms.cis.uam.service.LoginService;
+import com.dw.ngms.cis.uam.service.UserService;
 import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,6 +28,9 @@ public class LoginController extends MessageController {
     @Autowired
     private LoginService loginService;
 
+    @Autowired
+    private UserService userService;
+
     @PostMapping("/login")
     public ResponseEntity<?> authenticateLoginUser(HttpServletRequest request, @RequestBody @Valid LoggedUser loggedUser) {
         Gson gson = new Gson();
@@ -35,11 +39,25 @@ public class LoginController extends MessageController {
         String typeName = null;
         UserControllerResponse userControllerResponse = new UserControllerResponse();
         try {
-            user = this.loginService.findByLoginName(loggedUser.getUsername());
-            System.out.println("loggedUser.getUsername()" +loggedUser.getUsername());
+
+            if(loggedUser.getUsername()!= null){
+                user = this.loginService.findByLoginName(loggedUser.getUsername().toUpperCase());
+                System.out.println("loggedUser.getUsername()" +loggedUser.getUsername().toUpperCase());
+            }
+
             if (user == null) {
                 return generateEmptyResponse(request, "User not found");
             }
+
+            if(user.getLoggedInUser() != null && user.getLoggedInUser().equals("Y")){
+                return generateEmptyResponse(request, "User is already Logged in a different location");
+            }else{
+                //user.setLoggedInUser("Y");
+                user.setLoggedInUser("N");
+                this.userService.updatePassword(user);
+            }
+
+
             if (loggedUser.getInternal().equalsIgnoreCase("YES")) {
                 typeName = "Internal";
             } else {

@@ -20,6 +20,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
+import com.dw.ngms.cis.uam.entity.User;
 import com.dw.ngms.cis.uam.enums.LapseStatus;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
@@ -41,8 +42,6 @@ public class Requests implements Serializable {
 
 	@Id
     @Column(name = "REQUESTID")
-    @SequenceGenerator(name = "generator", sequenceName = "REQUESTS_SEQ", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "generator")
     private Long requestId;
 
     @OneToMany(mappedBy="requestItems",fetch = FetchType.EAGER, cascade = CascadeType.ALL)
@@ -194,4 +193,31 @@ public class Requests implements Serializable {
     private String assigneeInfoManager;    
     @Transient
     private String assigneeInfoOfficer;
+
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((requestId == null) ? 0 : requestId.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Requests other = (Requests) obj;
+        if (requestId == null) {
+            if (other.requestId != null)
+                return false;
+        } else if (!requestId.equals(other.requestId))
+            return false;
+        return true;
+    }
+
 }

@@ -125,6 +125,9 @@ public class User implements Serializable {
     @Column(name = "FIRSTLOGIN",nullable = true, length = 1)
     private String firstLogin;
 
+    @Column(name = "LOGGEDINUSER", length = 1, nullable = false)
+    private String loggedInUser;
+
     @JsonIgnore
     @ManyToMany(mappedBy = "userList", fetch=FetchType.LAZY)
     private List<Task> taskList = new ArrayList<Task>(); 
