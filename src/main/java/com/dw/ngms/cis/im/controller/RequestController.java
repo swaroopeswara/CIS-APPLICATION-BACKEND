@@ -1123,6 +1123,9 @@ public class RequestController extends MessageController {
                         requests1.setPaymentStatus("PAID");
                     }
                     requestService.saveRequest(requests1);
+                    //send notification
+                    uploadUserPaymentConfirmationNotification(requests1);
+                    
                     return ResponseEntity.status(HttpStatus.OK).body(message);
 
                 } else {
@@ -1219,34 +1222,49 @@ public class RequestController extends MessageController {
         }
     }//zipFiles
 
+    private void uploadUserPaymentConfirmationNotification(Requests requests) throws Exception {
+        try {
+	    	String userName = "";
+	        if(requests.getUserCode()!= null){
+	            User user  = this.userService.findByUserCode(requests.getUserCode());
+	            userName = (user!=null) ? user.getFirstName() +" "+ user.getSurname() : "";
+	        }
+	        String subject = "Upload user payment confirmation";
+	        String body = "Upload user payment confirmation processed successfully, reference code: "+requests.getRequestCode();
+	        
+	        sendMail(requests, new MailDTO(), userName, subject, body);
+        }catch (Exception e) {
+        	log.error("Failed to send upload user payment confirmation notification, "+e.getMessage());
+        	throw e;
+        }
+    }//uploadUserPaymentConfirmationNotification
 
     private void sendMailToCreateRequestUser(@RequestBody @Valid Requests requests, MailDTO mailDTO) throws Exception {
         String userName = null;
         if(requests.getUserCode()!= null){
             User user  = this.userService.findByUserCode(requests.getUserCode());
-            if(user!=null){
-                userName = user.getFirstName() +" "+ user.getSurname();
-            }else{
-                userName = "Test User";
-            }
+            userName = (user!=null) ? user.getFirstName() +" "+ user.getSurname() : "Test User";
         }
+        String subject = "Create Request";
+        String body = "Your request is created successfully with reference code: "+requests.getRequestCode();
+        
+        sendMail(requests, mailDTO, userName, subject, body);
+    }//sendMailToCreateRequestUser
 
-        Map<String, Object> model = new HashMap<String, Object>();
+	private void sendMail(Requests requests, MailDTO mailDTO, String userName, String subject, String body) throws Exception {
+		Map<String, Object> model = new HashMap<String, Object>();
         model.put("firstName", userName);
-        model.put("body1", "Your request is created successfully with reference code: "+requests.getRequestCode());
+        model.put("body1", body);
         model.put("body2", "");
         model.put("body3", "");
         model.put("body4", "");
-        mailDTO.setMailSubject("Create Request");
+        mailDTO.setMailSubject(subject);
         model.put("FOOTER", "CIS ADMIN");
         mailDTO.setMailFrom(applicationPropertiesConfiguration.getMailFrom());
         mailDTO.setMailTo(requests.getEmail());
         mailDTO.setModel(model);
         sendEmail(mailDTO);
-
-
-    }
-
+	}//sendMail
 
     protected static void showServerReply(FTPClient ftpClient) {
         String[] replies = ftpClient.getReplyStrings();

@@ -20,11 +20,12 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.format.annotation.DateTimeFormat;
 
 /**
  * Created by swaroop on 2019/04/06.
@@ -94,10 +95,12 @@ public class Task implements Serializable {
     @Column(name = "TASKDONEUSERFULLNAME", length = 125)
     private String taskDoneUserFullName;
     
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "CREATEDDATE", nullable = true)
     private Date createdDate = new Date();
     
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "UPDATEDDATE", nullable = true)
     private Date updatedDate = new Date();
