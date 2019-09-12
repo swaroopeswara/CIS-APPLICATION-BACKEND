@@ -96,8 +96,14 @@ public class CostSubService {
 
     public List<CostSubCategories> getSubCostCategoriesByCostCategoryCode(String costCategoryCode) {
         return this.costSubRepository.getSubCostCategoriesByCostCategoryCode(costCategoryCode);
-
-
     }
+
+    public List<CostSubCategories> getCostOfCategory(String costSubCategoryName) {
+        return this.costSubRepository.getCostOfCategory(costSubCategoryName);
+    }
+
+
+
+
 
 }

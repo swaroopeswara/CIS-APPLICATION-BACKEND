@@ -73,6 +73,20 @@ public class CostSubCategoryController extends MessageController {
     }//updateInternalUser
 
 
+    @GetMapping("/getCostOfCategory")
+    public ResponseEntity<?> getCostOfCategory(HttpServletRequest request,
+                                                                    @RequestParam String costSubCategoryName) {
+        try {
+            List<CostSubCategories> costOfCategoriesList = costSubService.getCostOfCategory(costSubCategoryName);
+            return (CollectionUtils.isEmpty(costOfCategoriesList)) ? generateEmptyResponse(request, "Cost Of Category(s) not found")
+                    : ResponseEntity.status(HttpStatus.OK).body(costOfCategoriesList);
+        } catch (Exception exception) {
+            return generateFailureResponse(request, exception);
+        }
+    }//getCostOfCategory
+
+
+
 
     @RequestMapping(value = "/deactivateSubCategory", method = RequestMethod.POST)
     public ResponseEntity<?> deactivateSubCategory(HttpServletRequest request, @RequestBody @Valid CostSubCategories costSubCategories) throws IOException {
