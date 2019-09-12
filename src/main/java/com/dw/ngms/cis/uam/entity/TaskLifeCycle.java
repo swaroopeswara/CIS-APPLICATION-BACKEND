@@ -80,6 +80,9 @@ public class TaskLifeCycle implements Serializable {
     @Column(name = "TASKDONEUSERFULLNAME", length = 125)
     private String taskDoneUserFullName;
     
+    @Column(name = "INITIATEDUSER", length = 255)
+    private String initiatedUser;
+    
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "CREATEDDATE", nullable = true)
     private Date createdDate = new Date();

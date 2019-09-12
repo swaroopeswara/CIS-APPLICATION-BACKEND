@@ -207,10 +207,12 @@ public class TaskService {
         	task.setTaskDoneUserCode(requests.getCapturerCode());
             task.setTaskDoneUserName(requests.getCapturerName());
             task.setTaskDoneUserFullName(requests.getCapturerFullName());
+            task.setInitiatedUser(requests.getCapturerName());
         }else if(!StringUtils.isEmpty(requests.getUserCode())) {
         	task.setTaskDoneUserCode(requests.getUserCode());
             task.setTaskDoneUserName(requests.getUserName());
             task.setTaskDoneUserFullName(requests.getUserFullName());
+            task.setInitiatedUser(requests.getUserName());
         }
 		return task;
 	}//populateTask

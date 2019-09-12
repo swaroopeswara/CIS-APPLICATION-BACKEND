@@ -185,7 +185,6 @@ public class ProcessEngineImpl implements ProcessEngine<Task>{
 	
 	private void addLifeCycleEntry(Task task, ProcessAdditionalInfo additionalInfo) {
 		TaskLifeCycle lifeCycleEntity = new TaskLifeCycle();
-//		BeanUtilsBean.getInstance().getConvertUtils().register(false, false, 0);
 		BeanUtils.copyProperties(task, lifeCycleEntity, "createdDate");
 		lifeCycleRepository.saveAndFlush(lifeCycleEntity);
 	}//addLifeCycleEntry
