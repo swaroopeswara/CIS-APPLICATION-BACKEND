@@ -98,6 +98,9 @@ public class Task implements Serializable {
     @Column(name = "INITIATEDUSER", length = 255)
     private String initiatedUser;
     
+    @Column(name = "ASSIGNEDUSER", length = 255)
+    private String assignedUser;
+    
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "CREATEDDATE", nullable = true)

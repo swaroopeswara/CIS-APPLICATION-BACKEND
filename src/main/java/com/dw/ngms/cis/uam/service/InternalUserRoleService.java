@@ -83,8 +83,8 @@ public class InternalUserRoleService {
 
 
 
-    public List<InternalUserRoles>getInternalUserName(String provinceCode,String sectionCode,String roleCode){
-        return this.internalUserRoleRepository.getInternalUserName(provinceCode,sectionCode,roleCode);
+    public List<InternalUserRoles> getInternalUserRoles(String provinceCode,String sectionCode,String roleCode){
+        return this.internalUserRoleRepository.getInternalUserRoles(provinceCode,sectionCode,roleCode);
     }
 
 

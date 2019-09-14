@@ -295,7 +295,7 @@ public class InternalUserRoleController extends MessageController {
         String mailResponse = null;
         String userCode = null;
         Map<String, Object> model = new HashMap<String, Object>();
-        List<InternalUserRoles> userRolesList = this.internalUserRoleService.getInternalUserName(task.getTaskAllProvinceCode(),task.getTaskAllOCSectionCode(),task.getTaskAllOCRoleCode());
+        List<InternalUserRoles> userRolesList = this.internalUserRoleService.getInternalUserRoles(task.getTaskAllProvinceCode(),task.getTaskAllOCSectionCode(),task.getTaskAllOCRoleCode());
         for(InternalUserRoles user: userRolesList){
             System.out.println("user code are " +user.getUserCode());
         }

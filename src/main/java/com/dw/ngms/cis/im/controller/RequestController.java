@@ -615,7 +615,33 @@ public class RequestController extends MessageController {
                 .body(resource);
     }
 
+    @RequestMapping(value = "/downloadPop", method = RequestMethod.POST)
+    public ResponseEntity<ByteArrayResource> downloadPop(HttpServletRequest request,
+                                                             @RequestBody @Valid Requests requests) throws IOException {
 
+        Requests ir = requestService.getRequestsByRequestCode(requests.getRequestCode());
+        System.out.println("Internal User Roles one " + ir.getPopFilePath());
+        int index = ir.getPopFilePath().lastIndexOf("/");
+        String fileName = ir.getPopFilePath().substring(index + 1);
+        System.out.println("File Name is " + fileName);
+        File file = new File(ir.getPopFilePath());
+
+        HttpHeaders header = new HttpHeaders();
+        header.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + file.getName());
+        header.add("Cache-Control", "no-cache, no-store, must-revalidate");
+        header.add("Pragma", "no-cache");
+        header.add("Expires", "0");
+
+        Path path = Paths.get(file.getAbsolutePath());
+        ByteArrayResource resource = new ByteArrayResource(Files.readAllBytes(path));
+
+        return ResponseEntity.ok()
+                .headers(header)
+                .contentLength(file.length())
+                .contentType(MediaType.parseMediaType("application/octet-stream"))
+                .body(resource);
+    }//downloadPop
+    
     @PostMapping("/uploadDispatchDocument")
     public ResponseEntity<?> uploadDispatchDocument(HttpServletRequest request, @RequestParam MultipartFile[] multipleFiles,
                                                     @RequestParam("requestCode") String requestCode
@@ -1116,8 +1142,8 @@ public class RequestController extends MessageController {
                 if (requests != null) {
                     String fileName = testService.store(file);
                     files.add(file.getOriginalFilename());
-                    requests.setInvoiceFilePath(applicationPropertiesConfiguration.getUploadDirectoryPath() + fileName);
-                    message = "You successfully uploaded " + requests.getInvoiceFilePath() + "!";
+                    requests.setPopFilePath(applicationPropertiesConfiguration.getUploadDirectoryPath() + fileName);
+                    message = "You successfully uploaded " + requests.getPopFilePath() + "!";
                     Requests requests1 = requestService.saveRequest(requests);
                     if (requests1 != null) {
                         requests1.setPaymentStatus("PAID");
@@ -1232,14 +1258,24 @@ public class RequestController extends MessageController {
 	        String subject = "Upload user payment confirmation";
 	        String body = "Upload user payment confirmation processed successfully, reference code: "+requests.getRequestCode();
 	        
-	        sendMail(requests, new MailDTO(), userName, subject, body);
+	        String email = getInvoiceGeneratedUserEmail(requests);
+	        
+	        if(email == null || email.trim().length() == 0) throw new Exception("Failed to get invoice generated user email");
+	        
+	        sendMail(requests, new MailDTO(), userName, subject, body, email);
         }catch (Exception e) {
         	log.error("Failed to send upload user payment confirmation notification, "+e.getMessage());
         	throw e;
         }
     }//uploadUserPaymentConfirmationNotification
 
-    private void sendMailToCreateRequestUser(@RequestBody @Valid Requests requests, MailDTO mailDTO) throws Exception {
+    private String getInvoiceGeneratedUserEmail(Requests requests) {
+    	List<TaskLifeCycle> taskLifeCycles = taskService.getTasksLifeCycleByTaskReferenceCode(requests.getRequestCode());
+    	TaskLifeCycle taskLifeCycle = taskLifeCycles.stream().filter(t -> "GenerateInvoice".equals(t.getTaskStatus())).findAny().get();
+		return (taskLifeCycle != null) ? taskLifeCycle.getTaskDoneUserName() : null;
+	}//getInvoiceGeneratedUserEmail
+
+	private void sendMailToCreateRequestUser(@RequestBody @Valid Requests requests, MailDTO mailDTO) throws Exception {
         String userName = null;
         if(requests.getUserCode()!= null){
             User user  = this.userService.findByUserCode(requests.getUserCode());
@@ -1248,10 +1284,10 @@ public class RequestController extends MessageController {
         String subject = "Create Request";
         String body = "Your request is created successfully with reference code: "+requests.getRequestCode();
         
-        sendMail(requests, mailDTO, userName, subject, body);
+        sendMail(requests, mailDTO, userName, subject, body, requests.getEmail());
     }//sendMailToCreateRequestUser
 
-	private void sendMail(Requests requests, MailDTO mailDTO, String userName, String subject, String body) throws Exception {
+	private void sendMail(Requests requests, MailDTO mailDTO, String userName, String subject, String body, String email) throws Exception {
 		Map<String, Object> model = new HashMap<String, Object>();
         model.put("firstName", userName);
         model.put("body1", body);
@@ -1261,7 +1297,7 @@ public class RequestController extends MessageController {
         mailDTO.setMailSubject(subject);
         model.put("FOOTER", "CIS ADMIN");
         mailDTO.setMailFrom(applicationPropertiesConfiguration.getMailFrom());
-        mailDTO.setMailTo(requests.getEmail());
+        mailDTO.setMailTo(email);
         mailDTO.setModel(model);
         sendEmail(mailDTO);
 	}//sendMail

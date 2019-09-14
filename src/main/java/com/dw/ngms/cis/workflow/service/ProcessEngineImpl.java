@@ -19,9 +19,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import com.dw.ngms.cis.uam.entity.InternalRole;
+import com.dw.ngms.cis.uam.entity.InternalUserRoles;
 import com.dw.ngms.cis.uam.entity.Task;
 import com.dw.ngms.cis.uam.entity.TaskLifeCycle;
 import com.dw.ngms.cis.uam.entity.User;
+import com.dw.ngms.cis.uam.repository.InternalUserRoleRepository;
 import com.dw.ngms.cis.uam.repository.TaskLifeCycleRepository;
 import com.dw.ngms.cis.uam.repository.TaskRepository;
 import com.dw.ngms.cis.uam.repository.UserRepository;
@@ -49,6 +51,8 @@ public class ProcessEngineImpl implements ProcessEngine<Task>{
 	@Autowired
 	private TaskRepository taskRepository;
 	@Autowired
+	private InternalUserRoleRepository internalUserRoleRepository;
+	@Autowired
 	private TaskLifeCycleRepository lifeCycleRepository;
 	@Autowired
 	private InternalRoleService internalRoleService;	
@@ -70,7 +74,8 @@ public class ProcessEngineImpl implements ProcessEngine<Task>{
 		if(targetSequence != null) {
 			task.setTaskStatus(targetSequence.getState());
 			updateRoleAndUserAssociations(task, additionalInfo, targetSequence);
-		}		
+		}
+		updateAssignedUser(task);
 		taskRepository.save(task);
 		addLifeCycleEntry(task, additionalInfo);
 	}//startProcess
@@ -111,6 +116,7 @@ public class ProcessEngineImpl implements ProcessEngine<Task>{
 //			validateDependancy(task, targetSequence, additionalInfo.getUrl());
 			updateRoleAndUserAssociations(task, additionalInfo, targetSequence);
 		}
+		updateAssignedUser(task);
 		taskRepository.save(task);
 		addLifeCycleEntry(task, additionalInfo);
 		return getTargetByIdAndProcessId(additionalInfo.getTargetSequenceId(), task.getTaskType());
@@ -182,6 +188,36 @@ public class ProcessEngineImpl implements ProcessEngine<Task>{
 		}
 		return process.getSequenceFlowByState(state);
 	}//getSequenceByStateAndProcessId
+	
+	private void updateAssignedUser(Task task) {
+		if(task == null) return;
+		
+		String assignedUser = null;
+		
+		if(!CollectionUtils.isEmpty(task.getUserList())){
+			assignedUser = task.getUserList().get(0).getUserName();
+		}
+		
+		if(StringUtils.isEmpty(assignedUser) && !CollectionUtils.isEmpty(task.getInternalRoleList())){
+			
+			String roleCode = task.getTaskAllOCRoleCode();
+			
+			if(StringUtils.isEmpty(roleCode)) {
+				InternalRole role = task.getInternalRoleList().get(0);
+				roleCode = role.getRoleCode();
+			}
+			
+	        List<InternalUserRoles> userRolesList = internalUserRoleRepository.
+	        	getInternalUserRoles(task.getTaskAllProvinceCode(),task.getTaskAllOCSectionCode(),roleCode);
+	        
+	        if(!CollectionUtils.isEmpty(userRolesList))
+	        	assignedUser = userRolesList.get(0).getUserName();
+	        
+		}
+		
+		if(!StringUtils.isEmpty(assignedUser))
+			task.setAssignedUser(assignedUser);
+	}//updateAssignedUser
 	
 	private void addLifeCycleEntry(Task task, ProcessAdditionalInfo additionalInfo) {
 		TaskLifeCycle lifeCycleEntity = new TaskLifeCycle();
@@ -272,14 +308,20 @@ public class ProcessEngineImpl implements ProcessEngine<Task>{
 				task.setTaskDoneUserCode(additionalInfo.getUserCode());
 			if(!StringUtils.isEmpty(additionalInfo.getUserName()))
 				task.setTaskDoneUserName(additionalInfo.getUserName());
-			if(!StringUtils.isEmpty(additionalInfo.getUserFullName()))
-				task.setTaskDoneUserFullName(additionalInfo.getUserFullName());
+			String taskDoneUserFullName = getUserFullName(additionalInfo.getUserName());					
+			task.setTaskDoneUserFullName(taskDoneUserFullName);
 		}
 		task.setUpdatedDate(new Date());
 		if("Closed".equalsIgnoreCase(task.getTaskCode())) {
 			task.setTaskCloseDate(new Date());
 		}
 	}//updateTaskDetails
+
+	private String getUserFullName(String userName) {
+		if(StringUtils.isEmpty(userName)) return null;
+		User user = userRepository.findByLoginName(userName);		
+		return (user != null) ? user.getFirstName()+" "+user.getSurname(): null;
+	}//getUserFullName
 
 	private void clearRoleAndUserAssociations(Task task) {
 		if(task == null) return;
