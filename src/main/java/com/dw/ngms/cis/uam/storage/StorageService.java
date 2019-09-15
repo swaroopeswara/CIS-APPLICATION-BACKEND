@@ -34,7 +34,7 @@ public class StorageService {
 		String fileNameWithPdf = null;
 		String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
 		try {
-			System.out.println("File name is "+file.getName());
+			System.out.println("File name is "+file.getOriginalFilename());
 			 fileName = file.getOriginalFilename();
 			if (fileName.indexOf(".") > 0)
 				fileName = fileName.substring(0, fileName.lastIndexOf("."));

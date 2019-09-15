@@ -1,31 +1,35 @@
 package com.dw.ngms.cis.im.controller;
 
 
-import com.dw.ngms.cis.controller.MessageController;
-import com.dw.ngms.cis.im.dto.InvoiceDTO;
-import com.dw.ngms.cis.im.entity.RequestItems;
-import com.dw.ngms.cis.im.entity.Requests;
-import com.dw.ngms.cis.im.service.ApplicationPropertiesService;
-import com.dw.ngms.cis.im.service.RequestItemService;
-import com.dw.ngms.cis.im.service.RequestService;
-import com.dw.ngms.cis.uam.configuration.ApplicationPropertiesConfiguration;
-import com.dw.ngms.cis.uam.dto.FilePathsDTO;
-import com.dw.ngms.cis.uam.dto.MailDTO;
-import com.dw.ngms.cis.uam.entity.InternalUserRoles;
-import com.dw.ngms.cis.uam.entity.TaskLifeCycle;
-import com.dw.ngms.cis.uam.entity.User;
-import com.dw.ngms.cis.uam.jsonresponse.UserControllerResponse;
-import com.dw.ngms.cis.uam.service.ProvinceService;
-import com.dw.ngms.cis.uam.service.TaskService;
-import com.dw.ngms.cis.uam.service.UserService;
-import com.dw.ngms.cis.uam.storage.StorageService;
-import com.dw.ngms.cis.workflow.api.ProcessAdditionalInfo;
-import com.dw.ngms.cis.workflow.model.Target;
-import com.google.gson.Gson;
-import com.itextpdf.text.pdf.AcroFields;
-import com.itextpdf.text.pdf.PdfReader;
-import com.itextpdf.text.pdf.PdfStamper;
-import lombok.extern.slf4j.Slf4j;
+import static org.springframework.util.StringUtils.isEmpty;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URLConnection;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPReply;
@@ -40,25 +44,41 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
-import java.io.*;
-import java.net.URLConnection;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
+import com.dw.ngms.cis.controller.MessageController;
+import com.dw.ngms.cis.im.dto.InvoiceDTO;
+import com.dw.ngms.cis.im.entity.RequestItems;
+import com.dw.ngms.cis.im.entity.Requests;
+import com.dw.ngms.cis.im.service.ApplicationPropertiesService;
+import com.dw.ngms.cis.im.service.RequestItemService;
+import com.dw.ngms.cis.im.service.RequestService;
+import com.dw.ngms.cis.uam.configuration.ApplicationPropertiesConfiguration;
+import com.dw.ngms.cis.uam.dto.FilePathsDTO;
+import com.dw.ngms.cis.uam.dto.MailDTO;
+import com.dw.ngms.cis.uam.entity.TaskLifeCycle;
+import com.dw.ngms.cis.uam.entity.User;
+import com.dw.ngms.cis.uam.jsonresponse.UserControllerResponse;
+import com.dw.ngms.cis.uam.service.ProvinceService;
+import com.dw.ngms.cis.uam.service.TaskService;
+import com.dw.ngms.cis.uam.service.UserService;
+import com.dw.ngms.cis.uam.storage.StorageService;
+import com.dw.ngms.cis.workflow.api.ProcessAdditionalInfo;
+import com.dw.ngms.cis.workflow.model.Target;
+import com.google.gson.Gson;
+import com.itextpdf.text.pdf.AcroFields;
+import com.itextpdf.text.pdf.PdfReader;
+import com.itextpdf.text.pdf.PdfStamper;
 
-import static org.springframework.util.StringUtils.isEmpty;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Created by swaroop on 2019/04/19.
@@ -356,8 +376,8 @@ public class RequestController extends MessageController {
                 if (requests != null) {
                     String fileName = testService.store(file);
                     files.add(file.getOriginalFilename());
-                    requests.setInvoiceFilePath(applicationPropertiesConfiguration.getUploadDirectoryPath() + fileName);
-                    message = "You successfully uploaded " + requests.getInvoiceFilePath() + "!";
+                    requests.setPopFilePath(applicationPropertiesConfiguration.getUploadDirectoryPath() + fileName);
+                    message = "You successfully uploaded " + requests.getPopFilePath() + "!";
                     Requests requests1 = requestService.saveRequest(requests);
                     if (requests1 != null) {
                         requests1.setPaymentStatus("PAID");
@@ -373,9 +393,12 @@ public class RequestController extends MessageController {
                     processAdditionalInfo.setUserName(userName);
                     processAdditionalInfo.setUrl(url);
 
-
+                    //process workflow
                     processUserState(request, processAdditionalInfo);
 
+                    //send notification
+                    uploadUserPaymentConfirmationNotification(requests1);
+                    
                     return ResponseEntity.status(HttpStatus.OK).body(message);
 
                 } else {
@@ -615,11 +638,11 @@ public class RequestController extends MessageController {
                 .body(resource);
     }
 
-    @RequestMapping(value = "/downloadPop", method = RequestMethod.POST)
+    @RequestMapping(value = "/downloadPop", method = RequestMethod.GET)
     public ResponseEntity<ByteArrayResource> downloadPop(HttpServletRequest request,
-                                                             @RequestBody @Valid Requests requests) throws IOException {
+            @RequestParam @Valid String requestCode) throws IOException {
 
-        Requests ir = requestService.getRequestsByRequestCode(requests.getRequestCode());
+        Requests ir = requestService.getRequestsByRequestCode(requestCode);
         System.out.println("Internal User Roles one " + ir.getPopFilePath());
         int index = ir.getPopFilePath().lastIndexOf("/");
         String fileName = ir.getPopFilePath().substring(index + 1);
@@ -1248,7 +1271,7 @@ public class RequestController extends MessageController {
         }
     }//zipFiles
 
-    private void uploadUserPaymentConfirmationNotification(Requests requests) throws Exception {
+    private void uploadUserPaymentConfirmationNotification(Requests requests) {
         try {
 	    	String userName = "";
 	        if(requests.getUserCode()!= null){
@@ -1260,19 +1283,24 @@ public class RequestController extends MessageController {
 	        
 	        String email = getInvoiceGeneratedUserEmail(requests);
 	        
-	        if(email == null || email.trim().length() == 0) throw new Exception("Failed to get invoice generated user email");
-	        
-	        sendMail(requests, new MailDTO(), userName, subject, body, email);
+	        if(StringUtils.isEmpty(email)) 
+	        	log.warn("Could not find invoice generated user email, No payment confirmation mail sent");
+	        else
+	        	sendMail(requests, new MailDTO(), userName, subject, body, email);
         }catch (Exception e) {
         	log.error("Failed to send upload user payment confirmation notification, "+e.getMessage());
-        	throw e;
         }
     }//uploadUserPaymentConfirmationNotification
 
     private String getInvoiceGeneratedUserEmail(Requests requests) {
     	List<TaskLifeCycle> taskLifeCycles = taskService.getTasksLifeCycleByTaskReferenceCode(requests.getRequestCode());
-    	TaskLifeCycle taskLifeCycle = taskLifeCycles.stream().filter(t -> "GenerateInvoice".equals(t.getTaskStatus())).findAny().get();
-		return (taskLifeCycle != null) ? taskLifeCycle.getTaskDoneUserName() : null;
+    	if(CollectionUtils.isEmpty(taskLifeCycles)) return null;
+    	for(TaskLifeCycle taskLifeCycle: taskLifeCycles) {
+    		if("GenerateInvoice".equals(taskLifeCycle.getTaskStatus())) {
+    			return taskLifeCycle.getTaskDoneUserName();
+    		}
+    	}
+		return null;
 	}//getInvoiceGeneratedUserEmail
 
 	private void sendMailToCreateRequestUser(@RequestBody @Valid Requests requests, MailDTO mailDTO) throws Exception {
