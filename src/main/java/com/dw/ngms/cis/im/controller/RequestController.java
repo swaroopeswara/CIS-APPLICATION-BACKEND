@@ -638,11 +638,11 @@ public class RequestController extends MessageController {
                 .body(resource);
     }
 
-    @RequestMapping(value = "/downloadPop", method = RequestMethod.GET)
+    @RequestMapping(value = "/downloadPop", method = RequestMethod.POST)
     public ResponseEntity<ByteArrayResource> downloadPop(HttpServletRequest request,
-            @RequestParam @Valid String requestCode) throws IOException {
+    		@RequestBody @Valid Requests requests) throws IOException {
 
-        Requests ir = requestService.getRequestsByRequestCode(requestCode);
+        Requests ir = requestService.getRequestsByRequestCode(requests.getRequestCode());
         System.out.println("Internal User Roles one " + ir.getPopFilePath());
         int index = ir.getPopFilePath().lastIndexOf("/");
         String fileName = ir.getPopFilePath().substring(index + 1);
