@@ -23,7 +23,7 @@ public class CostCategories {
     @Id
     @Column(name = "COSTCATEGORYID")
 //    @SequenceGenerator(name = "generator", sequenceName = "COSTCATEGORY_SEQ", allocationSize = 1)
-//    @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "generator")
+    @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "generator")
     private Long costCategoryId;
 
     @OneToMany(mappedBy="subCategoriesItems",fetch = FetchType.EAGER, cascade = CascadeType.ALL)
