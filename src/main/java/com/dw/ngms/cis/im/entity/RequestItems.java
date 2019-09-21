@@ -81,6 +81,14 @@ public class RequestItems implements Serializable {
     @Column(name = "RESULTJSON", length = 2000)
     private String resultJson;
 
+    @Column(name = "FTPSITEURL", length = 200)
+    private String ftpSiteUrl;
+
+    @Column(name = "FTPSITEURLJSON", length = 200)
+    private String ftpSiteUrlJson;
+
+
+
     /*@ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     @JoinColumn(name="REQUESTID", nullable=false)
     @JsonBackReference*/

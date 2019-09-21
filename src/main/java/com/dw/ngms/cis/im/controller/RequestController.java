@@ -440,7 +440,19 @@ public class RequestController extends MessageController {
             requests.setRequestTypeName(requests.getRequestTypeName());
             Requests requestToSave = this.requestService.saveRequest(requests);
             MailDTO mailDTO = new MailDTO();
-            sendMailToCreateRequestUser(requests, mailDTO);
+            ExecutorService emailExecutor = Executors.newSingleThreadExecutor();
+            emailExecutor.execute(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        sendMailToCreateRequestUser(requests, mailDTO);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            });
+            emailExecutor.shutdown(); // it is very important to shutdown your non-singleton ExecutorService.
             updateSavedRequests(requests, requestToSave);
             taskService.startProcess(processId, requests);
 
@@ -1282,8 +1294,8 @@ public class RequestController extends MessageController {
 	        String body = "Upload user payment confirmation processed successfully, reference code: "+requests.getRequestCode();
 	        
 	        String email = getInvoiceGeneratedUserEmail(requests);
-	        
-	        if(StringUtils.isEmpty(email)) 
+            System.out.println("Email is: "+email);
+            if(StringUtils.isEmpty(email))
 	        	log.warn("Could not find invoice generated user email, No payment confirmation mail sent");
 	        else
 	        	sendMail(requests, new MailDTO(), userName, subject, body, email);

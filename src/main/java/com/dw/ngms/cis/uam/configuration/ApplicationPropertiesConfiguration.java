@@ -29,6 +29,9 @@ public class ApplicationPropertiesConfiguration {
     private String mailFrom;
     private String mailTo;
 
+    private String requestDirectoryLocalPath;
+    private String requestDirectoryFtpPath;
+
 
 
     @Profile("dev")

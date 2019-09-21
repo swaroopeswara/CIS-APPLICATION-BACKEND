@@ -193,6 +193,8 @@ public class Requests implements Serializable {
     private String assigneeInfoManager;    
     @Transient
     private String assigneeInfoOfficer;
+    @Transient
+    private String requestFtpSiteUrl;
 
 
     @Override

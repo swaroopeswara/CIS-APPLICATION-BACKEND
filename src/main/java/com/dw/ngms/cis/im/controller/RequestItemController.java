@@ -6,12 +6,20 @@ import com.dw.ngms.cis.im.entity.RequestItems;
 import com.dw.ngms.cis.im.entity.RequestKinds;
 import com.dw.ngms.cis.im.entity.RequestTypes;
 import com.dw.ngms.cis.im.entity.Requests;
+import com.dw.ngms.cis.im.service.ApplicationPropertiesService;
 import com.dw.ngms.cis.im.service.RequestItemService;
 import com.dw.ngms.cis.im.service.RequestService;
+import com.dw.ngms.cis.uam.configuration.ApplicationPropertiesConfiguration;
+import com.dw.ngms.cis.uam.dto.FilePathsDTO;
+import com.dw.ngms.cis.uam.dto.MailDTO;
 import com.dw.ngms.cis.uam.entity.ExternalUser;
+import com.dw.ngms.cis.uam.jsonresponse.UserControllerResponse;
 import com.google.gson.Gson;
 import jdk.nashorn.internal.parser.JSONParser;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.net.ftp.FTPClient;
+import org.apache.commons.net.ftp.FTPReply;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,9 +29,18 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.*;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import static org.springframework.util.StringUtils.isEmpty;
 
@@ -41,6 +58,14 @@ public class RequestItemController extends MessageController {
     @Autowired
     private RequestService requestsService;
 
+    @Autowired
+    private ApplicationPropertiesService appPropertiesService;
+
+    @Autowired
+    private ApplicationPropertiesConfiguration applicationPropertiesConfiguration;
+
+    @Autowired
+    private RequestService requestService;
 
    /*@GetMapping("/getRequestsOfUser")
     public ResponseEntity<?> getRequestsOfUser(HttpServletRequest request,
@@ -99,6 +124,181 @@ public class RequestItemController extends MessageController {
     }//createRequestItem
 
 
+    @PostMapping("/getRequestItemsFilesSendEmail")
+    public ResponseEntity<?> getRequestItemsFilesSendEmail(HttpServletRequest request,
+                                                           @RequestBody RequestItems requestItems
+    ) {
+        String message = "";
+        String json = null;
+        Gson gson = new Gson();
+        UserControllerResponse userControllerResponse = new UserControllerResponse();
+        FTPClient ftpClient = new FTPClient();
+        String str = null;
+        List<String> filesExist = new ArrayList<>();
+        try {
+            List<RequestItems> requestItemsList = requestItemService.getRequestsByRequestCode(requestItems.getRequestCode());
+            System.out.println("size is "+requestItemsList.size());
+            if (requestItemsList.size()>0) {
+                for (RequestItems items : requestItemsList) {
+                    String fileName = null;
+
+                 if (items.getFtpSiteUrl() != null && !items.getFtpSiteUrl().isEmpty()) {
+                        int index = items.getFtpSiteUrl().lastIndexOf("/");
+                         fileName = items.getFtpSiteUrl().substring(index + 1);
+                        System.out.println("File Name is " + fileName);
+                    }
+
+                    if (items.getFtpSiteUrl() != null && !items.getFtpSiteUrl().isEmpty()) {
+                        System.out.println("items url is " + items.getFtpSiteUrl());
+                        InputStream inputStream = new URL(items.getFtpSiteUrl()).openStream();
+                        Files.copy(inputStream, Paths.get(applicationPropertiesConfiguration.getRequestDirectoryLocalPath() + fileName), StandardCopyOption.REPLACE_EXISTING);
+                        System.out.println("items open");
+
+                        filesExist.add(applicationPropertiesConfiguration.getRequestDirectoryLocalPath() + fileName);
+                        userControllerResponse.setFiles(filesExist);
+                        json = gson.toJson(userControllerResponse);
+                        items.setFtpSiteUrlJson(json);
+
+                        str = items.getFtpSiteUrlJson();
+
+                        //System.out.println("Items are "+new Gson().toJson(items.getFtpSiteUrlJson()));
+                    }
+                }
+
+                String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
+
+                if (str != null && !str.isEmpty()) {
+                    String pathFromDB = str;
+                    System.out.println("str is " + str);
+                    FilePathsDTO filePath = gson.fromJson(pathFromDB, FilePathsDTO.class);
+                    System.out.println("filePath is " + filePath.getFiles().toString());
+                    List<String> files = new ArrayList<String>();
+                    for (String str1 : filePath.getFiles()) {
+                        System.out.println(str1);
+                        files.add(str1);
+                        ftpZipFiles(files, ftpClient, timeStamp);
+                    }
+
+
+                    String zipFilename = "RequestItemsFtpFilesDownload" + "_" + timeStamp + ".zip";
+
+                    boolean loginExists = ftpLogin(ftpClient);
+                    if (loginExists) {
+                        ftpClient.changeWorkingDirectory("/ftpFileDownload/");
+                        File firstLocalFile = new File(applicationPropertiesConfiguration.getRequestDirectoryFtpPath() + zipFilename);
+                        String firstRemoteFile = zipFilename;
+                        InputStream inputStream = new FileInputStream(firstLocalFile);
+                        System.out.println("Start uploading first file");
+                        boolean done = ftpClient.storeFile(firstRemoteFile, inputStream);
+                        inputStream.close();
+                    }
+                    ftpClient.logout();
+                    String path = appPropertiesService.getProperty("FTP_UPLOAD_PATH").getKeyValue();
+                    String server = "ftp://" + appPropertiesService.getProperty("FTP_SERVER").getKeyValue();
+
+                    String ftpFilePath = server + path + zipFilename;
+                    System.out.println("File Path is: " + ftpFilePath);
+
+                    MailDTO mailDTO = new MailDTO();
+
+                    // inside your getSalesUserData() method
+                    Requests requests = this.requestsService.getRequestsByRequestCode(requestItems.getRequestCode());
+                    ExecutorService emailExecutor = Executors.newSingleThreadExecutor();
+                    emailExecutor.execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                sendMailWithFTPPAth(requests, mailDTO, ftpFilePath);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+
+                        }
+                    });
+                    emailExecutor.shutdown(); // it is very important to shutdown your non-singleton ExecutorService.
+                }else{
+                    return generateEmptyResponse(request, "RequestItems files are  not found");
+                }
+            }else{
+                return generateEmptyResponse(request, "RequestItems files are  not found");
+            }
+
+
+        } catch (Exception exception) {
+            return generateFailureResponse(request, exception);
+        }
+        return ResponseEntity.status(HttpStatus.OK).body("Sent email Sucessfully");
+    }
+
+
+
+    private void sendMailWithFTPPAth(Requests requests, MailDTO mailDTO, String ftpFilePath) throws Exception {
+
+        Map<String, Object> model = new HashMap<String, Object>();
+
+        model.put("firstName", requests.getUserName());
+        model.put("body1", "FTP paths send successfully");
+        model.put("body2", ftpFilePath);
+        model.put("body3", "");
+        model.put("body4", "");
+
+        mailDTO.setMailSubject("Welcome to CIS");
+        model.put("FOOTER", "CIS ADMIN");
+        mailDTO.setMailFrom(applicationPropertiesConfiguration.getMailFrom());
+        mailDTO.setMailTo(requests.getUserName());
+        mailDTO.setModel(model);
+        sendEmail(mailDTO);
+
+    }
+
+
+
+
+    public void ftpZipFiles(List<String> files, FTPClient ftpClient,String timeStamp) {
+        FileOutputStream fos = null;
+        ZipOutputStream zipOut = null;
+        FileInputStream fis = null;
+
+        String zipFilename = "RequestItemsFtpFilesDownload"+"_"+timeStamp+".zip";
+        try {
+
+            fos = new FileOutputStream(applicationPropertiesConfiguration.getRequestDirectoryFtpPath() + zipFilename);
+            zipOut = new ZipOutputStream(new BufferedOutputStream(fos));
+            for (String filePath : files) {
+                System.out.println("filePath is " + filePath);
+                File input = new File(filePath);
+                fis = new FileInputStream(input);
+                ZipEntry ze = new ZipEntry(input.getName());
+                zipOut.putNextEntry(ze);
+                byte[] tmp = new byte[4 * 1024];
+                int size = 0;
+                while ((size = fis.read(tmp)) != -1) {
+                    zipOut.write(tmp, 0, size);
+                }
+                zipOut.flush();
+                fis.close();
+            }
+            zipOut.close();
+            System.out.println("Done... Zipped the files...");
+
+
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } finally {
+            try {
+                if (fos != null) fos.close();
+            } catch (Exception ex) {
+
+            }
+        }
+    }//zipFiles
+
+
+
     @GetMapping("/getRequestItemsOfRequest")
     public ResponseEntity<?> getRequestItemsOfRequest(HttpServletRequest request,
                                                       @RequestParam String requestCode) {
@@ -147,5 +347,39 @@ public class RequestItemController extends MessageController {
         }
     }
 
+
+    private boolean ftpLogin(FTPClient ftpClient) throws IOException {
+        String server = appPropertiesService.getProperty("FTP_SERVER").getKeyValue();
+        int port = Integer.valueOf(appPropertiesService.getProperty("FTP_PORT").getKeyValue());
+        String user = appPropertiesService.getProperty("FTP_USERNAME").getKeyValue();
+        String pass = appPropertiesService.getProperty("FTP_PASSWORD").getKeyValue();
+        ftpClient.connect(server, port);
+        showServerReply(ftpClient);
+        int replyCode = ftpClient.getReplyCode();
+        if (!FTPReply.isPositiveCompletion(replyCode)) {
+            System.out.println("Operation failed. Server reply code: " + replyCode);
+            return false;
+        }
+        boolean success = ftpClient.login(user, pass);
+        showServerReply(ftpClient);
+        if (!success) {
+            System.out.println("Could not login to the server");
+            return false;
+        } else {
+            System.out.println("LOGGED IN SERVER");
+            return true;
+        }
+
+    }
+
+
+    protected static void showServerReply(FTPClient ftpClient) {
+        String[] replies = ftpClient.getReplyStrings();
+        if (replies != null && replies.length > 0) {
+            for (String aReply : replies) {
+                System.out.println("SERVER: " + aReply);
+            }
+        }
+    }
 
 }
