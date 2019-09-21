@@ -1305,14 +1305,22 @@ public class RequestController extends MessageController {
     }//uploadUserPaymentConfirmationNotification
 
     private String getInvoiceGeneratedUserEmail(Requests requests) {
+    	String userEmail = null;
     	List<TaskLifeCycle> taskLifeCycles = taskService.getTasksLifeCycleByTaskReferenceCode(requests.getRequestCode());
     	if(CollectionUtils.isEmpty(taskLifeCycles)) return null;
     	for(TaskLifeCycle taskLifeCycle: taskLifeCycles) {
     		if("GenerateInvoice".equals(taskLifeCycle.getTaskStatus())) {
-    			return taskLifeCycle.getTaskDoneUserName();
+    			if(taskLifeCycle.getTaskDoneUserName() != null) {
+    				userEmail = taskLifeCycle.getTaskDoneUserName();
+    			} else {
+    				 if(taskLifeCycle.getTaskDoneUserCode() != null){
+    					 User user  = this.userService.findByUserCode(taskLifeCycle.getTaskDoneUserCode());
+    			         userEmail = (user!=null) ? user.getUserName(): null;
+    			     }
+    			}
     		}
     	}
-		return null;
+		return userEmail;
 	}//getInvoiceGeneratedUserEmail
 
 	private void sendMailToCreateRequestUser(@RequestBody @Valid Requests requests, MailDTO mailDTO) throws Exception {
