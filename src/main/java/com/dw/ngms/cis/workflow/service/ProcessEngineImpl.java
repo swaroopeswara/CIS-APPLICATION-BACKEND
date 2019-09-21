@@ -67,6 +67,12 @@ public class ProcessEngineImpl implements ProcessEngine<Task>{
 		task.setTaskOpenDesc(process.getDescription());
 		task.setTaskType(process.getId());
 		task.setTaskReferenceType(process.getId());
+		
+		if("finalise".equalsIgnoreCase(additionalInfo.getSequenceRequest())) {
+			endProcess(process, task, additionalInfo);
+			return;
+		}
+		//if sequence request is not finalised then continue	
 		String targetSequenceId = getStartProcessTargetSequenceId(additionalInfo, process);		
 		SequenceFlow targetSequence = (!StringUtils.isEmpty(targetSequenceId)) ? process.getSequenceFlow(targetSequenceId) :
 			process.getSequenceFlow(process.getStartSequenceFlow().getTargetList().get(0).getId());
