@@ -245,7 +245,7 @@ public class RequestItemController extends MessageController {
         mailDTO.setMailSubject("Welcome to CIS");
         model.put("FOOTER", "CIS ADMIN");
         mailDTO.setMailFrom(applicationPropertiesConfiguration.getMailFrom());
-        mailDTO.setMailTo(requests.getUserName());
+        mailDTO.setMailTo(requests.getEmail());
         mailDTO.setModel(model);
         sendEmail(mailDTO);
 
