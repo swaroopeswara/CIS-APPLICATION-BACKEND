@@ -13,9 +13,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Base64;
+import java.util.Date;
 import java.util.Map;
 import java.util.Properties;
 
+import javax.mail.Address;
 import javax.mail.Message;
 import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
@@ -24,7 +26,6 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
 
-import com.dw.ngms.cis.uam.service.AuditEntryService;
 import org.jfree.util.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
@@ -37,7 +38,6 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
 import com.dw.ngms.cis.exception.ExceptionConstants;
@@ -45,8 +45,9 @@ import com.dw.ngms.cis.exception.ResponseBuilderAgent;
 import com.dw.ngms.cis.exception.RestResponse;
 import com.dw.ngms.cis.im.entity.ApplicationProperties;
 import com.dw.ngms.cis.im.service.ApplicationPropertiesService;
-
 import com.dw.ngms.cis.uam.dto.MailDTO;
+import com.dw.ngms.cis.uam.entity.AuditEntry;
+import com.dw.ngms.cis.uam.service.AuditEntryService;
 
 import freemarker.core.ParseException;
 import freemarker.template.Configuration;
@@ -76,8 +77,8 @@ public class MessageController implements ExceptionConstants {
     private Configuration freemarkerConfig;
 
     @Autowired
-    private AuditEntryService auditEntryService;
-
+	private AuditEntryService auditEntryService;
+    		
     /**
      * This is to generate failure response
      *
@@ -382,23 +383,58 @@ public class MessageController implements ExceptionConstants {
         Transport.send(message);
     }//sendEmail
 
-
-
-
 	private void sendMailMessage(MimeMessage message) {
-		ApplicationProperties property = appPropertiesService.getProperty("SEND_MAIL");
+		
+		String operation = "SEND_MAIL";
+		String userName = getUserMailId(message);
+		ApplicationProperties property = appPropertiesService.getProperty(operation);
+		
 		if(property != null && property.getKeyValue() != null && 
 				property.getKeyValue().equalsIgnoreCase("false")) {
-			log.warn("Mail configuration disabled, no mail sent");
+			String failureReason = "Mail configuration disabled, no mail sent";
+			log.error(failureReason);
+			logMailAuditEntry(operation, userName, failureReason);
 			return;
 		}else{
-            log.warn("Test mail");
-
-            sender.send(message);
+			try {
+	            log.info("Mail is being sent to :"+userName);
+	            sender.send(message);
+	            logMailAuditEntry(operation, userName, message.toString());
+			}catch (Exception e) {
+				log.error("Failed to send mail: "+e.getMessage());
+				logMailAuditEntry(operation, userName, e.getMessage());
+			}
         }
-
 	}//sendMailMessage
     
+	private void logMailAuditEntry(String operation, String userName, String message) {
+		try {
+			AuditEntry auditEntry = new AuditEntry();
+			auditEntry.setOperation(operation);
+			auditEntry.setUserName(userName);
+			auditEntry.setResponseDatetime(new Date());
+			auditEntry.setResponseJson(message);
+			auditEntryService.logAuditEntry(auditEntry);
+		}catch (Exception e) {
+			log.error("Failed to log mail audit entry: "+message);
+		}
+	}//logMailAuditEntry
+
+	private String getUserMailId(MimeMessage message) {
+		String userName = "";
+		if(message != null) {
+			try {
+				Address[] recipients = message.getRecipients(Message.RecipientType.TO);				
+				if(recipients != null && recipients.length > 0) {
+					userName = recipients[0].toString();
+				}
+			} catch (Exception e) {
+				log.error("Could not fetch recipients"+e.getMessage());
+			}
+		}
+		return userName;
+	}//logMailAuditEntry
+
 	private String getProcessedTemplate(Map<String, Object> model) throws TemplateNotFoundException,
 			MalformedTemplateNameException, ParseException, IOException, TemplateException {
 		// Using a subfolder such as /templates here
