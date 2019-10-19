@@ -48,6 +48,7 @@ import com.dw.ngms.cis.im.service.ApplicationPropertiesService;
 import com.dw.ngms.cis.uam.dto.MailDTO;
 import com.dw.ngms.cis.uam.entity.AuditEntry;
 import com.dw.ngms.cis.uam.service.AuditEntryService;
+import com.google.gson.Gson;
 
 import freemarker.core.ParseException;
 import freemarker.template.Configuration;
@@ -78,7 +79,7 @@ public class MessageController implements ExceptionConstants {
 
     @Autowired
 	private AuditEntryService auditEntryService;
-    		
+        
     /**
      * This is to generate failure response
      *
@@ -399,7 +400,7 @@ public class MessageController implements ExceptionConstants {
 			try {
 	            log.info("Mail is being sent to :"+userName);
 	            sender.send(message);
-	            logMailAuditEntry(operation, userName, message.toString());
+	            logMailAuditEntry(operation, userName, new Gson().toJson(message));
 			}catch (Exception e) {
 				log.error("Failed to send mail: "+e.getMessage());
 				logMailAuditEntry(operation, userName, e.getMessage());
