@@ -1,60 +1,6 @@
 package com.dw.ngms.cis.im.controller;
 
 
-import static org.springframework.util.StringUtils.isEmpty;
-
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URLConnection;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.net.ftp.FTP;
-import org.apache.commons.net.ftp.FTPClient;
-import org.apache.commons.net.ftp.FTPReply;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.InputStreamResource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.util.FileCopyUtils;
-import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
-
 import com.dw.ngms.cis.controller.MessageController;
 import com.dw.ngms.cis.im.dto.InvoiceDTO;
 import com.dw.ngms.cis.im.entity.RequestItems;
@@ -78,8 +24,41 @@ import com.google.gson.Gson;
 import com.itextpdf.text.pdf.AcroFields;
 import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.PdfStamper;
-
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.net.ftp.FTP;
+import org.apache.commons.net.ftp.FTPClient;
+import org.apache.commons.net.ftp.FTPReply;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.util.FileCopyUtils;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
+import java.io.*;
+import java.net.URLConnection;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
+
+import static org.springframework.util.StringUtils.isEmpty;
 
 /**
  * Created by swaroop on 2019/04/19.
@@ -114,6 +93,15 @@ public class RequestController extends MessageController {
 
     @Autowired
     private JavaMailSender mailSender;
+
+    protected static void showServerReply(FTPClient ftpClient) {
+        String[] replies = ftpClient.getReplyStrings();
+        if (replies != null && replies.length > 0) {
+            for (String aReply : replies) {
+                System.out.println("SERVER: " + aReply);
+            }
+        }
+    }
 
     @GetMapping("/getTaskTargetFlows")
     public ResponseEntity<?> getTaskTargetFlows(HttpServletRequest request,
@@ -183,27 +171,14 @@ public class RequestController extends MessageController {
             List<Requests> requestList = new ArrayList<>();
             if (StringUtils.isEmpty(provinceCode) || "all".equalsIgnoreCase(provinceCode.trim()) && !StringUtils.isEmpty(userCode)) {
                 requestList = requestService.getRequestByUserCode(userCode);
-                for(Requests req: requestList){
+                for (Requests req : requestList) {
                     List<RequestItems> requestItemsList = new ArrayList<>();
-                    System.out.println("Request code is " +req.getRequestCode());
+                    System.out.println("Request code is " + req.getRequestCode());
                     List<RequestItems> requestItems = this.requestItemService.getRequestsByRequestItemCode(req.getRequestCode());
                     if (!isEmpty(requestItems) && requestItems != null) {
                         for (RequestItems in : requestItems) {
                             System.out.println("Internal user roles" + in.getGazetteType1());
-                            RequestItems requestItems1 = new RequestItems();
-                            requestItems1.setCreatedDate(in.getCreatedDate());
-                            requestItems1.setQuantity(in.getQuantity());
-                            requestItems1.setRequestCode(in.getRequestCode());
-                            requestItems1.setRequestCost(in.getRequestCost());
-                            requestItems1.setRequestGazette1(in.getRequestGazette1());
-                            requestItems1.setRequestGazette2(in.getRequestGazette2());
-                            requestItems1.setRequestGazetteType(in.getRequestGazetteType());
-                            requestItems1.setRequestHours(in.getRequestHours());
-                            requestItems1.setSearchText(in.getSearchText());
-                            requestItems1.setRequestId(in.getRequestId());
-                            requestItems1.setGazetteType1(in.getGazetteType1());
-                            requestItems1.setGazetteType2(in.getGazetteType2());
-
+                            RequestItems requestItems1 = getRequestItems(in);
                             requestItemsList.add(requestItems1);
                             req.setRequestItems(requestItemsList);
 
@@ -214,27 +189,14 @@ public class RequestController extends MessageController {
 
             } else if (!StringUtils.isEmpty(userCode) && !StringUtils.isEmpty(provinceCode.trim())) {
                 requestList = requestService.getRequestByUserCodeProvinceCode(userCode, provinceCode);
-                for(Requests req: requestList){
+                for (Requests req : requestList) {
                     List<RequestItems> requestItemsList = new ArrayList<>();
                     List<RequestItems> requestItems = this.requestItemService.getRequestsByRequestItemCode(req.getRequestCode());
                     if (!isEmpty(requestItems) && requestItems != null) {
                         for (RequestItems in : requestItems) {
                             System.out.println("Internal user roles" + in.getGazetteType1());
-                            RequestItems requestItems1 = new RequestItems();
-
-                            requestItems1.setCreatedDate(in.getCreatedDate());
-                            requestItems1.setQuantity(in.getQuantity());
-                            requestItems1.setRequestCode(in.getRequestCode());
-                            requestItems1.setRequestCost(in.getRequestCost());
-                            requestItems1.setRequestGazette1(in.getRequestGazette1());
-                            requestItems1.setRequestGazette2(in.getRequestGazette2());
-                            requestItems1.setRequestGazetteType(in.getRequestGazetteType());
-                            requestItems1.setRequestHours(in.getRequestHours());
-                            requestItems1.setSearchText(in.getSearchText());
-                            requestItems1.setRequestId(in.getRequestId());
-                            requestItems1.setGazetteType1(in.getGazetteType1());
-                            requestItems1.setGazetteType2(in.getGazetteType2());
-
+                            RequestItems requestItems1 = getRequestItems(in);
+                            requestItemsList.add(requestItems1);
                             req.setRequestItems(requestItemsList);
 
                         }
@@ -248,6 +210,24 @@ public class RequestController extends MessageController {
         }
     }//getRequestsOfUser
 
+    private RequestItems getRequestItems(RequestItems in) {
+        RequestItems requestItems1 = new RequestItems();
+        requestItems1.setCreatedDate(in.getCreatedDate());
+        requestItems1.setQuantity(in.getQuantity());
+        requestItems1.setRequestCode(in.getRequestCode());
+        requestItems1.setRequestCost(in.getRequestCost());
+        requestItems1.setRequestGazette1(in.getRequestGazette1());
+        requestItems1.setRequestGazette2(in.getRequestGazette2());
+        requestItems1.setRequestGazetteType(in.getRequestGazetteType());
+        requestItems1.setRequestHours(in.getRequestHours());
+        requestItems1.setSearchText(in.getSearchText());
+        requestItems1.setRequestId(in.getRequestId());
+        requestItems1.setGazetteType1(in.getGazetteType1());
+        requestItems1.setGazetteType2(in.getGazetteType2());
+        requestItems1.setResultJson(in.getResultJson());
+        requestItems1.setCurrentStatus(taskService.getTaskCurrentStatus(in.getRequestCode()));
+        return requestItems1;
+    }
 
     @GetMapping("/getRequestsPaidInfoByProvince")
     public ResponseEntity<?> getRequestsPaidInfoByProvince(HttpServletRequest request,
@@ -319,7 +299,6 @@ public class RequestController extends MessageController {
         }
     }//getRequestsPaidInfoByProvince
 
-
     @GetMapping("/getRequestByRequestCode")
     public ResponseEntity<?> getRequestByRequestCode(HttpServletRequest request,
                                                      @RequestParam String requestCode) {
@@ -337,7 +316,6 @@ public class RequestController extends MessageController {
         }
     }//RequestController
 
-
     @GetMapping("/updateRequestOnLapse")
     public ResponseEntity<?> updateRequestOnLapse(HttpServletRequest request,
                                                   @RequestParam @Valid String reuestcode, @RequestParam @Valid Integer lapsetime,
@@ -354,7 +332,6 @@ public class RequestController extends MessageController {
             return generateFailureResponse(request, exception);
         }
     }//updateRequestOnLapse
-
 
     @PostMapping("/uploadPaymentConfirmation")
     public ResponseEntity<?> handleFileUpload(HttpServletRequest request, @RequestParam("file") MultipartFile file,
@@ -399,7 +376,7 @@ public class RequestController extends MessageController {
 
                     //send notification
                     uploadUserPaymentConfirmationNotification(requests1);
-                    
+
                     return ResponseEntity.status(HttpStatus.OK).body(message);
 
                 } else {
@@ -412,7 +389,6 @@ public class RequestController extends MessageController {
             return generateFailureResponse(request, exception);
         }
     }//uploadPaymentConfirmation
-
 
     @PostMapping("/createRequest")
     public ResponseEntity<?> createRequest(HttpServletRequest request, @RequestBody @Valid Requests requests) {
@@ -463,15 +439,15 @@ public class RequestController extends MessageController {
         }
     }//createRequest
 
-	private void updateSavedRequests(Requests requests, Requests requestToSave) {
-		requestToSave.setAssigneeInfoManager(requests.getAssigneeInfoManager());
-		requestToSave.setAssigneeInfoOfficer(requests.getAssigneeInfoOfficer());
-		requestToSave.setCapturerCode(requests.getCapturerCode());
-		requestToSave.setCapturerName(requests.getCapturerName());
-		requestToSave.setCapturerFullName(requests.getCapturerFullName());
-		requestToSave.setInternalCapturer(requests.isInternalCapturer());
-	}//updateSavedRequests
-	
+    private void updateSavedRequests(Requests requests, Requests requestToSave) {
+        requestToSave.setAssigneeInfoManager(requests.getAssigneeInfoManager());
+        requestToSave.setAssigneeInfoOfficer(requests.getAssigneeInfoOfficer());
+        requestToSave.setCapturerCode(requests.getCapturerCode());
+        requestToSave.setCapturerName(requests.getCapturerName());
+        requestToSave.setCapturerFullName(requests.getCapturerFullName());
+        requestToSave.setInternalCapturer(requests.isInternalCapturer());
+    }//updateSavedRequests
+
     private void updateRequestProvinceAndSectionCodes(ProcessAdditionalInfo additionalInfo) {
         if (additionalInfo != null && additionalInfo.getRequestCode() != null) {
             Requests request = requestService.getRequestsByRequestCode(additionalInfo.getRequestCode());
@@ -542,7 +518,6 @@ public class RequestController extends MessageController {
         return generateEmptyResponse(request, "No Request found with requestCode " + requestCode);
     }
 
-
     @SuppressWarnings("unused")
     @PostMapping("/sendEmailWithInvoice")
     public ResponseEntity<?> sendEmailWithInvoice(HttpServletRequest request, HttpServletResponse response,
@@ -567,22 +542,27 @@ public class RequestController extends MessageController {
         }
     }
 
-
     private void sendMailInvoiceUser(Requests requests, MailDTO mailDTO, String fileName, File fileLater) throws Exception {
         System.out.println("File Name test is " + fileName);
-        if(!fileName.isEmpty()){
+        if (!fileName.isEmpty()) {
             int index = fileName.lastIndexOf("/");
             fileName = fileName.substring(index + 1);
             System.out.println("File Name before is " + fileName);
-            fileName = fileName.replace("_NLC_MonitoringForm","");
-            fileName = "Invoice_"+fileName;
+            fileName = fileName.replace("_NLC_MonitoringForm", "");
+            fileName = "Invoice_" + fileName;
             System.out.println("File Name before testis " + fileName);
 
         }
-        System.out.println("File Name after is "+fileName);
+        System.out.println("File Name after is " + fileName);
         Map<String, Object> model = new HashMap<String, Object>();
-
-        model.put("firstName", requests.getUserName());
+        String firstName = null;
+        String lastName = null;
+        if (requests.getUserCode() != null) {
+            User user = this.userService.findByUserCode(requests.getUserCode());
+            firstName = user.getFirstName();
+            lastName = user.getSurname();
+        }
+        model.put("firstName", firstName + " " + lastName);
         model.put("body1", "Invoice Generated Successfully");
         model.put("body2", "");
         model.put("body3", "");
@@ -597,12 +577,16 @@ public class RequestController extends MessageController {
 
     }
 
-
     private void sendMailWithFTPPAth(Requests requests, MailDTO mailDTO, String ftpFilePath) throws Exception {
-
+        String firstName = null;
+        String lastName = null;
         Map<String, Object> model = new HashMap<String, Object>();
-
-        model.put("firstName", requests.getUserName());
+        if (requests.getUserCode() != null) {
+            User user = this.userService.findByUserCode(requests.getUserCode());
+            firstName = user.getFirstName();
+            lastName = user.getSurname();
+        }
+        model.put("firstName", firstName + " " + lastName);
         model.put("body1", "FTP paths send successfully");
         model.put("body2", ftpFilePath);
         model.put("body3", "");
@@ -617,6 +601,29 @@ public class RequestController extends MessageController {
 
     }
 
+    private void sendMaiForCollectionReady(Requests requests, MailDTO mailDTO) throws Exception {
+        String firstName = null;
+        String lastName = null;
+        Map<String, Object> model = new HashMap<String, Object>();
+        if (requests.getUserCode() != null) {
+            User user = this.userService.findByUserCode(requests.getUserCode());
+            firstName = user.getFirstName();
+            lastName = user.getSurname();
+        }
+        model.put("firstName", firstName + " " + lastName);
+        model.put("body1", "Your request is ready for collection");
+        model.put("body2", "");
+        model.put("body3", "");
+        model.put("body4", "");
+
+        mailDTO.setMailSubject("DRDLR:Delivery");
+        model.put("FOOTER", "CIS ADMIN");
+        mailDTO.setMailFrom(applicationPropertiesConfiguration.getMailFrom());
+        mailDTO.setMailTo(requests.getUserName());
+        mailDTO.setModel(model);
+        sendEmail(mailDTO);
+
+    }
 
     private ProcessAdditionalInfo getProcessAdditionalInfo(@RequestBody @Valid InvoiceDTO invoiceDTO) {
         ProcessAdditionalInfo processAdditionalInfo = new ProcessAdditionalInfo();
@@ -632,7 +639,6 @@ public class RequestController extends MessageController {
         }
         return processAdditionalInfo;
     }
-
 
     @RequestMapping(value = "/downloadInvoice", method = RequestMethod.POST)
     public ResponseEntity<ByteArrayResource> downloadInvoice(HttpServletRequest request,
@@ -663,7 +669,7 @@ public class RequestController extends MessageController {
 
     @RequestMapping(value = "/downloadPop", method = RequestMethod.POST)
     public ResponseEntity<ByteArrayResource> downloadPop(HttpServletRequest request,
-    		@RequestBody @Valid Requests requests) throws IOException {
+                                                         @RequestBody @Valid Requests requests) throws IOException {
 
         Requests ir = requestService.getRequestsByRequestCode(requests.getRequestCode());
         System.out.println("Internal User Roles one " + ir.getPopFilePath());
@@ -687,7 +693,7 @@ public class RequestController extends MessageController {
                 .contentType(MediaType.parseMediaType("application/octet-stream"))
                 .body(resource);
     }//downloadPop
-    
+
     @PostMapping("/uploadDispatchDocument")
     public ResponseEntity<?> uploadDispatchDocument(HttpServletRequest request, @RequestParam MultipartFile[] multipleFiles,
                                                     @RequestParam("requestCode") String requestCode
@@ -792,6 +798,31 @@ public class RequestController extends MessageController {
         return ResponseEntity.status(HttpStatus.OK).body(json);
     }//uploadExternalUserRequestDocument
 
+    // ftp server local tech live
+   /* private boolean ftpLogin(FTPClient ftpClient) throws IOException {
+        String server = "160.119.101.57";
+        int port = 21;
+        String user = "Administrator";
+        String pass = "dataworld@1";
+
+        ftpClient.connect(server, port);
+        showServerReply(ftpClient);
+        int replyCode = ftpClient.getReplyCode();
+        if (!FTPReply.isPositiveCompletion(replyCode)) {
+            System.out.println("Operation failed. Server reply code: " + replyCode);
+            return false;
+        }
+        boolean success = ftpClient.login(user, pass);
+        showServerReply(ftpClient);
+        if (!success) {
+            System.out.println("Could not login to the server");
+            return false;
+        } else {
+            System.out.println("LOGGED IN SERVER");
+            return true;
+        }
+
+    }*/
 
     @PostMapping("/dispatchDocumentSendMail")
     public ResponseEntity<?> dispatchDocumentSendMail(HttpServletRequest request,
@@ -805,9 +836,11 @@ public class RequestController extends MessageController {
         try {
             Requests requests = this.requestService.getRequestsByRequestCode(requestsParam.getRequestCode());
             String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
-            if (requests.getFormatType().equalsIgnoreCase("Electronic(Email)") || requests.getFormatType().equalsIgnoreCase("Electronic(FTP)")) {
+            if (requests.getFormatType().equalsIgnoreCase("Electronic(Email)")) {
+
+            }  else if (requests.getFormatType().equalsIgnoreCase("Electronic(FTP)")) {
                 if (requests != null && !isEmpty(requests)) {
-                    if(requests.getDispatchDocs()!= null) {
+                    if (requests.getDispatchDocs() != null) {
                         String pathFromDB = requests.getDispatchDocs();
                         FilePathsDTO filePath = gson.fromJson(pathFromDB, FilePathsDTO.class);
                         System.out.println("filePath is " + filePath.getFiles().toString());
@@ -836,15 +869,16 @@ public class RequestController extends MessageController {
                                 InputStream inputStream = new FileInputStream(firstLocalFile);
                                 System.out.println("Start uploading first file");
                                 boolean done = ftpClient.storeFile(firstRemoteFile, inputStream);
-                                if(done){
+                                if (done) {
                                     System.out.println("Done");
-                                }else{
+                                } else {
                                     System.out.println("Not Done");
                                 }
                                 inputStream.close();
                             }
-                        }catch (Exception e){
-                            System.out.println("Exception is" +e.getMessage());;
+                        } catch (Exception e) {
+                            System.out.println("Exception is" + e.getMessage());
+                            ;
                             e.printStackTrace();
                         }
                         ftpClient.logout();
@@ -874,10 +908,27 @@ public class RequestController extends MessageController {
                             }
                         });
                         emailExecutor.shutdown(); // it is very important to shutdown your non-singleton ExecutorService.
-                    }else{
+                    } else {
                         return ResponseEntity.status(HttpStatus.OK).body("Dispatch documents are not found");
                     }
                 }
+            } else {
+                System.out.println("This is manual delivery for collection");
+                MailDTO mailDTO = new MailDTO();
+                ExecutorService emailExecutor = Executors.newSingleThreadExecutor();
+                emailExecutor.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            sendMaiForCollectionReady(requests, mailDTO);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                });
+                emailExecutor.shutdown(); // it is very important to shutdown your non-singleton ExecutorService.
+
             }
 
         } catch (Exception exception) {
@@ -885,34 +936,6 @@ public class RequestController extends MessageController {
         }
         return ResponseEntity.status(HttpStatus.OK).body("Sent email Sucessfully");
     }//uploadFTPDispatchDocumentSendMail
-
-    // ftp server local tech live
-   /* private boolean ftpLogin(FTPClient ftpClient) throws IOException {
-        String server = "160.119.101.57";
-        int port = 21;
-        String user = "Administrator";
-        String pass = "dataworld@1";
-
-        ftpClient.connect(server, port);
-        showServerReply(ftpClient);
-        int replyCode = ftpClient.getReplyCode();
-        if (!FTPReply.isPositiveCompletion(replyCode)) {
-            System.out.println("Operation failed. Server reply code: " + replyCode);
-            return false;
-        }
-        boolean success = ftpClient.login(user, pass);
-        showServerReply(ftpClient);
-        if (!success) {
-            System.out.println("Could not login to the server");
-            return false;
-        } else {
-            System.out.println("LOGGED IN SERVER");
-            return true;
-        }
-
-    }*/
-
-
 
     private boolean ftpLogin(FTPClient ftpClient) throws IOException {
         String server = appPropertiesService.getProperty("FTP_SERVER").getKeyValue();
@@ -937,7 +960,6 @@ public class RequestController extends MessageController {
         }
 
     }
-
 
     @RequestMapping(value = "/deleteDispatchDocument", method = RequestMethod.POST)
     public ResponseEntity<?> deleteDispatchDocument(HttpServletRequest request,
@@ -995,7 +1017,6 @@ public class RequestController extends MessageController {
         }
     }//deleteDispatchDocument
 
-
     @RequestMapping(value = "/deleteExternalUserRequestDocument", method = RequestMethod.POST)
     public ResponseEntity<?> deleteExternalUserDispatchDocument(HttpServletRequest request,
                                                                 @RequestBody @Valid Requests requestsBody,
@@ -1043,7 +1064,6 @@ public class RequestController extends MessageController {
         }
     }//deleteDispatchDocument
 
-
     @RequestMapping(value = "/getDispatchDocsList", method = RequestMethod.GET)
     public ResponseEntity<?> getDispatchDocsList(HttpServletRequest request,
                                                  @RequestParam String requestCode) throws IOException {
@@ -1071,7 +1091,6 @@ public class RequestController extends MessageController {
             return generateFailureResponse(request, exception);
         }
     }//getDispatchDocsList
-
 
     @RequestMapping(value = "/getExternalUserRequestDocsList", method = RequestMethod.GET)
     public ResponseEntity<?> getExternalUserDispatchDocsList(HttpServletRequest request,
@@ -1101,7 +1120,6 @@ public class RequestController extends MessageController {
         }
     }//getDispatchDocsList
 
-
     @RequestMapping(value = "/externalUserDownloadRequestDocuments", method = RequestMethod.POST)
     public ResponseEntity<InputStreamResource> externalUserDownloadDispatchDocuments(HttpServletRequest request,
                                                                                      @RequestBody @Valid Requests requests) throws IOException {
@@ -1128,7 +1146,6 @@ public class RequestController extends MessageController {
                 .body(resource);
     }//downloadDispatchDocuments
 
-
     @RequestMapping(value = "/downloadDispatchDocuments", method = RequestMethod.POST)
     public ResponseEntity<InputStreamResource> downloadDocumentation(HttpServletRequest request,
                                                                      @RequestBody @Valid Requests requests) throws IOException {
@@ -1154,7 +1171,6 @@ public class RequestController extends MessageController {
                 .contentLength(file.length()) //
                 .body(resource);
     }//downloadDispatchDocuments
-
 
     public void externalUserZipFiles(List<String> files) {
         FileOutputStream fos = null;
@@ -1194,7 +1210,6 @@ public class RequestController extends MessageController {
         }
     }//zipFiles
 
-
     @PostMapping("/uploadUserPaymentConfirmation")
     public ResponseEntity<?> uploadUserPaymentConfirmation(HttpServletRequest request, @RequestParam("file") MultipartFile file,
                                                            @RequestParam("requestCode") String requestCode,
@@ -1220,7 +1235,7 @@ public class RequestController extends MessageController {
                     requestService.saveRequest(requests1);
                     //send notification
                     uploadUserPaymentConfirmationNotification(requests1);
-                    
+
                     return ResponseEntity.status(HttpStatus.OK).body(message);
 
                 } else {
@@ -1233,7 +1248,6 @@ public class RequestController extends MessageController {
             return generateFailureResponse(request, exception);
         }
     }//uploadUserPaymentConfirmation
-
 
     public void zipFiles(List<String> files) {
 
@@ -1273,14 +1287,13 @@ public class RequestController extends MessageController {
         }
     }//zipFiles
 
-
-    public void ftpZipFiles(List<String> files,String timeStamp) {
+    public void ftpZipFiles(List<String> files, String timeStamp) {
         FileOutputStream fos = null;
         ZipOutputStream zipOut = null;
         FileInputStream fis = null;
 
-        String zipFilename = "FTPFilesDownload"+"_"+timeStamp+".zip";
-       // String zipFilename = "FTPFilesDownload.zip";
+        String zipFilename = "FTPFilesDownload" + "_" + timeStamp + ".zip";
+        // String zipFilename = "FTPFilesDownload.zip";
         try {
 
             fos = new FileOutputStream(applicationPropertiesConfiguration.getUploadDirectoryPathFTP() + zipFilename);
@@ -1320,59 +1333,66 @@ public class RequestController extends MessageController {
 
     private void uploadUserPaymentConfirmationNotification(Requests requests) {
         try {
-	    	String userName = "";
-	        if(requests.getUserCode()!= null){
-	            User user  = this.userService.findByUserCode(requests.getUserCode());
-	            userName = (user!=null) ? user.getFirstName() +" "+ user.getSurname() : "";
-	        }
-	        String subject = "Upload user payment confirmation";
-	        String body = "Upload user payment confirmation processed successfully, reference code: "+requests.getRequestCode();
-	        
-	        String email = getInvoiceGeneratedUserEmail(requests);
-            System.out.println("Email is: "+email);
-            if(StringUtils.isEmpty(email))
-	        	log.warn("Could not find invoice generated user email, No payment confirmation mail sent");
-	        else
-	        	sendMail(requests, new MailDTO(), userName, subject, body, email);
-        }catch (Exception e) {
-        	log.error("Failed to send upload user payment confirmation notification, "+e.getMessage());
+            String userName = "";
+            if (requests.getUserCode() != null) {
+                User user = this.userService.findByUserCode(requests.getUserCode());
+                userName = (user != null) ? user.getFirstName() + " " + user.getSurname() : "";
+            }
+            String subject = "Upload user payment confirmation";
+            String body = "Upload user payment confirmation processed successfully, reference code: " + requests.getRequestCode();
+
+            String email = getInvoiceGeneratedUserEmail(requests);
+            System.out.println("Email is: " + email);
+            if (StringUtils.isEmpty(email))
+                log.warn("Could not find invoice generated user email, No payment confirmation mail sent");
+            else
+                sendMail(requests, new MailDTO(), userName, subject, body, email);
+        } catch (Exception e) {
+            log.error("Failed to send upload user payment confirmation notification, " + e.getMessage());
         }
     }//uploadUserPaymentConfirmationNotification
 
     private String getInvoiceGeneratedUserEmail(Requests requests) {
-    	String userEmail = null;
-    	List<TaskLifeCycle> taskLifeCycles = taskService.getTasksLifeCycleByTaskReferenceCode(requests.getRequestCode());
-    	if(CollectionUtils.isEmpty(taskLifeCycles)) return null;
-    	for(TaskLifeCycle taskLifeCycle: taskLifeCycles) {
-    		if("GenerateInvoice".equals(taskLifeCycle.getTaskStatus())) {
-    			if(taskLifeCycle.getTaskDoneUserName() != null) {
-    				userEmail = taskLifeCycle.getTaskDoneUserName();
-    			} else {
-    				 if(taskLifeCycle.getTaskDoneUserCode() != null){
-    					 User user  = this.userService.findByUserCode(taskLifeCycle.getTaskDoneUserCode());
-    			         userEmail = (user!=null) ? user.getUserName(): null;
-    			     }
-    			}
-    		}
-    	}
-		return userEmail;
-	}//getInvoiceGeneratedUserEmail
+        String userEmail = null;
+        List<TaskLifeCycle> taskLifeCycles = taskService.getTasksLifeCycleByTaskReferenceCode(requests.getRequestCode());
+        if (CollectionUtils.isEmpty(taskLifeCycles)) return null;
+        for (TaskLifeCycle taskLifeCycle : taskLifeCycles) {
+            if ("GenerateInvoice".equals(taskLifeCycle.getTaskStatus())) {
+                if (taskLifeCycle.getTaskDoneUserName() != null) {
+                    userEmail = taskLifeCycle.getTaskDoneUserName();
+                } else {
+                    if (taskLifeCycle.getTaskDoneUserCode() != null) {
+                        User user = this.userService.findByUserCode(taskLifeCycle.getTaskDoneUserCode());
+                        userEmail = (user != null) ? user.getUserName() : null;
+                    }
+                }
+            }
+        }
+        return userEmail;
+    }//getInvoiceGeneratedUserEmail
 
-	private void sendMailToCreateRequestUser(@RequestBody @Valid Requests requests, MailDTO mailDTO) throws Exception {
+    private void sendMailToCreateRequestUser(@RequestBody @Valid Requests requests, MailDTO mailDTO) throws Exception {
         String userName = null;
-        if(requests.getUserCode()!= null){
-            User user  = this.userService.findByUserCode(requests.getUserCode());
-            userName = (user!=null) ? user.getFirstName() +" "+ user.getSurname() : "Test User";
+        if (requests.getUserCode() != null) {
+            User user = this.userService.findByUserCode(requests.getUserCode());
+            userName = (user != null) ? user.getFirstName() + " " + user.getSurname() : "Test User";
         }
         String subject = "Request Created";
-        String body = "Your request is created successfully with reference code: "+requests.getRequestCode();
-        
+        String body = "Your request is created successfully with reference code: " + requests.getRequestCode();
+
         sendMail(requests, mailDTO, userName, subject, body, requests.getEmail());
     }//sendMailToCreateRequestUser
 
-	private void sendMail(Requests requests, MailDTO mailDTO, String userName, String subject, String body, String email) throws Exception {
-		Map<String, Object> model = new HashMap<String, Object>();
-        model.put("firstName", userName);
+    private void sendMail(Requests requests, MailDTO mailDTO, String userName, String subject, String body, String email) throws Exception {
+        String firstName = null;
+        String lastName = null;
+        Map<String, Object> model = new HashMap<String, Object>();
+        if (requests.getUserCode() != null) {
+            User user = this.userService.findByUserCode(requests.getUserCode());
+            firstName = user.getFirstName();
+            lastName = user.getSurname();
+        }
+        model.put("firstName", firstName + " " + lastName);
         model.put("body1", body);
         model.put("body2", "");
         model.put("body3", "");
@@ -1383,15 +1403,6 @@ public class RequestController extends MessageController {
         mailDTO.setMailTo(email);
         mailDTO.setModel(model);
         sendEmail(mailDTO);
-	}//sendMail
-
-    protected static void showServerReply(FTPClient ftpClient) {
-        String[] replies = ftpClient.getReplyStrings();
-        if (replies != null && replies.length > 0) {
-            for (String aReply : replies) {
-                System.out.println("SERVER: " + aReply);
-            }
-        }
-    }
+    }//sendMail
 
 }

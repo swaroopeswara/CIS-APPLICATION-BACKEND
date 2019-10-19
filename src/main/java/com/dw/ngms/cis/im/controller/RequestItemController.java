@@ -13,7 +13,9 @@ import com.dw.ngms.cis.uam.configuration.ApplicationPropertiesConfiguration;
 import com.dw.ngms.cis.uam.dto.FilePathsDTO;
 import com.dw.ngms.cis.uam.dto.MailDTO;
 import com.dw.ngms.cis.uam.entity.ExternalUser;
+import com.dw.ngms.cis.uam.entity.User;
 import com.dw.ngms.cis.uam.jsonresponse.UserControllerResponse;
+import com.dw.ngms.cis.uam.service.UserService;
 import com.google.gson.Gson;
 import jdk.nashorn.internal.parser.JSONParser;
 import org.apache.commons.collections.CollectionUtils;
@@ -64,6 +66,10 @@ public class RequestItemController extends MessageController {
 
     @Autowired
     private ApplicationPropertiesConfiguration applicationPropertiesConfiguration;
+
+
+    @Autowired
+    private UserService userService;
 
     @Autowired
     private RequestService requestService;
@@ -237,9 +243,15 @@ public class RequestItemController extends MessageController {
 
     private void sendMailWithFTPPAth(Requests requests, MailDTO mailDTO, String ftpFilePath) throws Exception {
 
+        String firstName = null;
+        String lastName = null;
         Map<String, Object> model = new HashMap<String, Object>();
-
-        model.put("firstName", requests.getUserName());
+        if (requests.getUserCode() != null) {
+            User user = this.userService.findByUserCode(requests.getUserCode());
+            firstName = user.getFirstName();
+            lastName = user.getSurname();
+        }
+        model.put("firstName", firstName + " " + lastName);
         model.put("body1", "FTP paths send successfully");
         model.put("body2", ftpFilePath);
         model.put("body3", "");
