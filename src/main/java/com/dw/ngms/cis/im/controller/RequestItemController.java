@@ -18,6 +18,7 @@ import com.google.gson.Gson;
 import jdk.nashorn.internal.parser.JSONParser;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPReply;
 import org.json.JSONObject;
@@ -184,6 +185,8 @@ public class RequestItemController extends MessageController {
 
                     boolean loginExists = ftpLogin(ftpClient);
                     if (loginExists) {
+                        ftpClient.enterLocalPassiveMode();
+                        ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
                         ftpClient.changeWorkingDirectory("/ftpFileDownload/");
                         File firstLocalFile = new File(applicationPropertiesConfiguration.getRequestDirectoryFtpPath() + zipFilename);
                         String firstRemoteFile = zipFilename;
@@ -242,7 +245,7 @@ public class RequestItemController extends MessageController {
         model.put("body3", "");
         model.put("body4", "");
 
-        mailDTO.setMailSubject("Welcome to CIS");
+        mailDTO.setMailSubject("DRDLR:Delivery");
         model.put("FOOTER", "CIS ADMIN");
         mailDTO.setMailFrom(applicationPropertiesConfiguration.getMailFrom());
         mailDTO.setMailTo(requests.getEmail());

@@ -822,7 +822,8 @@ public class UserController extends MessageController {
             mailDTO.setMailSubject("User password reset");
 
             model.put("body1", "Your password is reset Successfully");
-            model.put("body2", "Your password is " + user.getPassword());
+            //model.put("body2", "Your password is " + user.getPassword());
+            model.put("body2", "");
             model.put("body3", "");
             model.put("body4", "");
             model.put("firstName", user.getFirstName() + ",");
@@ -844,7 +845,8 @@ public class UserController extends MessageController {
             mailDTO.setMailSubject("User password updated");
 
             model.put("body1", "Your password is updated Successfully");
-            model.put("body2", "Your password is " + user.getPassword());
+            //model.put("body2", "Your password is " + user.getPassword());
+            model.put("body2", "");
             model.put("body3", "");
             model.put("body4", "");
             model.put("firstName", user.getFirstName() + ",");

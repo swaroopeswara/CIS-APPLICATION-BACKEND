@@ -31,6 +31,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPReply;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -568,7 +569,17 @@ public class RequestController extends MessageController {
 
 
     private void sendMailInvoiceUser(Requests requests, MailDTO mailDTO, String fileName, File fileLater) throws Exception {
+        System.out.println("File Name test is " + fileName);
+        if(!fileName.isEmpty()){
+            int index = fileName.lastIndexOf("/");
+            fileName = fileName.substring(index + 1);
+            System.out.println("File Name before is " + fileName);
+            fileName = fileName.replace("_NLC_MonitoringForm","");
+            fileName = "Invoice_"+fileName;
+            System.out.println("File Name before testis " + fileName);
 
+        }
+        System.out.println("File Name after is "+fileName);
         Map<String, Object> model = new HashMap<String, Object>();
 
         model.put("firstName", requests.getUserName());
@@ -577,7 +588,7 @@ public class RequestController extends MessageController {
         model.put("body3", "");
         model.put("body4", "");
 
-        mailDTO.setMailSubject("Welcome to CIS");
+        mailDTO.setMailSubject("DRDLR:Invoice");
         model.put("FOOTER", "CIS ADMIN");
         mailDTO.setMailFrom(applicationPropertiesConfiguration.getMailFrom());
         mailDTO.setMailTo(requests.getUserName());
@@ -597,7 +608,7 @@ public class RequestController extends MessageController {
         model.put("body3", "");
         model.put("body4", "");
 
-        mailDTO.setMailSubject("Welcome to CIS");
+        mailDTO.setMailSubject("DRDLR:Delivery");
         model.put("FOOTER", "CIS ADMIN");
         mailDTO.setMailFrom(applicationPropertiesConfiguration.getMailFrom());
         mailDTO.setMailTo(requests.getUserName());
@@ -712,7 +723,7 @@ public class RequestController extends MessageController {
                         List<String> files = new ArrayList<String>();
                         String fileName = testService.store(f);
                         files.add(f.getOriginalFilename());
-                        filesExist.add(applicationPropertiesConfiguration.getDownloadDirectoryPath() + fileName);
+                        filesExist.add(applicationPropertiesConfiguration.getUploadDirectoryPath() + fileName);
                         userControllerResponse.setFiles(filesExist);
                         json = gson.toJson(userControllerResponse);
                         requests.setDispatchDocs(json);
@@ -793,6 +804,7 @@ public class RequestController extends MessageController {
         FTPClient ftpClient = new FTPClient();
         try {
             Requests requests = this.requestService.getRequestsByRequestCode(requestsParam.getRequestCode());
+            String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
             if (requests.getFormatType().equalsIgnoreCase("Electronic(Email)") || requests.getFormatType().equalsIgnoreCase("Electronic(FTP)")) {
                 if (requests != null && !isEmpty(requests)) {
                     if(requests.getDispatchDocs()!= null) {
@@ -803,27 +815,49 @@ public class RequestController extends MessageController {
                         for (String str1 : filePath.getFiles()) {
                             System.out.println(str1);
                             files.add(str1);
-                            ftpZipFiles(files, ftpClient);
+                            ftpZipFiles(files, timeStamp);
                         }
 
-                        String zipFilename = "FTPFilesDownload.zip";
+
+                        String zipFilename = "FTPFilesDownload" + "_" + timeStamp + ".zip";
+
+                        //String zipFilename = "FTPFilesDownload.zip";
 
                         boolean loginExists = ftpLogin(ftpClient);
-                        if (loginExists) {
-                            ftpClient.changeWorkingDirectory("/ftpFileDownload/");
-                            File firstLocalFile = new File(applicationPropertiesConfiguration.getUploadDirectoryPathFTP() + zipFilename);
-                            String firstRemoteFile = zipFilename;
-                            InputStream inputStream = new FileInputStream(firstLocalFile);
-                            System.out.println("Start uploading first file");
-                            boolean done = ftpClient.storeFile(firstRemoteFile, inputStream);
-                            inputStream.close();
+                        try {
+                            if (loginExists) {
+                                ftpClient.enterLocalPassiveMode();
+                                ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
+                                ftpClient.changeWorkingDirectory("/ftpFileDownload/");
+                                File firstLocalFile = new File(applicationPropertiesConfiguration.getUploadDirectoryPathFTP() + zipFilename);
+                                System.out.println("Local File is: " + applicationPropertiesConfiguration.getUploadDirectoryPathFTP());
+                                System.out.println("zipFilename is: " + zipFilename);
+                                String firstRemoteFile = zipFilename;
+                                InputStream inputStream = new FileInputStream(firstLocalFile);
+                                System.out.println("Start uploading first file");
+                                boolean done = ftpClient.storeFile(firstRemoteFile, inputStream);
+                                if(done){
+                                    System.out.println("Done");
+                                }else{
+                                    System.out.println("Not Done");
+                                }
+                                inputStream.close();
+                            }
+                        }catch (Exception e){
+                            System.out.println("Exception is" +e.getMessage());;
+                            e.printStackTrace();
                         }
                         ftpClient.logout();
+                        System.out.println("Start uploading second");
                         String path = appPropertiesService.getProperty("FTP_UPLOAD_PATH").getKeyValue();
                         String server = "ftp://" + appPropertiesService.getProperty("FTP_SERVER").getKeyValue();
 
                         String ftpFilePath = server + path + zipFilename;
                         System.out.println("File Path is: " + ftpFilePath);
+
+                        System.out.println("FTP Server is: " + appPropertiesService.getProperty("FTP_SERVER").getKeyValue());
+                        System.out.println("FTP userName: " + appPropertiesService.getProperty("FTP_USERNAME").getKeyValue());
+                        System.out.println("FTP  Password is: " + appPropertiesService.getProperty("FTP_PASSWORD").getKeyValue());
                         MailDTO mailDTO = new MailDTO();
 
                         // inside your getSalesUserData() method
@@ -883,8 +917,8 @@ public class RequestController extends MessageController {
     private boolean ftpLogin(FTPClient ftpClient) throws IOException {
         String server = appPropertiesService.getProperty("FTP_SERVER").getKeyValue();
         int port = Integer.valueOf(appPropertiesService.getProperty("FTP_PORT").getKeyValue());
-        String user = appPropertiesService.getProperty("FTP_SERVER").getKeyValue();
-        String pass = appPropertiesService.getProperty("FTP_SERVER").getKeyValue();
+        String user = appPropertiesService.getProperty("FTP_USERNAME").getKeyValue();
+        String pass = appPropertiesService.getProperty("FTP_PASSWORD").getKeyValue();
         ftpClient.connect(server, port);
         showServerReply(ftpClient);
         int replyCode = ftpClient.getReplyCode();
@@ -1240,12 +1274,13 @@ public class RequestController extends MessageController {
     }//zipFiles
 
 
-    public void ftpZipFiles(List<String> files, FTPClient ftpClient) {
+    public void ftpZipFiles(List<String> files,String timeStamp) {
         FileOutputStream fos = null;
         ZipOutputStream zipOut = null;
         FileInputStream fis = null;
 
-        String zipFilename = "FTPFilesDownload.zip";
+        String zipFilename = "FTPFilesDownload"+"_"+timeStamp+".zip";
+       // String zipFilename = "FTPFilesDownload.zip";
         try {
 
             fos = new FileOutputStream(applicationPropertiesConfiguration.getUploadDirectoryPathFTP() + zipFilename);
@@ -1329,7 +1364,7 @@ public class RequestController extends MessageController {
             User user  = this.userService.findByUserCode(requests.getUserCode());
             userName = (user!=null) ? user.getFirstName() +" "+ user.getSurname() : "Test User";
         }
-        String subject = "Create Request";
+        String subject = "Request Created";
         String body = "Your request is created successfully with reference code: "+requests.getRequestCode();
         
         sendMail(requests, mailDTO, userName, subject, body, requests.getEmail());

@@ -78,13 +78,13 @@ public class RequestItems implements Serializable {
     @Column(name = "REQUESTCODE", nullable = true, length = 50)
     private String requestCode;
 
-    @Column(name = "RESULTJSON", length = 2000)
+    @Column(name = "RESULTJSON")
     private String resultJson;
 
-    @Column(name = "FTPSITEURL", length = 200)
+    @Column(name = "FTPSITEURL")
     private String ftpSiteUrl;
 
-    @Column(name = "FTPSITEURLJSON", length = 200)
+    @Column(name = "FTPSITEURLJSON")
     private String ftpSiteUrlJson;
 
 

@@ -24,6 +24,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
 
+import com.dw.ngms.cis.uam.service.AuditEntryService;
 import org.jfree.util.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
@@ -73,6 +74,9 @@ public class MessageController implements ExceptionConstants {
 
     @Autowired
     private Configuration freemarkerConfig;
+
+    @Autowired
+    private AuditEntryService auditEntryService;
 
     /**
      * This is to generate failure response
@@ -389,6 +393,7 @@ public class MessageController implements ExceptionConstants {
 			return;
 		}else{
             log.warn("Test mail");
+
             sender.send(message);
         }
 

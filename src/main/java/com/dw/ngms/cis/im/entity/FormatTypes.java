@@ -29,6 +29,9 @@ public class FormatTypes {
     @Column(name = "DESCRIPTION", length = 200)
     private String description;
 
+    @Column(name = "ISDELETED")
+    private String isDeleted;
+
     @Temporal(TemporalType.DATE)
     @Column(name = "CREATEDDATE", nullable = true)
     private Date createdDate = new Date();

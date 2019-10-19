@@ -102,7 +102,8 @@ public class CostSubCategoryController extends MessageController {
             }
             if (!isEmpty(costSubCategoriesItem)) {
                 costSubCategoriesItem.setIsActive("N");
-                this.costSubService.saveCostSubCategories(costSubCategoriesItem);
+                CostSubCategories cost =  this.costSubService.updateCostSubCategory(costSubCategoriesItem);
+                System.out.println("Cost "+cost);
             }
             userControllerResponse.setMessage("Cost Sub Category de-activated Successfully");
             json = gson.toJson(userControllerResponse);

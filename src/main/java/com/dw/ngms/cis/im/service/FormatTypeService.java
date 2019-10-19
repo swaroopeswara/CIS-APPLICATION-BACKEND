@@ -1,5 +1,6 @@
 package com.dw.ngms.cis.im.service;
 
+import com.dw.ngms.cis.im.entity.DeliveryMethods;
 import com.dw.ngms.cis.im.entity.FormatTypes;
 import com.dw.ngms.cis.im.entity.MediaTypes;
 import com.dw.ngms.cis.im.repository.FormatTypeRepository;
@@ -29,8 +30,14 @@ public class FormatTypeService {
 
 
     public List<FormatTypes> getAllFormatTypes() {
-        return this.formatTypeRepository.findAll();
+        return this.formatTypeRepository.getFormatTypeActive();
     } //getAllFormatTypes
+
+    public FormatTypes getFormatByCode(String formatTypeCode) {
+        return this.formatTypeRepository.getFormatByCode(formatTypeCode);
+    } //getDeliveryMethodByCode
+
+
 
 
 
