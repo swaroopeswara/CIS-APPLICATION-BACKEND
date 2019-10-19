@@ -414,7 +414,7 @@ public class MessageController implements ExceptionConstants {
 			auditEntry.setResponseJson(message);
 			auditEntryService.logAuditEntry(auditEntry);
 		}catch (Exception e) {
-			log.error("Failed to log mail audit entry: "+message);
+			log.error("Failed to log mail audit entry: "+e.getMessage());
 		}
 	}//logMailAuditEntry
 
