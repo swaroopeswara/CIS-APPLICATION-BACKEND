@@ -1,5 +1,6 @@
 package com.dw.ngms.cis.uam.dto;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,9 +21,11 @@ import lombok.ToString;
 @Setter
 @ToString
 @NoArgsConstructor
-public class MailDTO {
+public class MailDTO implements Serializable {
 
-    private String mailFrom;
+	private static final long serialVersionUID = 1260712582512350495L;
+
+	private String mailFrom;
 
     private String mailTo;
 

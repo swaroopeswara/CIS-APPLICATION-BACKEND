@@ -26,7 +26,6 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
 
-import org.jfree.util.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
@@ -63,10 +62,10 @@ import lombok.extern.slf4j.Slf4j;
 @Controller
 public class MessageController implements ExceptionConstants {
 
+	private static final String OPERATION_SEND_MAIL = "SEND_MAIL";
+	
     @Autowired
     private ResponseBuilderAgent responseBuilderAgent;
-
-
 
     @Autowired
     private ApplicationPropertiesService appPropertiesService;
@@ -209,7 +208,14 @@ public class MessageController implements ExceptionConstants {
     }//sendSMS
 
     public void sendEmail(MailDTO mailDTO) throws Exception {
-        this.sendEmail(mailDTO.getModel(), mailDTO.getMailTo(), mailDTO.getMailSubject());
+    	try {
+    		this.sendEmail(mailDTO.getModel(), mailDTO.getMailTo(), mailDTO.getMailSubject());
+    		logMailAuditEntry(mailDTO.getMailTo(), new Gson().toJson(mailDTO));
+    	}catch (Exception e) {
+    		String failureMessage = "Failed to send mail, "+e.getMessage();
+			log.error(failureMessage);
+			logMailAuditEntry(mailDTO.getMailTo(), failureMessage);
+		}
     }//sendEmail
 
     public void sendEmailDrdlr(MailDTO mailDTO) throws Exception {
@@ -255,9 +261,12 @@ public class MessageController implements ExceptionConstants {
     		mail.getMailsTo().forEach(mailTo -> {
     			try {
     				model.put("firstName", mail.getUserNameMap().get(mailTo));
-					this.sendEmail(model, mailTo, mail.getMailSubject());
+    				this.sendEmail(model, mailTo, mail.getMailSubject());
+    				logMailAuditEntry(mailTo, new Gson().toJson(mail));
 				} catch (Exception e) {
-					Log.error("Failed to send email "+e.getMessage());
+					String failureMessage = "Failed to send mail, "+e.getMessage();
+					log.error(failureMessage);
+					logMailAuditEntry(mailTo, failureMessage);
 				}
     		});
     	}
@@ -339,7 +348,7 @@ public class MessageController implements ExceptionConstants {
         sendMailMessage(message);
     }//sendEmail
 
-    public void sendEmail(Map<String, Object> model, String mailTo, String mailSubject) throws Exception {
+    public boolean sendEmail(Map<String, Object> model, String mailTo, String mailSubject) throws Exception {
         MimeMessage message = sender.createMimeMessage();
         
         MimeMessageHelper helper = new MimeMessageHelper(message,true, "utf-8");
@@ -349,6 +358,7 @@ public class MessageController implements ExceptionConstants {
         helper.setSubject(mailSubject);
 
         sendMailMessage(message);
+        return true;
     }//sendEmail
 
 
@@ -384,34 +394,22 @@ public class MessageController implements ExceptionConstants {
         Transport.send(message);
     }//sendEmail
 
-	private void sendMailMessage(MimeMessage message) {
-		
-		String operation = "SEND_MAIL";
+	private void sendMailMessage(MimeMessage message) throws Exception{		
 		String userName = getUserMailId(message);
-		ApplicationProperties property = appPropertiesService.getProperty(operation);
-		
+		ApplicationProperties property = appPropertiesService.getProperty(OPERATION_SEND_MAIL);		
 		if(property != null && property.getKeyValue() != null && 
 				property.getKeyValue().equalsIgnoreCase("false")) {
-			String failureReason = "Mail configuration disabled, no mail sent";
-			log.error(failureReason);
-			logMailAuditEntry(operation, userName, failureReason);
-			return;
+			throw new Exception("Mail configuration disabled, no mail sent");
 		}else{
-			try {
-	            log.info("Mail is being sent to :"+userName);
-	            sender.send(message);
-	            logMailAuditEntry(operation, userName, new Gson().toJson(message));
-			}catch (Exception e) {
-				log.error("Failed to send mail: "+e.getMessage());
-				logMailAuditEntry(operation, userName, e.getMessage());
-			}
+			log.info("Mail is being sent to :"+userName);
+	        sender.send(message);
         }
 	}//sendMailMessage
     
-	private void logMailAuditEntry(String operation, String userName, String message) {
+	private void logMailAuditEntry(String userName, String message) {
 		try {
 			AuditEntry auditEntry = new AuditEntry();
-			auditEntry.setOperation(operation);
+			auditEntry.setOperation(OPERATION_SEND_MAIL);
 			auditEntry.setUserName(userName);
 			auditEntry.setResponseDatetime(new Date());
 			auditEntry.setResponseJson(message);
@@ -434,7 +432,7 @@ public class MessageController implements ExceptionConstants {
 			}
 		}
 		return userName;
-	}//logMailAuditEntry
+	}//getUserMailId
 
 	private String getProcessedTemplate(Map<String, Object> model) throws TemplateNotFoundException,
 			MalformedTemplateNameException, ParseException, IOException, TemplateException {
