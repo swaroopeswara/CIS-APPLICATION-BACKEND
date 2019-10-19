@@ -59,6 +59,11 @@ public class AuditEntry implements Serializable {
 	@Column(name = "RESPONSEDATETIME")
 	private Date responseDatetime;
 
+	public AuditEntry(String operation) {
+		this.id = UUID.randomUUID();
+		this.operation = operation;
+	}
+	
 	public AuditEntry(String operation, String requestUrl, String userCode, String userName, String userType, String requestJson) {
 		this.id = UUID.randomUUID();
 		this.operation = operation;
