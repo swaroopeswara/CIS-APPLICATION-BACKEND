@@ -408,8 +408,7 @@ public class MessageController implements ExceptionConstants {
     
 	private void logMailAuditEntry(String userName, String message) {
 		try {
-			AuditEntry auditEntry = new AuditEntry();
-			auditEntry.setOperation(OPERATION_SEND_MAIL);
+			AuditEntry auditEntry = new AuditEntry(OPERATION_SEND_MAIL);
 			auditEntry.setUserName(userName);
 			auditEntry.setResponseDatetime(new Date());
 			auditEntry.setResponseJson(message);
