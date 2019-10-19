@@ -375,7 +375,7 @@ public class RequestController extends MessageController {
                     processUserState(request, processAdditionalInfo);
 
                     //send notification
-                    uploadUserPaymentConfirmationNotification(requests1);
+                    uploadPaymentConfirmationNotification(requests1, false);
 
                     return ResponseEntity.status(HttpStatus.OK).body(message);
 
@@ -1234,7 +1234,7 @@ public class RequestController extends MessageController {
                     }
                     requestService.saveRequest(requests1);
                     //send notification
-                    uploadUserPaymentConfirmationNotification(requests1);
+                    uploadPaymentConfirmationNotification(requests1, true);
 
                     return ResponseEntity.status(HttpStatus.OK).body(message);
 
@@ -1331,26 +1331,29 @@ public class RequestController extends MessageController {
         }
     }//zipFiles
 
-    private void uploadUserPaymentConfirmationNotification(Requests requests) {
-        try {
-            String userName = "";
-            if (requests.getUserCode() != null) {
-                User user = this.userService.findByUserCode(requests.getUserCode());
-                userName = (user != null) ? user.getFirstName() + " " + user.getSurname() : "";
-            }
-            String subject = "Upload user payment confirmation";
-            String body = "Upload user payment confirmation processed successfully, reference code: " + requests.getRequestCode();
-
+    private void uploadPaymentConfirmationNotification(Requests requests, boolean isUser) {
+        try {              
+            User user = null;
             String email = getInvoiceGeneratedUserEmail(requests);
-            System.out.println("Email is: " + email);
-            if (StringUtils.isEmpty(email))
-                log.warn("Could not find invoice generated user email, No payment confirmation mail sent");
-            else
-                sendMail(requests, new MailDTO(), userName, subject, body, email);
+            log.info("Email is: " + email);
+            if (StringUtils.isEmpty(email)) {
+                log.error("Could not find invoice generated user email, No payment confirmation mail sent");
+                return ;
+            }
+            if(isUser) {
+            	user = this.userService.getUserByUserName(email);
+            } else if (requests.getUserCode() != null) {
+                user = this.userService.findByUserCode(requests.getUserCode());                
+            }
+            String userFullName = (user != null) ? user.getFirstName() + " " + user.getSurname() : "";
+            String subject = "Upload user payment confirmation";
+            String body = "Upload user payment confirmation processed successfully, reference code: " + requests.getRequestCode();            
+                       
+            sendMail(requests, new MailDTO(), userFullName, subject, body, email);
         } catch (Exception e) {
             log.error("Failed to send upload user payment confirmation notification, " + e.getMessage());
         }
-    }//uploadUserPaymentConfirmationNotification
+    }//uploadPaymentConfirmationNotification
 
     private String getInvoiceGeneratedUserEmail(Requests requests) {
         String userEmail = null;
@@ -1371,6 +1374,10 @@ public class RequestController extends MessageController {
         return userEmail;
     }//getInvoiceGeneratedUserEmail
 
+    private User getUser(String userName) {
+        return (userName == null) ? null : this.userService.getUserByUserName(userName);
+    }//getInvoiceGeneratedUser
+    
     private void sendMailToCreateRequestUser(@RequestBody @Valid Requests requests, MailDTO mailDTO) throws Exception {
         String userName = null;
         if (requests.getUserCode() != null) {

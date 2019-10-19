@@ -27,6 +27,10 @@ public class UserService {
 	@Autowired
 	private LdapClient ldapClient;
 
+	public User getUserByUserName(String userName){
+		return userRepository.findByLoginName(userName);
+	}//getUserByUserName
+	
 	public List<User> getAllUsersByUserTypeName(String userTypeName){
 		return userRepository.findByUserTypeName(userTypeName);
 	}//getAllUsersByUserTypeName
